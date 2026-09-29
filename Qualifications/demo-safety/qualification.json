@@ -1,0 +1,14 @@
+{
+  "id": "demo-safety",
+  "name": "設備安全管理士",
+  "subtitle": "架空の資格・学習体験用",
+  "examMinutes": 40,
+  "mockQuestionCount": 12,
+  "passingPercent": 70,
+  "minimumSubjectPercent": 40,
+  "subjects": ["点検計画", "作業手順", "記録と報告", "安全計算"],
+  "freeQuestionIDs": ["p01", "p02", "p03", "w01", "w02", "w03", "r01", "r02", "r03", "c01", "c02", "c03"],
+  "productID": "jp.example.exammaster.demo.unlock",
+  "accentHex": "#2F6E70",
+  "examNote": "この資格・基準・問題は製品確認用の架空データです。実在する国家資格の試験内容ではありません。"
+}

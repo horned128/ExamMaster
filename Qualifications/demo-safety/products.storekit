@@ -1,0 +1,45 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      { "locale" : "ja_JP", "policyText" : "", "policyURL" : "" }
+    ]
+  },
+  "identifier" : "7B33CA6D",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "980",
+      "familyShareable" : false,
+      "internalID" : "A8652763",
+      "localizations" : [
+        {
+          "description" : "設備安全管理士（架空）の全問題を永久に利用できます。",
+          "displayName" : "全問題を解放",
+          "locale" : "ja_JP"
+        }
+      ],
+      "productID" : "jp.example.exammaster.demo.unlock",
+      "referenceName" : "設備安全学習 全問題解放",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ja_JP",
+    "_storefront" : "JPN",
+    "_storeKitErrors" : [
+      { "current" : null, "enabled" : false, "name" : "Load Products" },
+      { "current" : null, "enabled" : false, "name" : "Purchase" },
+      { "current" : null, "enabled" : false, "name" : "Verification" },
+      { "current" : null, "enabled" : false, "name" : "App Store Sync" },
+      { "current" : null, "enabled" : false, "name" : "Subscription Status" },
+      { "current" : null, "enabled" : false, "name" : "App Transaction" }
+    ]
+  },
+  "subscriptionGroups" : [],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

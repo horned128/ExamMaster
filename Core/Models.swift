@@ -1,0 +1,146 @@
+import Foundation
+
+struct Qualification: Codable {
+    let id: String
+    let name: String
+    let subtitle: String
+    let examMinutes: Int
+    let mockQuestionCount: Int
+    let passingPercent: Int
+    let minimumSubjectPercent: Int
+    let subjects: [String]
+    let freeQuestionIDs: [String]
+    let productID: String
+    let accentHex: String
+    let examNote: String
+}
+
+struct QuestionBank: Codable {
+    let version: Int
+    let questions: [Question]
+}
+
+struct Question: Codable, Identifiable, Hashable {
+    let id: String
+    let year: Int
+    let subject: String
+    let category: String
+    let stem: String
+    let choices: [String]
+    let correctIndex: Int
+    let explanation: String
+    let source: String
+    let imageName: String?
+    let difficulty: Int
+    let tags: [String]
+    let concepts: [String]
+    let steps: [String]?
+
+    var searchText: String { ([stem, explanation, subject, category] + choices + tags + concepts).joined(separator: " ") }
+}
+
+enum CatalogError: LocalizedError {
+    case invalid(String)
+    var errorDescription: String? {
+        switch self { case .invalid(let message): return "問題データを確認してください: \(message)" }
+    }
+}
+
+struct Catalog {
+    let qualification: Qualification
+    let questions: [Question]
+
+    static func load(id: String) throws -> Catalog {
+        guard let config = Bundle.main.url(forResource: "qualification", withExtension: "json"),
+              let bank = Bundle.main.url(forResource: "questions", withExtension: "json") else {
+            throw CatalogError.invalid("資格 \(id) のファイルがありません")
+        }
+        let qualification = try JSONDecoder().decode(Qualification.self, from: Data(contentsOf: config))
+        guard qualification.id == id else { throw CatalogError.invalid("資格ID \(id) と同梱データが一致しません") }
+        return try Catalog(qualification: qualification,
+                           bank: JSONDecoder().decode(QuestionBank.self, from: Data(contentsOf: bank)))
+    }
+
+    init(qualification: Qualification, bank: QuestionBank) throws {
+        guard bank.version == 1, !qualification.id.isEmpty, !qualification.name.isEmpty,
+              qualification.examMinutes > 0,
+              qualification.mockQuestionCount >= qualification.subjects.count,
+              qualification.mockQuestionCount <= bank.questions.count,
+              (1...100).contains(qualification.passingPercent),
+              (0...100).contains(qualification.minimumSubjectPercent),
+              qualification.minimumSubjectPercent <= qualification.passingPercent,
+              qualification.accentHex.range(of: "^#[0-9A-Fa-f]{6}$", options: .regularExpression) != nil,
+              !qualification.subjects.isEmpty, Set(qualification.subjects).count == qualification.subjects.count,
+              !qualification.productID.isEmpty else { throw CatalogError.invalid("資格設定") }
+        let ids = bank.questions.map(\.id)
+        guard Set(ids).count == ids.count, !ids.isEmpty,
+              Set(qualification.freeQuestionIDs).isSubset(of: Set(ids)),
+              qualification.freeQuestionIDs.count > 0,
+              Set(qualification.freeQuestionIDs).count == qualification.freeQuestionIDs.count,
+              qualification.subjects.allSatisfy({ subject in bank.questions.contains { $0.subject == subject } }),
+              qualification.subjects.allSatisfy({ subject in bank.questions.contains { $0.subject == subject && qualification.freeQuestionIDs.contains($0.id) } }),
+              bank.questions.allSatisfy({ q in
+                  !q.id.isEmpty && !q.stem.isEmpty && !q.explanation.isEmpty && !q.source.isEmpty &&
+                  qualification.subjects.contains(q.subject) && !q.category.isEmpty &&
+                  (1...5).contains(q.difficulty) && (2...6).contains(q.choices.count) &&
+                  q.choices.indices.contains(q.correctIndex) && Set(q.choices).count == q.choices.count &&
+                  (q.steps == nil || !(q.steps?.isEmpty ?? true))
+              }) else { throw CatalogError.invalid("問題ID・科目・正答・無料範囲") }
+        self.qualification = qualification
+        self.questions = bank.questions
+    }
+}
+
+enum Confidence: String, Codable, CaseIterable, Identifiable {
+    case unsure, somewhat, sure
+    var id: String { rawValue }
+    var title: String {
+        switch self { case .unsure: "自信なし"; case .somewhat: "迷った"; case .sure: "自信あり" }
+    }
+}
+
+enum StudyMode: String, Codable { case diagnostic, recommended, misconception, contrast, year, subject, random, incorrect, bookmarked, mock, search }
+
+struct Answer: Codable, Identifiable {
+    var id = UUID()
+    let questionID: String
+    let date: Date
+    let selectedIndex: Int
+    let correct: Bool
+    let duration: TimeInterval
+    let confidence: Confidence?
+    let mode: StudyMode
+}
+
+struct MockResult: Codable, Identifiable {
+    var id = UUID()
+    let date: Date
+    let score: Int
+    let total: Int
+    let passed: Bool
+    let subjectScores: [String: Int]
+}
+
+struct Mastery: Codable {
+    var attempts = 0
+    var streak = 0
+    var distinctSuccessDays = 0
+    var lastSuccessDay: Date?
+    var lastAnswered: Date?
+    var stabilityDays = 1.0
+    var dueAt: Date?
+    var misconception = false
+    var wrongChoices: [Int: Int] = [:]
+    var lastCorrect = false
+}
+
+struct StudyData: Codable {
+    var schemaVersion = 1
+    var answers: [Answer] = []
+    var mastery: [String: Mastery] = [:]
+    var bookmarks: Set<String> = []
+    var mocks: [MockResult] = []
+    var onboardingCompleted = false
+    var diagnosticCompleted = false
+    var recallFirst = true
+}
