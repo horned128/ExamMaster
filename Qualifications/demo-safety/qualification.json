@@ -9,6 +9,18 @@
   "subjects": ["点検計画", "作業手順", "記録と報告", "安全計算"],
   "freeQuestionIDs": ["p01", "p02", "p03", "w01", "w02", "w03", "r01", "r02", "r03", "c01", "c02", "c03"],
   "productID": "jp.example.exammaster.demo.unlock",
+  "privacyPolicyURL": null,
   "accentHex": "#2F6E70",
-  "examNote": "この資格・基準・問題は製品確認用の架空データです。実在する国家資格の試験内容ではありません。"
+  "examNote": "この資格・基準・問題は製品確認用の架空データです。実在する国家資格の試験内容ではありません。",
+  "ads": {
+    "enabled": true,
+    "bannerEnabled": true,
+    "interstitialEnabled": true,
+    "interstitialMinimumIntervalSeconds": 1800,
+    "interstitialMinimumSessions": 3,
+    "interstitialMinimumAnsweredQuestions": 8,
+    "adMobAppID": "ca-app-pub-3940256099942544~1458002511",
+    "bannerAdUnitID": "ca-app-pub-3940256099942544/2435281174",
+    "interstitialAdUnitID": "ca-app-pub-3940256099942544/4411468910"
+  }
 }

@@ -5,8 +5,12 @@ struct DashboardView: View {
     let catalog: Catalog
     let store: StudyStore
     let purchase: PurchaseManager
+    let ads: AdsService
     let start: (StudySession) -> Void
     let paywall: () -> Void
+    let resume: () -> Void
+    let openAnalysis: () -> Void
+    let settings: () -> Void
 
     private var stats: StudyStats { StudyStats(catalog: catalog, data: store.data) }
 
@@ -17,6 +21,23 @@ struct DashboardView: View {
                     Text("今日、覚えるべきこと。").font(.largeTitle.bold())
                     Text(catalog.qualification.name + "  ·  " + catalog.qualification.subtitle)
                         .font(.subheadline).foregroundStyle(.secondary)
+                }
+                if let pending = store.data.pending {
+                    Button(action: resume) {
+                        HStack(spacing: 14) {
+                            Image(systemName: "play.circle.fill").font(.title).foregroundStyle(.tint)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("続きから · \(pending.title)").font(.headline)
+                                Text("\(pending.questionIDs.count)問中\(pending.index + 1)問目 · \(pending.answers.count)問回答済み")
+                                    .font(.subheadline).foregroundStyle(.secondary)
+                            }
+                            Spacer(minLength: 0)
+                            Image(systemName: "chevron.right").font(.caption).foregroundStyle(.secondary)
+                        }
+                        .padding(18)
+                        .background(Palette.surface, in: RoundedRectangle(cornerRadius: 20))
+                    }
+                    .buttonStyle(.plain)
                 }
                 Surface {
                     HStack(alignment: .firstTextBaseline) {
@@ -52,25 +73,30 @@ struct DashboardView: View {
                 .buttonStyle(.plain)
 
                 LazyVGrid(columns: dynamicTypeSize.isAccessibilitySize ? [GridItem(.flexible())] :
-                          [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    Metric(title: "安定して記憶", value: "\(stats.stable)", symbol: "checkmark.seal")
-                    Metric(title: "復習の目安", value: "\(stats.due)", symbol: "arrow.clockwise")
-                    Metric(title: "忘却リスク", value: "\(stats.atRisk)", symbol: "waveform.path")
-                    Metric(title: "未学習", value: "\(stats.new)", symbol: "square.dashed")
-                    Metric(title: "危険な思い込み", value: "\(stats.misconceptions)", symbol: "exclamationmark.bubble")
-                    Metric(title: "学習した日", value: "\(stats.studyDays)日", symbol: "calendar")
-                }
-
-                if stats.misconceptions > 0 {
-                    Button { start(StudySession(title: "危険な思い込みを潰す", mode: .misconception,
-                                                questions: SessionPlanner.interleave(SessionPlanner.available(catalog, unlocked: purchase.unlocked).filter { store.data.mastery[$0.id]?.misconception == true }), timed: false)) } label: {
-                        Label("危険な思い込みを潰す", systemImage: "exclamationmark.triangle")
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                           [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                    NavigationLink(value: QuestionCollectionRoute.status(.stable)) {
+                        Metric(title: "安定して記憶", value: "\(stats.stable)", symbol: "checkmark.seal")
                     }
-                    .buttonStyle(.bordered)
+                    NavigationLink(value: QuestionCollectionRoute.status(.due)) {
+                        Metric(title: "復習の目安", value: "\(stats.due)", symbol: "arrow.clockwise")
+                    }
+                    NavigationLink(value: QuestionCollectionRoute.status(.risk)) {
+                        Metric(title: "忘却リスク", value: "\(stats.atRisk)", symbol: "waveform.path")
+                    }
+                    NavigationLink(value: QuestionCollectionRoute.status(.new)) {
+                        Metric(title: "未学習", value: "\(stats.new)", symbol: "square.dashed")
+                    }
+                    NavigationLink(value: QuestionCollectionRoute.status(.misconception)) {
+                        Metric(title: "危険な思い込み", value: "\(stats.misconceptions)", symbol: "exclamationmark.bubble")
+                    }
+                    Button(action: openAnalysis) {
+                        Metric(title: "学習した日", value: "\(stats.studyDays)日", symbol: "calendar")
+                    }
                 }
+                .buttonStyle(.plain)
+
                 if !SessionPlanner.contrast(catalog, data: store.data, unlocked: purchase.unlocked).questions.isEmpty {
-                    Button { start(SessionPlanner.contrast(catalog, data: store.data, unlocked: purchase.unlocked)) } label: {
+                    NavigationLink(value: QuestionCollectionRoute.contrast) {
                         Label("混同しやすい概念を比べる", systemImage: "square.on.square")
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -104,6 +130,9 @@ struct DashboardView: View {
                     }
                     .font(.subheadline).padding(.vertical, 8)
                 }
+                if !purchase.unlocked && !purchase.purchasing {
+                    AdBannerPlacement(ads: ads)
+                }
                 if let error = store.error {
                     Surface {
                         Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
@@ -114,7 +143,13 @@ struct DashboardView: View {
             .padding(18)
         }
         .background(Palette.background)
-        .navigationTitle("今日")
-        .toolbar(.hidden, for: .navigationBar)
+        .navigationTitle("ホーム")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: settings) { Image(systemName: "gearshape") }
+                    .accessibilityLabel("設定")
+            }
+        }
     }
 }

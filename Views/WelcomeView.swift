@@ -28,6 +28,10 @@ struct WelcomeView: View {
                     }
                     Text(catalog.qualification.examNote)
                         .font(.footnote).foregroundStyle(.secondary)
+                    if catalog.qualification.ads.enabled {
+                        Text("無料版では学習画面以外に広告を表示します。全問題解放の買い切り購入で広告も永久に非表示になります。")
+                            .font(.footnote).foregroundStyle(.secondary)
+                    }
                     Button(action: start) {
                         Label("診断を始める", systemImage: "arrow.right")
                             .frame(maxWidth: .infinity).padding(7)

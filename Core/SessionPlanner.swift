@@ -1,11 +1,19 @@
 import Foundation
 
 struct StudySession: Identifiable {
-    let id = UUID()
+    let id: UUID
     let title: String
     let mode: StudyMode
     let questions: [Question]
     let timed: Bool
+
+    init(id: UUID = UUID(), title: String, mode: StudyMode, questions: [Question], timed: Bool) {
+        self.id = id
+        self.title = title
+        self.mode = mode
+        self.questions = questions
+        self.timed = timed
+    }
 }
 
 enum SessionPlanner {

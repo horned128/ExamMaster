@@ -7,22 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		02A0A0EAF90AB8CFF88780F0 /* QuestionCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C3417539AC3F5ECF6D045 /* QuestionCollectionView.swift */; };
+		03CEFA2910F52CF3B1329B28 /* AdMobProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E248D128768BBC2BA12BE963 /* AdMobProvider.swift */; };
 		07DE7E2C4AB2BF3EF39EBA91 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C57B2384D09F548C520AD30 /* SessionView.swift */; };
 		0CBD06ABE7673482667E6616 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 324EBA80EFA4D79AD6BD30CE /* PrivacyInfo.xcprivacy */; };
+		0EF0E85D8231A9A1AFFCBB45 /* QuestionCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5ACB4B0D5E8D5A37DF986E /* QuestionCollections.swift */; };
 		12CACB1C7B1B43E8A0CA3D54 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024286A75E5FCFD27F5C021C /* PurchaseManager.swift */; };
 		1A062C230FA11F5F11696A24 /* qualification.json in Resources */ = {isa = PBXBuildFile; fileRef = BA0D77AE5437E0A09065315C /* qualification.json */; };
 		1BC168F6FB5D06B6BACB75B7 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A9C020D1A1D60639381D99 /* DashboardView.swift */; };
 		1C5B49BF5B02B7424FA677F5 /* EngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797A04C98A62C691C6AE0212 /* EngineTests.swift */; };
+		1D015430339B7AA0D5BF54CC /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = E3E5A73EDEBD8CEDA2E8C9CE /* GoogleMobileAds */; };
 		257000BF799B3916DD3C1C7A /* MasteryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F6E4DD29B23FEA7E16CC05 /* MasteryEngine.swift */; };
 		2602CC20531E2CCD907BF44A /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7E1CE75780B23C509CD532 /* Models.swift */; };
+		2CA6500F79E2B9DEEF9D5741 /* AdsServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A70E9A0A3901264556F4E45 /* AdsServiceTests.swift */; };
 		30C923EC5BB83F11A2E88926 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75AEE3D8BE09D71792B9089C /* PreferencesView.swift */; };
 		332EEE284DCBE69BCD16512A /* StoreKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 900327AA328BD9ACABB184BE /* StoreKitTests.swift */; };
 		35BD2C50C7D863823FA844EF /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 324EBA80EFA4D79AD6BD30CE /* PrivacyInfo.xcprivacy */; };
 		37A162E94BD4C9946699FA63 /* MasteryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F6E4DD29B23FEA7E16CC05 /* MasteryEngine.swift */; };
+		3F19AEA88CF736B3B293475D /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 6CC925AD813D68D1C4142B6B /* GoogleMobileAds */; };
 		41A89225592CBEE9C21A3FCE /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75AEE3D8BE09D71792B9089C /* PreferencesView.swift */; };
 		41A9D8DA01BC8F943193FEB8 /* MyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE84C243D737551403A212E /* MyApp.swift */; };
+		430BC53363A901E11C797472 /* QuestionCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C3417539AC3F5ECF6D045 /* QuestionCollectionView.swift */; };
+		4A1BB73965D120D54F553819 /* AdBannerPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7DD77005DF50C7EA85C2A1 /* AdBannerPlacement.swift */; };
 		51750676208AFAB71185CCC6 /* PurchaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 024286A75E5FCFD27F5C021C /* PurchaseManager.swift */; };
 		52418354F9049089DC3AA65A /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62029C8749ECBFC2FC654DA /* WelcomeView.swift */; };
+		5518A18EE9294A24F26E18C0 /* AdsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35C36699C3466E474BA87AA /* AdsService.swift */; };
 		5567CF5F45D0DEE46BB84F93 /* MyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE84C243D737551403A212E /* MyApp.swift */; };
 		5AF2E85624717D10C22DA8C0 /* StudyFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76D7611E1C77C74B6ECBE4B /* StudyFlowUITests.swift */; };
 		60A83417354D9D4EF9424E52 /* questions.json in Resources */ = {isa = PBXBuildFile; fileRef = FC64478F3502E3D79E79E782 /* questions.json */; };
@@ -30,22 +39,32 @@
 		6D2AB7CC221F1389FD55E8B2 /* Design.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0B32884BC413A9E463629F /* Design.swift */; };
 		6D36467AF212AD84CFD83FB9 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A9C020D1A1D60639381D99 /* DashboardView.swift */; };
 		764A2139FFD1FEAB89B559B6 /* SessionPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DB9DE4B6110EF858EA1DDD /* SessionPlanner.swift */; };
+		7849331042D1F06A6E97E04E /* AdsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35C36699C3466E474BA87AA /* AdsService.swift */; };
 		786B53A0E24B4D6B5E44AC73 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62029C8749ECBFC2FC654DA /* WelcomeView.swift */; };
+		7BE32C15E44FF6AB81236F19 /* PrivacyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87E383478FCEA8C77D53F2E /* PrivacyDetailsView.swift */; };
 		89A6471D6849655AFF7DFB5D /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7E1CE75780B23C509CD532 /* Models.swift */; };
 		89BCD3AAEB4BA9E5BE0DD17C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F176E3ABC14F26EEED91C85 /* Assets.xcassets */; };
+		93E2828DABBD0B45A4A364A0 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = 45865E6FC592F470E323036E /* GoogleUserMessagingPlatform */; };
 		94A76334CFACD916911A9E3C /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19AF3A5683E30D36A809AFC3 /* LibraryView.swift */; };
 		951531C553E3F74510778917 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19AF3A5683E30D36A809AFC3 /* LibraryView.swift */; };
 		9E3ACCE2684EA4097EDA609F /* SessionPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14DB9DE4B6110EF858EA1DDD /* SessionPlanner.swift */; };
+		A88E774956C3FCC8F1A08CE8 /* AdMobProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E248D128768BBC2BA12BE963 /* AdMobProvider.swift */; };
 		ABCD685D0B7B0B9C63416FA0 /* qualification.json in Resources */ = {isa = PBXBuildFile; fileRef = 13E7A81EAAF81BE47E1B8469 /* qualification.json */; };
 		B278CE35EE2035E3877D2748 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3843C71C12394AC5EEBED /* ContentView.swift */; };
 		B88C3D95981E24D6C089ED85 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C57B2384D09F548C520AD30 /* SessionView.swift */; };
 		B94A1366CD95C053F187CE5A /* StudyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81001B76DA1BBA8FDCB859EB /* StudyStore.swift */; };
 		BA3B43185FCAB9D0B8AF6C92 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE1E720722D7D936CF8FC3 /* InsightsView.swift */; };
+		BAA86A1F2C14D51A6D0511C9 /* PrivacyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87E383478FCEA8C77D53F2E /* PrivacyDetailsView.swift */; };
+		BBEF360DEDBABE55033BA1A1 /* PrivacyPolicy.txt in Resources */ = {isa = PBXBuildFile; fileRef = 081B3C1C8A65AABCDF2E20EF /* PrivacyPolicy.txt */; };
+		BC3945B5339D47CC25D601FE /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = FC317F92A893B0787C0A7BF3 /* GoogleUserMessagingPlatform */; };
+		C4EA829FB65081ABCA5E777F /* PrivacyPolicy.txt in Resources */ = {isa = PBXBuildFile; fileRef = 081B3C1C8A65AABCDF2E20EF /* PrivacyPolicy.txt */; };
 		CEB9391364CF4F1ECDD7B85A /* Design.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0B32884BC413A9E463629F /* Design.swift */; };
+		D92D7B2751712D998B541C82 /* QuestionCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA5ACB4B0D5E8D5A37DF986E /* QuestionCollections.swift */; };
 		DEE427C5D89142E92B986A62 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F176E3ABC14F26EEED91C85 /* Assets.xcassets */; };
 		E98A7C771EC885E3A995B194 /* products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 15546FB3B3DA6685453C7963 /* products.storekit */; };
 		EAE79E431D0A6F8E92EEEAA7 /* StudyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81001B76DA1BBA8FDCB859EB /* StudyStore.swift */; };
 		EE55254E54AEAD70581DFEEE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FE3843C71C12394AC5EEBED /* ContentView.swift */; };
+		EFF455CBA10531266924570E /* AdBannerPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7DD77005DF50C7EA85C2A1 /* AdBannerPlacement.swift */; };
 		F4E7B9C636D1D9AF0D39FB8F /* questions.json in Resources */ = {isa = PBXBuildFile; fileRef = 49AEA7928D4A58AFF69FBB43 /* questions.json */; };
 		F9449FC1AD7675E75D25FAEE /* harbor-record in Resources */ = {isa = PBXBuildFile; fileRef = EB02AF55B77C0D82B65F7F21 /* harbor-record */; };
 /* End PBXBuildFile section */
@@ -69,6 +88,7 @@
 
 /* Begin PBXFileReference section */
 		024286A75E5FCFD27F5C021C /* PurchaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchaseManager.swift; sourceTree = "<group>"; };
+		081B3C1C8A65AABCDF2E20EF /* PrivacyPolicy.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = PrivacyPolicy.txt; sourceTree = "<group>"; };
 		13E7A81EAAF81BE47E1B8469 /* qualification.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = qualification.json; sourceTree = "<group>"; };
 		14DB9DE4B6110EF858EA1DDD /* SessionPlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionPlanner.swift; sourceTree = "<group>"; };
 		15546FB3B3DA6685453C7963 /* products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = products.storekit; sourceTree = "<group>"; };
@@ -77,11 +97,13 @@
 		1F0B32884BC413A9E463629F /* Design.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Design.swift; sourceTree = "<group>"; };
 		1F176E3ABC14F26EEED91C85 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1FDC723245E1DDDE566715FB /* HarborStudy.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HarborStudy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A70E9A0A3901264556F4E45 /* AdsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsServiceTests.swift; sourceTree = "<group>"; };
 		324EBA80EFA4D79AD6BD30CE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3C57B2384D09F548C520AD30 /* SessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionView.swift; sourceTree = "<group>"; };
 		416198787AA25BDFFCB8B503 /* ExamMasterUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ExamMasterUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		49AEA7928D4A58AFF69FBB43 /* questions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = questions.json; sourceTree = "<group>"; };
 		4CAFF292A3F75C55AE8D77BE /* ExamMasterTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ExamMasterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		502C3417539AC3F5ECF6D045 /* QuestionCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionCollectionView.swift; sourceTree = "<group>"; };
 		5D074B7EE1496EC2542CA03F /* ExamMaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ExamMaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6EE84C243D737551403A212E /* MyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyApp.swift; sourceTree = "<group>"; };
 		6FE3843C71C12394AC5EEBED /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -90,20 +112,47 @@
 		81001B76DA1BBA8FDCB859EB /* StudyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyStore.swift; sourceTree = "<group>"; };
 		900327AA328BD9ACABB184BE /* StoreKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitTests.swift; sourceTree = "<group>"; };
 		94A9C020D1A1D60639381D99 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A87E383478FCEA8C77D53F2E /* PrivacyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyDetailsView.swift; sourceTree = "<group>"; };
+		AA5ACB4B0D5E8D5A37DF986E /* QuestionCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionCollections.swift; sourceTree = "<group>"; };
 		BA0D77AE5437E0A09065315C /* qualification.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = qualification.json; sourceTree = "<group>"; };
 		C5F6E4DD29B23FEA7E16CC05 /* MasteryEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasteryEngine.swift; sourceTree = "<group>"; };
+		CA7DD77005DF50C7EA85C2A1 /* AdBannerPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdBannerPlacement.swift; sourceTree = "<group>"; };
+		D35C36699C3466E474BA87AA /* AdsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsService.swift; sourceTree = "<group>"; };
 		D76D7611E1C77C74B6ECBE4B /* StudyFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyFlowUITests.swift; sourceTree = "<group>"; };
 		D9DE1E720722D7D936CF8FC3 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
+		E248D128768BBC2BA12BE963 /* AdMobProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobProvider.swift; sourceTree = "<group>"; };
 		E4C00A8C671C1B80E6EA2C77 /* products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = products.storekit; sourceTree = "<group>"; };
 		E62029C8749ECBFC2FC654DA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		EB02AF55B77C0D82B65F7F21 /* harbor-record */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "harbor-record"; path = "Qualifications/harbor-record"; sourceTree = SOURCE_ROOT; };
 		FC64478F3502E3D79E79E782 /* questions.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = questions.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		7712FBAD6BAEB6F786196EF1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D015430339B7AA0D5BF54CC /* GoogleMobileAds in Frameworks */,
+				BC3945B5339D47CC25D601FE /* GoogleUserMessagingPlatform in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7F76846B192C2B0AAE6155D6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3F19AEA88CF736B3B293475D /* GoogleMobileAds in Frameworks */,
+				93E2828DABBD0B45A4A364A0 /* GoogleUserMessagingPlatform in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
 		1F35A03874F61D52536FEE18 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				2A70E9A0A3901264556F4E45 /* AdsServiceTests.swift */,
 				797A04C98A62C691C6AE0212 /* EngineTests.swift */,
 				900327AA328BD9ACABB184BE /* StoreKitTests.swift */,
 			);
@@ -124,9 +173,11 @@
 		315255418E35FFF0FD853F71 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				D35C36699C3466E474BA87AA /* AdsService.swift */,
 				C5F6E4DD29B23FEA7E16CC05 /* MasteryEngine.swift */,
 				1D7E1CE75780B23C509CD532 /* Models.swift */,
 				024286A75E5FCFD27F5C021C /* PurchaseManager.swift */,
+				AA5ACB4B0D5E8D5A37DF986E /* QuestionCollections.swift */,
 				14DB9DE4B6110EF858EA1DDD /* SessionPlanner.swift */,
 				81001B76DA1BBA8FDCB859EB /* StudyStore.swift */,
 			);
@@ -156,11 +207,14 @@
 		8BACF3918C7622EBA34F0D7F /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				CA7DD77005DF50C7EA85C2A1 /* AdBannerPlacement.swift */,
 				94A9C020D1A1D60639381D99 /* DashboardView.swift */,
 				1F0B32884BC413A9E463629F /* Design.swift */,
 				D9DE1E720722D7D936CF8FC3 /* InsightsView.swift */,
 				19AF3A5683E30D36A809AFC3 /* LibraryView.swift */,
 				75AEE3D8BE09D71792B9089C /* PreferencesView.swift */,
+				A87E383478FCEA8C77D53F2E /* PrivacyDetailsView.swift */,
+				502C3417539AC3F5ECF6D045 /* QuestionCollectionView.swift */,
 				3C57B2384D09F548C520AD30 /* SessionView.swift */,
 				E62029C8749ECBFC2FC654DA /* WelcomeView.swift */,
 			);
@@ -185,6 +239,14 @@
 			path = "harbor-record";
 			sourceTree = "<group>";
 		};
+		DBA0F4DFD59393693AA4939E /* Ads */ = {
+			isa = PBXGroup;
+			children = (
+				E248D128768BBC2BA12BE963 /* AdMobProvider.swift */,
+			);
+			path = Ads;
+			sourceTree = "<group>";
+		};
 		FD8DC60CF2EBAF185F157C03 = {
 			isa = PBXGroup;
 			children = (
@@ -192,6 +254,8 @@
 				6FE3843C71C12394AC5EEBED /* ContentView.swift */,
 				6EE84C243D737551403A212E /* MyApp.swift */,
 				324EBA80EFA4D79AD6BD30CE /* PrivacyInfo.xcprivacy */,
+				081B3C1C8A65AABCDF2E20EF /* PrivacyPolicy.txt */,
+				DBA0F4DFD59393693AA4939E /* Ads */,
 				315255418E35FFF0FD853F71 /* Core */,
 				7C5C79A78E81AA9D1CB5F2FB /* Qualifications */,
 				1F35A03874F61D52536FEE18 /* Tests */,
@@ -229,6 +293,7 @@
 			buildPhases = (
 				F211271D721B2E87558796C9 /* Sources */,
 				2F996B8B3764CB9D30DD9443 /* Resources */,
+				7712FBAD6BAEB6F786196EF1 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -236,6 +301,8 @@
 			);
 			name = HarborStudy;
 			packageProductDependencies = (
+				E3E5A73EDEBD8CEDA2E8C9CE /* GoogleMobileAds */,
+				FC317F92A893B0787C0A7BF3 /* GoogleUserMessagingPlatform */,
 			);
 			productName = HarborStudy;
 			productReference = 1FDC723245E1DDDE566715FB /* HarborStudy.app */;
@@ -265,6 +332,7 @@
 			buildPhases = (
 				123D0963A8A657E4F6113F21 /* Sources */,
 				2701EA6BF80910177F3E57DA /* Resources */,
+				7F76846B192C2B0AAE6155D6 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -272,6 +340,8 @@
 			);
 			name = ExamMaster;
 			packageProductDependencies = (
+				6CC925AD813D68D1C4142B6B /* GoogleMobileAds */,
+				45865E6FC592F470E323036E /* GoogleUserMessagingPlatform */,
 			);
 			productName = ExamMaster;
 			productReference = 5D074B7EE1496EC2542CA03F /* ExamMaster.app */;
@@ -307,6 +377,10 @@
 			);
 			mainGroup = FD8DC60CF2EBAF185F157C03;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3FD291D7C511CFFB3BC2EE1A /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				7AA5EE3BBC8D645148297C87 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 20D145B5BF33B832984DFE64 /* Products */;
 			projectDirPath = "";
@@ -327,6 +401,7 @@
 			files = (
 				DEE427C5D89142E92B986A62 /* Assets.xcassets in Resources */,
 				0CBD06ABE7673482667E6616 /* PrivacyInfo.xcprivacy in Resources */,
+				BBEF360DEDBABE55033BA1A1 /* PrivacyPolicy.txt in Resources */,
 				1A062C230FA11F5F11696A24 /* qualification.json in Resources */,
 				F4E7B9C636D1D9AF0D39FB8F /* questions.json in Resources */,
 			);
@@ -347,6 +422,7 @@
 			files = (
 				89BCD3AAEB4BA9E5BE0DD17C /* Assets.xcassets in Resources */,
 				35BD2C50C7D863823FA844EF /* PrivacyInfo.xcprivacy in Resources */,
+				C4EA829FB65081ABCA5E777F /* PrivacyPolicy.txt in Resources */,
 				ABCD685D0B7B0B9C63416FA0 /* qualification.json in Resources */,
 				60A83417354D9D4EF9424E52 /* questions.json in Resources */,
 			);
@@ -359,6 +435,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4A1BB73965D120D54F553819 /* AdBannerPlacement.swift in Sources */,
+				03CEFA2910F52CF3B1329B28 /* AdMobProvider.swift in Sources */,
+				7849331042D1F06A6E97E04E /* AdsService.swift in Sources */,
 				EE55254E54AEAD70581DFEEE /* ContentView.swift in Sources */,
 				1BC168F6FB5D06B6BACB75B7 /* DashboardView.swift in Sources */,
 				6D2AB7CC221F1389FD55E8B2 /* Design.swift in Sources */,
@@ -368,7 +447,10 @@
 				2602CC20531E2CCD907BF44A /* Models.swift in Sources */,
 				41A9D8DA01BC8F943193FEB8 /* MyApp.swift in Sources */,
 				30C923EC5BB83F11A2E88926 /* PreferencesView.swift in Sources */,
+				7BE32C15E44FF6AB81236F19 /* PrivacyDetailsView.swift in Sources */,
 				12CACB1C7B1B43E8A0CA3D54 /* PurchaseManager.swift in Sources */,
+				02A0A0EAF90AB8CFF88780F0 /* QuestionCollectionView.swift in Sources */,
+				0EF0E85D8231A9A1AFFCBB45 /* QuestionCollections.swift in Sources */,
 				9E3ACCE2684EA4097EDA609F /* SessionPlanner.swift in Sources */,
 				B88C3D95981E24D6C089ED85 /* SessionView.swift in Sources */,
 				EAE79E431D0A6F8E92EEEAA7 /* StudyStore.swift in Sources */,
@@ -388,6 +470,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CA6500F79E2B9DEEF9D5741 /* AdsServiceTests.swift in Sources */,
 				1C5B49BF5B02B7424FA677F5 /* EngineTests.swift in Sources */,
 				332EEE284DCBE69BCD16512A /* StoreKitTests.swift in Sources */,
 			);
@@ -397,6 +480,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EFF455CBA10531266924570E /* AdBannerPlacement.swift in Sources */,
+				A88E774956C3FCC8F1A08CE8 /* AdMobProvider.swift in Sources */,
+				5518A18EE9294A24F26E18C0 /* AdsService.swift in Sources */,
 				B278CE35EE2035E3877D2748 /* ContentView.swift in Sources */,
 				6D36467AF212AD84CFD83FB9 /* DashboardView.swift in Sources */,
 				CEB9391364CF4F1ECDD7B85A /* Design.swift in Sources */,
@@ -406,7 +492,10 @@
 				89A6471D6849655AFF7DFB5D /* Models.swift in Sources */,
 				5567CF5F45D0DEE46BB84F93 /* MyApp.swift in Sources */,
 				41A89225592CBEE9C21A3FCE /* PreferencesView.swift in Sources */,
+				BAA86A1F2C14D51A6D0511C9 /* PrivacyDetailsView.swift in Sources */,
 				51750676208AFAB71185CCC6 /* PurchaseManager.swift in Sources */,
+				430BC53363A901E11C797472 /* QuestionCollectionView.swift in Sources */,
+				D92D7B2751712D998B541C82 /* QuestionCollections.swift in Sources */,
 				764A2139FFD1FEAB89B559B6 /* SessionPlanner.swift in Sources */,
 				07DE7E2C4AB2BF3EF39EBA91 /* SessionView.swift in Sources */,
 				B94A1366CD95C053F187CE5A /* StudyStore.swift in Sources */,
@@ -754,6 +843,48 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3FD291D7C511CFFB3BC2EE1A /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = exactVersion;
+				version = 13.11.0;
+			};
+		};
+		7AA5EE3BBC8D645148297C87 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-user-messaging-platform.git";
+			requirement = {
+				kind = exactVersion;
+				version = 3.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		45865E6FC592F470E323036E /* GoogleUserMessagingPlatform */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7AA5EE3BBC8D645148297C87 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */;
+			productName = GoogleUserMessagingPlatform;
+		};
+		6CC925AD813D68D1C4142B6B /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FD291D7C511CFFB3BC2EE1A /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+		E3E5A73EDEBD8CEDA2E8C9CE /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FD291D7C511CFFB3BC2EE1A /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+		FC317F92A893B0787C0A7BF3 /* GoogleUserMessagingPlatform */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7AA5EE3BBC8D645148297C87 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */;
+			productName = GoogleUserMessagingPlatform;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 24C28C197AA6AD9B27FDF7B8 /* Project object */;
 }

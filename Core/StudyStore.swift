@@ -25,11 +25,46 @@ import Observation
         }
     }
 
-    func record(_ answer: Answer, question: Question) {
+    func record(_ answer: Answer, question: Question, pending: PendingStudy? = nil) {
         guard !readOnly else { return }
         data.answers.append(answer)
         data.mastery[question.id] = MasteryEngine.update(data.mastery[question.id] ?? Mastery(), answer: answer, difficulty: question.difficulty)
+        if let pending { data.pending = pending }
         save()
+    }
+
+    func setPending(_ pending: PendingStudy) {
+        guard !readOnly else { return }
+        data.pending = pending
+        save()
+    }
+
+    func clearPending() {
+        guard !readOnly, data.pending != nil else { return }
+        data.pending = nil
+        save()
+    }
+
+    func setRandomScope(_ scope: RandomScope) {
+        guard !readOnly else { return }
+        data.randomScope = scope
+        save()
+    }
+
+    @discardableResult func resetLearning() -> Bool {
+        guard !readOnly else { return false }
+        var replacement = StudyData()
+        replacement.recallFirst = data.recallFirst
+        replacement.randomScope = data.randomScope
+        do {
+            try JSONEncoder().encode(replacement).write(to: url, options: .atomic)
+            data = replacement
+            error = nil
+            return true
+        } catch {
+            self.error = "学習情報を削除できませんでした: \(error.localizedDescription)"
+            return false
+        }
     }
 
     func finishMock(_ result: MockResult) { guard !readOnly else { return }; data.mocks.append(result); save() }

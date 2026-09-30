@@ -13,6 +13,30 @@ struct Qualification: Codable {
     let productID: String
     let accentHex: String
     let examNote: String
+    let privacyPolicyURL: String?
+    let ads: AdsConfiguration
+}
+
+struct AdsConfiguration: Codable {
+    let enabled: Bool
+    let bannerEnabled: Bool
+    let interstitialEnabled: Bool
+    let interstitialMinimumIntervalSeconds: Int
+    let interstitialMinimumSessions: Int
+    let interstitialMinimumAnsweredQuestions: Int
+    let adMobAppID: String
+    let bannerAdUnitID: String
+    let interstitialAdUnitID: String
+
+    var isValid: Bool {
+        guard adMobAppID.range(of: "^ca-app-pub-[0-9]+~[0-9]+$", options: .regularExpression) != nil,
+              interstitialMinimumIntervalSeconds >= 600,
+              interstitialMinimumSessions >= 2,
+              interstitialMinimumAnsweredQuestions >= 5 else { return false }
+        return !enabled ||
+            ((!bannerEnabled || bannerAdUnitID.range(of: "^ca-app-pub-[0-9]+/[0-9]+$", options: .regularExpression) != nil) &&
+             (!interstitialEnabled || interstitialAdUnitID.range(of: "^ca-app-pub-[0-9]+/[0-9]+$", options: .regularExpression) != nil))
+    }
 }
 
 struct QuestionBank: Codable {
@@ -30,6 +54,7 @@ struct Question: Codable, Identifiable, Hashable {
     let correctIndex: Int
     let explanation: String
     let source: String
+    let questionNumber: Int?
     let imageName: String?
     let difficulty: Int
     let tags: [String]
@@ -57,6 +82,9 @@ struct Catalog {
         }
         let qualification = try JSONDecoder().decode(Qualification.self, from: Data(contentsOf: config))
         guard qualification.id == id else { throw CatalogError.invalid("資格ID \(id) と同梱データが一致しません") }
+        guard qualification.ads.adMobAppID == Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") as? String else {
+            throw CatalogError.invalid("AdMobアプリIDと資格設定が一致しません")
+        }
         return try Catalog(qualification: qualification,
                            bank: JSONDecoder().decode(QuestionBank.self, from: Data(contentsOf: bank)))
     }
@@ -71,7 +99,10 @@ struct Catalog {
               qualification.minimumSubjectPercent <= qualification.passingPercent,
               qualification.accentHex.range(of: "^#[0-9A-Fa-f]{6}$", options: .regularExpression) != nil,
               !qualification.subjects.isEmpty, Set(qualification.subjects).count == qualification.subjects.count,
-              !qualification.productID.isEmpty else { throw CatalogError.invalid("資格設定") }
+              !qualification.productID.isEmpty, qualification.ads.isValid,
+              qualification.privacyPolicyURL.map({ URL(string: $0)?.scheme == "https" }) ?? true else {
+            throw CatalogError.invalid("資格設定・広告設定・プライバシーポリシーURL")
+        }
         let ids = bank.questions.map(\.id)
         guard Set(ids).count == ids.count, !ids.isEmpty,
               Set(qualification.freeQuestionIDs).isSubset(of: Set(ids)),
@@ -100,6 +131,12 @@ enum Confidence: String, Codable, CaseIterable, Identifiable {
 }
 
 enum StudyMode: String, Codable { case diagnostic, recommended, misconception, contrast, year, subject, random, incorrect, bookmarked, mock, search }
+
+enum RandomScope: String, Codable, CaseIterable, Identifiable {
+    case unanswered, mixed
+    var id: String { rawValue }
+    var title: String { self == .unanswered ? "未回答のみ" : "ごちゃまぜ" }
+}
 
 struct Answer: Codable, Identifiable {
     var id = UUID()
@@ -134,6 +171,30 @@ struct Mastery: Codable {
     var lastCorrect = false
 }
 
+struct PendingStudy: Codable {
+    let id: UUID
+    let title: String
+    let mode: StudyMode
+    let questionIDs: [String]
+    var index: Int
+    var answers: [Answer]
+    var submitted: Bool
+    var selectedIndex: Int?
+    var createdAt: Date
+
+    init(session: StudySession, createdAt: Date = .now) {
+        id = session.id
+        title = session.title
+        mode = session.mode
+        questionIDs = session.questions.map(\.id)
+        index = 0
+        answers = []
+        submitted = false
+        selectedIndex = nil
+        self.createdAt = createdAt
+    }
+}
+
 struct StudyData: Codable {
     var schemaVersion = 1
     var answers: [Answer] = []
@@ -143,4 +204,27 @@ struct StudyData: Codable {
     var onboardingCompleted = false
     var diagnosticCompleted = false
     var recallFirst = true
+    var randomScope: RandomScope = .mixed
+    var pending: PendingStudy?
+
+    private enum CodingKeys: String, CodingKey {
+        case schemaVersion, answers, mastery, bookmarks, mocks, onboardingCompleted, diagnosticCompleted, recallFirst, randomScope, pending
+    }
+
+    init() {}
+
+    // Existing version-1 files lack the new keys. Decode them without resetting user history.
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        schemaVersion = try c.decode(Int.self, forKey: .schemaVersion)
+        answers = try c.decode([Answer].self, forKey: .answers)
+        mastery = try c.decode([String: Mastery].self, forKey: .mastery)
+        bookmarks = try c.decode(Set<String>.self, forKey: .bookmarks)
+        mocks = try c.decode([MockResult].self, forKey: .mocks)
+        onboardingCompleted = try c.decode(Bool.self, forKey: .onboardingCompleted)
+        diagnosticCompleted = try c.decode(Bool.self, forKey: .diagnosticCompleted)
+        recallFirst = try c.decode(Bool.self, forKey: .recallFirst)
+        randomScope = try c.decodeIfPresent(RandomScope.self, forKey: .randomScope) ?? .mixed
+        pending = try c.decodeIfPresent(PendingStudy.self, forKey: .pending)
+    }
 }

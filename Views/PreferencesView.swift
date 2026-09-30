@@ -4,7 +4,9 @@ struct PreferencesView: View {
     let catalog: Catalog
     let store: StudyStore
     let purchase: PurchaseManager
+    let ads: AdsService
     let paywall: () -> Void
+    let onReset: () -> Void
 
     private var recallBinding: Binding<Bool> {
         Binding(get: { store.data.recallFirst }, set: { store.setRecallFirst($0) })
@@ -21,17 +23,9 @@ struct PreferencesView: View {
             } footer: {
                 Text("おすすめ・復習・混同学習でのみ有効です。年度別演習と模擬試験は通常の出題形式で表示します。")
             }
-            Section("問題集") {
-                LabeledContent("資格", value: catalog.qualification.name)
-                LabeledContent("収録問題", value: "\(catalog.questions.count)問")
-                LabeledContent("無料問題", value: "\(catalog.qualification.freeQuestionIDs.count)問")
-                LabeledContent("データ版", value: "端末内に保存")
-                Text(catalog.qualification.examNote)
-                    .font(.footnote).foregroundStyle(.secondary)
-            }
             Section {
                 if purchase.unlocked {
-                    Label("購入済み · 全問題を利用できます", systemImage: "checkmark.seal.fill")
+                    Label("購入済み · 全問題と広告なしで利用できます", systemImage: "checkmark.seal.fill")
                         .foregroundStyle(.green)
                 } else {
                     Button("全問題を解放する", action: paywall)
@@ -47,13 +41,15 @@ struct PreferencesView: View {
             } footer: {
                 Text("買い切りです。定期購入はありません。購入済みの問題はオフラインでも利用できます。")
             }
-            Section("データとプライバシー") {
-                Text("学習履歴・お気に入りはこの端末内に保存します。アカウント登録は不要です。購入状態はAppleのStoreKitで確認します。")
-                    .font(.subheadline).foregroundStyle(.secondary)
-                if let error = store.error {
-                    Text(error).foregroundStyle(.red)
-                    Button("保存を再試行") { store.retrySave() }
+            Section {
+                NavigationLink {
+                    PrivacyDetailsView(catalog: catalog, store: store, purchase: purchase,
+                                       ads: ads, onReset: onReset)
+                } label: {
+                    Label("データとプライバシー", systemImage: "hand.raised")
                 }
+            } footer: {
+                Text("端末内の学習データ、広告の同意と買い切り購入について確認できます。")
             }
         }
         .navigationTitle("設定")
@@ -81,6 +77,7 @@ struct PaywallView: View {
                         Label("無料の\(catalog.qualification.freeQuestionIDs.count)問は購入不要", systemImage: "checkmark.circle")
                         Label("年度別・分野別・模擬試験の全問題", systemImage: "square.grid.2x2")
                         Label("復習と学習履歴はそのまま継続", systemImage: "arrow.clockwise")
+                        Label("広告も永久に非表示", systemImage: "rectangle.slash")
                     }
                     if purchase.loading {
                         ProgressView("商品情報を確認中…")
@@ -91,7 +88,7 @@ struct PaywallView: View {
                         Button {
                             Task { await purchase.buy() }
                         } label: {
-                            Text("全問題を解放 · \(product.displayPrice)")
+                            Text("全問題解放・広告削除 · 買い切り \(product.displayPrice)")
                                 .frame(maxWidth: .infinity).padding(7)
                         }
                         .buttonStyle(.borderedProminent)

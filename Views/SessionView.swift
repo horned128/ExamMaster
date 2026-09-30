@@ -5,7 +5,10 @@ struct SessionView: View {
     let session: StudySession
     let qualification: Qualification
     let store: StudyStore
-    let onFinish: () -> Void
+    let purchase: PurchaseManager
+    let ads: AdsService
+    let resume: PendingStudy?
+    let onFinish: (Int) -> Void
 
     @Environment(\.dismiss) private var dismiss
     @State private var index = 0
@@ -22,11 +25,21 @@ struct SessionView: View {
     @State private var remaining: TimeInterval
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
-    init(session: StudySession, qualification: Qualification, store: StudyStore, onFinish: @escaping () -> Void) {
+    init(session: StudySession, qualification: Qualification, store: StudyStore, purchase: PurchaseManager, ads: AdsService,
+         resume: PendingStudy? = nil,
+         onFinish: @escaping (Int) -> Void) {
         self.session = session
         self.qualification = qualification
         self.store = store
+        self.purchase = purchase
+        self.ads = ads
+        self.resume = resume
         self.onFinish = onFinish
+        _index = State(initialValue: min(max(0, resume?.index ?? 0), max(0, session.questions.count - 1)))
+        _answers = State(initialValue: resume?.answers ?? [])
+        _selected = State(initialValue: resume?.selectedIndex)
+        _submitted = State(initialValue: resume?.submitted ?? false)
+        _revealed = State(initialValue: resume?.submitted ?? false)
         let seconds = TimeInterval(qualification.examMinutes * 60)
         _deadline = State(initialValue: .now.addingTimeInterval(seconds))
         _remaining = State(initialValue: seconds)
@@ -74,9 +87,20 @@ struct SessionView: View {
             }
         }
         .interactiveDismissDisabled(!finished)
-        .confirmationDialog("学習を中断しますか？回答済みの履歴は保存されます。", isPresented: $confirmExit) {
-            Button("中断する", role: .destructive) { dismiss() }
-            Button("続ける", role: .cancel) { }
+        .confirmationDialog("問題の途中ですが、中断しますか？", isPresented: $confirmExit, titleVisibility: .visible) {
+            Button(session.timed ? "模試を中断する" : (session.mode == .diagnostic ? "診断を中断する" :
+                   (session.mode == .search ? "問題を閉じる" : "中断して後で再開")), role: .destructive) { dismiss() }
+            Button("学習を続ける", role: .cancel) { }
+        } message: {
+            if session.timed {
+                Text("\(session.questions.count)問中\(index + 1)問目。模試の途中位置・結果は保存されず、再開できません。回答済みの学習履歴は残ります。")
+            } else if session.mode == .diagnostic {
+                Text("回答済みの履歴は残ります。診断は次回、最初から受け直せます。")
+            } else if session.mode == .search {
+                Text("回答済みの場合は学習履歴に記録されています。元の問題リストに戻ります。")
+            } else {
+                Text("\(session.questions.count)問中\(index + 1)問目。回答済みの\(answers.count)問と出題順を保存し、ホームの「続きから」で再開できます。")
+            }
         }
         .onReceive(timer) { _ in
             guard session.timed, !finished else { return }
@@ -100,7 +124,7 @@ struct SessionView: View {
                     HStack {
                         Text("\(index + 1) / \(session.questions.count)").font(.subheadline.bold())
                         Spacer()
-                        Text("\(question.year) · \(question.subject) / \(question.category)")
+                        Text("\(question.year.formatted(.number.grouping(.never))) · \(question.subject) / \(question.category)")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     Text(question.stem).font(.title3.weight(.semibold))
@@ -149,7 +173,7 @@ struct SessionView: View {
                 Button {
                     if submitted { advance() } else { submit() }
                 } label: {
-                    Text(submitted ? (index + 1 == session.questions.count ? "結果を見る" : "次の問題へ") :
+                    Text(submitted ? (session.mode == .search ? "一覧へ戻る" : (index + 1 == session.questions.count ? "結果を見る" : "次の問題へ")) :
                          (session.timed && index + 1 == session.questions.count ? "回答して採点する" : "回答を確定"))
                         .frame(maxWidth: .infinity).padding(6)
                 }
@@ -224,11 +248,23 @@ struct SessionView: View {
                             duration: max(0, Date().timeIntervalSince(startedAt)),
                             confidence: session.timed ? nil : confidence, mode: session.mode)
         answers.append(answer)
-        store.record(answer, question: question)
+        var progress = store.data.pending
+        if progress?.id == session.id {
+            progress?.answers = answers
+            progress?.index = index
+            progress?.submitted = true
+            progress?.selectedIndex = selected
+        } else { progress = nil }
+        store.record(answer, question: question, pending: progress)
         if session.timed { advance() } else { submitted = true }
     }
 
     private func advance() {
+        if session.mode == .search {
+            onFinish(answers.count)
+            dismiss()
+            return
+        }
         if index + 1 == session.questions.count { finish(); return }
         index += 1
         selected = nil
@@ -237,10 +273,17 @@ struct SessionView: View {
         revealed = false
         visibleSteps = 0
         startedAt = .now
+        if var progress = store.data.pending, progress.id == session.id {
+            progress.index = index
+            progress.submitted = false
+            progress.selectedIndex = nil
+            store.setPending(progress)
+        }
     }
 
     private func finish() {
         guard !finished else { return }
+        if store.data.pending?.id == session.id { store.clearPending() }
         if session.timed {
             store.finishMock(SessionPlanner.mockResult(answers, questions: session.questions, qualification: qualification))
         }
@@ -308,11 +351,15 @@ struct SessionView: View {
                 }
                 .padding(18)
                 .background(Palette.surface, in: RoundedRectangle(cornerRadius: 18))
+                if !purchase.unlocked && !purchase.purchasing {
+                    AdBannerPlacement(ads: ads, placement: .sessionResult)
+                }
                 Button {
-                    onFinish()
+                    onFinish(answers.count)
                     dismiss()
                 } label: {
-                    Text("ホームに戻る").frame(maxWidth: .infinity).padding(6)
+                    Text(session.mode == .diagnostic ? "ホームへ進む" : "学習を終える")
+                        .frame(maxWidth: .infinity).padding(6)
                 }
                 .buttonStyle(.borderedProminent)
             }

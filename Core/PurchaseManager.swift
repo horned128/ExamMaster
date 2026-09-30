@@ -21,6 +21,7 @@ enum PurchasePolicy {
     private(set) var unlocked = false
     private(set) var product: Product?
     private(set) var loading = true
+    private(set) var entitlementResolved = false
     private(set) var purchasing = false
     var error: String?
     let productID: String
@@ -61,6 +62,7 @@ enum PurchasePolicy {
             }
         }
         unlocked = PurchasePolicy.isUnlocked(productID: productID, entitlements: entitlements)
+        entitlementResolved = true
         if unlocked { error = nil }
     }
 

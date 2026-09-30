@@ -14,6 +14,13 @@ settings:
     INFOPLIST_KEY_UIUserInterfaceStyle: Automatic
     ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     DEVELOPMENT_TEAM: ''
+packages:
+  GoogleMobileAds:
+    url: https://github.com/googleads/swift-package-manager-google-mobile-ads.git
+    version: 13.11.0
+  GoogleUserMessagingPlatform:
+    url: https://github.com/googleads/swift-package-manager-google-user-messaging-platform.git
+    version: 3.1.0
 targetTemplates:
   QualificationApp:
     type: application
@@ -26,18 +33,28 @@ targetTemplates:
         CFBundleDevelopmentRegion: ja
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        GADApplicationIdentifier: ${adMobAppID}
+        NSUserTrackingUsageDescription: 広告を適切に表示するため、他社のアプリやWebサイトでのアクティビティとの関連付けに同意をお願いしています。許可しなくても学習できます。
+        SKAdNetworkItems:
+          - SKAdNetworkIdentifier: cstr6suwn9.skadnetwork
         UILaunchScreen: {}
     sources:
       - path: MyApp.swift
       - path: ContentView.swift
       - path: Core
+      - path: Ads
       - path: Views
       - path: Assets.xcassets
       - path: PrivacyInfo.xcprivacy
+      - path: PrivacyPolicy.txt
+        buildPhase: resources
       - path: Qualifications/${qualificationID}/products.storekit
         buildPhase: none
       - path: Qualifications/${qualificationID}/qualification.json
       - path: Qualifications/${qualificationID}/questions.json
+    dependencies:
+      - package: GoogleMobileAds
+      - package: GoogleUserMessagingPlatform
     settings:
       base:
         MARKETING_VERSION: '1.0'
@@ -54,6 +71,7 @@ targets:
       displayName: 設備安全学習
       bundleID: jp.example.exammaster.demo
       iconName: AppIcon
+      adMobAppID: ca-app-pub-3940256099942544~1458002511
     scheme:
       testTargets: [ExamMasterTests, ExamMasterUITests]
       storeKitConfiguration: Qualifications/demo-safety/products.storekit
@@ -64,6 +82,7 @@ targets:
       displayName: 港湾記録学習
       bundleID: jp.example.exammaster.harbor
       iconName: HarborIcon
+      adMobAppID: ca-app-pub-3940256099942544~1458002511
     scheme:
       storeKitConfiguration: Qualifications/harbor-record/products.storekit
   ExamMasterTests:

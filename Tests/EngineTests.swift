@@ -176,4 +176,77 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(restored.data.answers.count, 10_001)
         XCTAssertEqual(restored.data.mastery["p01"]?.attempts, 1)
     }
+
+    @MainActor func testPendingSessionSurvivesRelaunchAndResetKeepsPreferences() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let catalog = try Catalog.load(id: "demo-safety")
+        let store = StudyStore(qualificationID: "demo-safety", directory: directory)
+        let session = StudySession(title: "2025年", mode: .year, questions: Array(catalog.questions.prefix(3)), timed: false)
+        var progress = PendingStudy(session: session, createdAt: start)
+        store.setPending(progress)
+        let first = answer(at: start, correct: true)
+        progress.answers = [first]
+        progress.submitted = true
+        progress.selectedIndex = 0
+        store.record(first, question: session.questions[0], pending: progress)
+        store.toggleBookmark("p01")
+        store.setRecallFirst(false)
+        store.setRandomScope(.unanswered)
+        let restored = StudyStore(qualificationID: "demo-safety", directory: directory)
+        XCTAssertEqual(restored.data.pending?.questionIDs, session.questions.map(\.id))
+        XCTAssertEqual(restored.data.pending?.answers.count, 1)
+        XCTAssertEqual(restored.data.pending?.selectedIndex, 0)
+        XCTAssertTrue(restored.resetLearning())
+        XCTAssertTrue(restored.data.answers.isEmpty)
+        XCTAssertNil(restored.data.pending)
+        XCTAssertTrue(restored.data.bookmarks.isEmpty)
+        XCTAssertFalse(restored.data.onboardingCompleted)
+        XCTAssertFalse(restored.data.recallFirst)
+        XCTAssertEqual(restored.data.randomScope, .unanswered)
+        XCTAssertNil(StudyStore(qualificationID: "demo-safety", directory: directory).data.pending)
+    }
+
+    func testExistingVersionOneHistoryDecodesWithoutNewKeys() throws {
+        var history = StudyData()
+        history.answers = [answer(at: start, correct: true)]
+        history.bookmarks = ["p01"]
+        let encoded = try JSONEncoder().encode(history)
+        var dictionary = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        dictionary.removeValue(forKey: "randomScope")
+        dictionary.removeValue(forKey: "pending")
+        let legacy = try JSONSerialization.data(withJSONObject: dictionary)
+        let restored = try JSONDecoder().decode(StudyData.self, from: legacy)
+        XCTAssertEqual(restored.answers.count, 1)
+        XCTAssertEqual(restored.bookmarks, ["p01"])
+        XCTAssertNil(restored.pending)
+        XCTAssertEqual(restored.randomScope, .mixed)
+    }
+
+    func testSharedListsUseAppropriateOrderingAndDashboardCounts() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        var data = StudyData()
+        let now = start.addingTimeInterval(day * 4)
+        data.mastery["p01"] = Mastery(attempts: 1, lastAnswered: start, stabilityDays: 1,
+                                        dueAt: start.addingTimeInterval(day), lastCorrect: true)
+        data.mastery["w01"] = Mastery(attempts: 1, misconception: true, lastCorrect: false)
+        let year = QuestionCollections.questions(for: .year(2025), catalog: catalog, data: data, now: now)
+        XCTAssertEqual(year.count, 8)
+        XCTAssertTrue(year.prefix(4).allSatisfy { $0.source.hasSuffix("問1") })
+        XCTAssertEqual(QuestionCollections.questions(for: .status(.due), catalog: catalog, data: data, now: now).map(\.id), ["p01"])
+        let stats = StudyStats(catalog: catalog, data: data, now: now)
+        XCTAssertEqual(QuestionCollections.questions(for: .status(.new), catalog: catalog, data: data, now: now).count, stats.new)
+        XCTAssertEqual(QuestionCollections.questions(for: .status(.misconception), catalog: catalog, data: data, now: now).count, stats.misconceptions)
+        XCTAssertEqual(QuestionCollections.questions(for: .category("日常点検"), catalog: catalog, data: data, now: now).map(\.year), [2025, 2024, 2023, 2022])
+    }
+
+    func testResumptionRejectsPaidItemsWhenPurchaseMissingAndKeepsOrder() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let items = [catalog.questions[0], catalog.questions[12], catalog.questions[1]]
+        let original = StudySession(title: "ランダム", mode: .random, questions: items, timed: false)
+        var pending = PendingStudy(session: original)
+        pending.index = 1
+        XCTAssertEqual(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: true)?.questions.map(\.id), items.map(\.id))
+        XCTAssertNil(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: false))
+    }
 }
