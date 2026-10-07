@@ -138,6 +138,40 @@ enum RandomScope: String, Codable, CaseIterable, Identifiable {
     var title: String { self == .unanswered ? "未回答のみ" : "ごちゃまぜ" }
 }
 
+/// Calendar date, not a timestamp: travelling across time zones must not change the exam day.
+struct ExamDay: Codable, Equatable {
+    let year: Int
+    let month: Int
+    let day: Int
+
+    static var localCalendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .current
+        return calendar
+    }
+
+    init(date: Date, calendar: Calendar = ExamDay.localCalendar) {
+        let components = calendar.dateComponents([.year, .month, .day], from: date)
+        year = components.year ?? 0
+        month = components.month ?? 0
+        day = components.day ?? 0
+    }
+
+    func date(calendar: Calendar = ExamDay.localCalendar) -> Date? {
+        guard let date = calendar.date(from: DateComponents(year: year, month: month, day: day)),
+              calendar.component(.year, from: date) == year,
+              calendar.component(.month, from: date) == month,
+              calendar.component(.day, from: date) == day else { return nil }
+        return date
+    }
+
+    func daysRemaining(from now: Date = .now, calendar: Calendar = ExamDay.localCalendar) -> Int? {
+        guard let date = date(calendar: calendar) else { return nil }
+        return calendar.dateComponents([.day], from: calendar.startOfDay(for: now),
+                                       to: calendar.startOfDay(for: date)).day
+    }
+}
+
 struct Answer: Codable, Identifiable {
     var id = UUID()
     let questionID: String
@@ -206,9 +240,10 @@ struct StudyData: Codable {
     var recallFirst = true
     var randomScope: RandomScope = .mixed
     var pending: PendingStudy?
+    var examDay: ExamDay?
 
     private enum CodingKeys: String, CodingKey {
-        case schemaVersion, answers, mastery, bookmarks, mocks, onboardingCompleted, diagnosticCompleted, recallFirst, randomScope, pending
+        case schemaVersion, answers, mastery, bookmarks, mocks, onboardingCompleted, diagnosticCompleted, recallFirst, randomScope, pending, examDay
     }
 
     init() {}
@@ -226,5 +261,6 @@ struct StudyData: Codable {
         recallFirst = try c.decode(Bool.self, forKey: .recallFirst)
         randomScope = try c.decodeIfPresent(RandomScope.self, forKey: .randomScope) ?? .mixed
         pending = try c.decodeIfPresent(PendingStudy.self, forKey: .pending)
+        examDay = try c.decodeIfPresent(ExamDay.self, forKey: .examDay)
     }
 }

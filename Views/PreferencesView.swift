@@ -14,6 +14,23 @@ struct PreferencesView: View {
 
     var body: some View {
         Form {
+            Section("受験予定") {
+                NavigationLink {
+                    ExamDateEditor(store: store)
+                } label: {
+                    HStack {
+                        Label("試験日", systemImage: "calendar")
+                        Spacer()
+                        if let date = store.data.examDay?.date() {
+                            Text(date, format: .dateTime.year().month().day())
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("未設定").foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .accessibilityLabel("試験日を設定")
+            }
             Section {
                 Toggle(isOn: recallBinding) {
                     Label("思い出してから選択肢を見る", systemImage: "brain.head.profile")

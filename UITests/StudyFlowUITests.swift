@@ -1,6 +1,33 @@
 import XCTest
 
 final class StudyFlowUITests: XCTestCase {
+    func testExamDayCountdownPersistsAndCanBeCleared() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
+        app.launch()
+        app.buttons["診断をスキップして始める"].tap()
+        XCTAssertTrue(app.buttons["試験日を設定"].waitForExistence(timeout: 5))
+        app.buttons["試験日を設定"].tap()
+        XCTAssertTrue(app.buttons["試験日を保存"].waitForExistence(timeout: 5))
+        app.buttons["試験日を保存"].tap()
+        let countdown = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "あと")).firstMatch
+        XCTAssertTrue(countdown.waitForExistence(timeout: 5))
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "試験日と学習準備度・ホーム"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        let label = countdown.label
+        app.terminate()
+        app.launchArguments = ["-UITestDisableAds"]
+        app.launch()
+        XCTAssertTrue(app.staticTexts[label].waitForExistence(timeout: 5))
+        app.buttons["設定"].tap()
+        app.buttons["試験日を設定"].tap()
+        app.buttons["試験日の設定を解除"].tap()
+        app.buttons["閉じる"].tap()
+        XCTAssertTrue(app.staticTexts["未設定"].waitForExistence(timeout: 5))
+    }
+
     func testAnalysisCalendarAndEmptyCharts() {
         let app = XCUIApplication()
         app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]

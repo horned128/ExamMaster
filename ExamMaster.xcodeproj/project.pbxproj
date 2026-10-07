@@ -42,6 +42,7 @@
 		7849331042D1F06A6E97E04E /* AdsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35C36699C3466E474BA87AA /* AdsService.swift */; };
 		786B53A0E24B4D6B5E44AC73 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E62029C8749ECBFC2FC654DA /* WelcomeView.swift */; };
 		7BE32C15E44FF6AB81236F19 /* PrivacyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87E383478FCEA8C77D53F2E /* PrivacyDetailsView.swift */; };
+		835780C2E5B94634388B2A58 /* ExamDateEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2E42C2462E3A0342169FBB /* ExamDateEditor.swift */; };
 		89A6471D6849655AFF7DFB5D /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D7E1CE75780B23C509CD532 /* Models.swift */; };
 		89BCD3AAEB4BA9E5BE0DD17C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F176E3ABC14F26EEED91C85 /* Assets.xcassets */; };
 		93E2828DABBD0B45A4A364A0 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = 45865E6FC592F470E323036E /* GoogleUserMessagingPlatform */; };
@@ -67,6 +68,7 @@
 		EFF455CBA10531266924570E /* AdBannerPlacement.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA7DD77005DF50C7EA85C2A1 /* AdBannerPlacement.swift */; };
 		F4E7B9C636D1D9AF0D39FB8F /* questions.json in Resources */ = {isa = PBXBuildFile; fileRef = 49AEA7928D4A58AFF69FBB43 /* questions.json */; };
 		F9449FC1AD7675E75D25FAEE /* harbor-record in Resources */ = {isa = PBXBuildFile; fileRef = EB02AF55B77C0D82B65F7F21 /* harbor-record */; };
+		FCD5E225C91CDE2474919E0D /* ExamDateEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2E42C2462E3A0342169FBB /* ExamDateEditor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,7 +98,7 @@
 		1D7E1CE75780B23C509CD532 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		1F0B32884BC413A9E463629F /* Design.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Design.swift; sourceTree = "<group>"; };
 		1F176E3ABC14F26EEED91C85 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		1FDC723245E1DDDE566715FB /* HarborStudy.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HarborStudy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1FDC723245E1DDDE566715FB /* HarborStudy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HarborStudy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A70E9A0A3901264556F4E45 /* AdsServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsServiceTests.swift; sourceTree = "<group>"; };
 		324EBA80EFA4D79AD6BD30CE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		3C57B2384D09F548C520AD30 /* SessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionView.swift; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 		94A9C020D1A1D60639381D99 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		A87E383478FCEA8C77D53F2E /* PrivacyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyDetailsView.swift; sourceTree = "<group>"; };
 		AA5ACB4B0D5E8D5A37DF986E /* QuestionCollections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionCollections.swift; sourceTree = "<group>"; };
+		AD2E42C2462E3A0342169FBB /* ExamDateEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExamDateEditor.swift; sourceTree = "<group>"; };
 		BA0D77AE5437E0A09065315C /* qualification.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = qualification.json; sourceTree = "<group>"; };
 		C5F6E4DD29B23FEA7E16CC05 /* MasteryEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasteryEngine.swift; sourceTree = "<group>"; };
 		CA7DD77005DF50C7EA85C2A1 /* AdBannerPlacement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdBannerPlacement.swift; sourceTree = "<group>"; };
@@ -210,6 +213,7 @@
 				CA7DD77005DF50C7EA85C2A1 /* AdBannerPlacement.swift */,
 				94A9C020D1A1D60639381D99 /* DashboardView.swift */,
 				1F0B32884BC413A9E463629F /* Design.swift */,
+				AD2E42C2462E3A0342169FBB /* ExamDateEditor.swift */,
 				D9DE1E720722D7D936CF8FC3 /* InsightsView.swift */,
 				19AF3A5683E30D36A809AFC3 /* LibraryView.swift */,
 				75AEE3D8BE09D71792B9089C /* PreferencesView.swift */,
@@ -359,9 +363,6 @@
 					6AF3BB5300214409CAE49124 = {
 						DevelopmentTeam = "";
 					};
-					775DE968959F3675D6365372 = {
-						DevelopmentTeam = "";
-					};
 					9AE8924BD19C2004E6530B13 = {
 						DevelopmentTeam = "";
 						TestTargetID = B7D41351865A5A4AAED8CC22;
@@ -441,6 +442,7 @@
 				EE55254E54AEAD70581DFEEE /* ContentView.swift in Sources */,
 				1BC168F6FB5D06B6BACB75B7 /* DashboardView.swift in Sources */,
 				6D2AB7CC221F1389FD55E8B2 /* Design.swift in Sources */,
+				835780C2E5B94634388B2A58 /* ExamDateEditor.swift in Sources */,
 				6B36F7F118F273FA61EF3A7A /* InsightsView.swift in Sources */,
 				951531C553E3F74510778917 /* LibraryView.swift in Sources */,
 				37A162E94BD4C9946699FA63 /* MasteryEngine.swift in Sources */,
@@ -486,6 +488,7 @@
 				B278CE35EE2035E3877D2748 /* ContentView.swift in Sources */,
 				6D36467AF212AD84CFD83FB9 /* DashboardView.swift in Sources */,
 				CEB9391364CF4F1ECDD7B85A /* Design.swift in Sources */,
+				FCD5E225C91CDE2474919E0D /* ExamDateEditor.swift in Sources */,
 				BA3B43185FCAB9D0B8AF6C92 /* InsightsView.swift in Sources */,
 				94A76334CFACD916911A9E3C /* LibraryView.swift in Sources */,
 				257000BF799B3916DD3C1C7A /* MasteryEngine.swift in Sources */,
@@ -588,6 +591,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = HarborIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QZH83KGFVX;
 				INFOPLIST_FILE = "Config/HarborStudy-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -713,6 +717,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = HarborIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QZH83KGFVX;
 				INFOPLIST_FILE = "Config/HarborStudy-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

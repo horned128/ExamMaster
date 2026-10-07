@@ -51,6 +51,12 @@ import Observation
         save()
     }
 
+    func setExamDay(_ day: ExamDay?) {
+        guard !readOnly else { return }
+        data.examDay = day
+        save()
+    }
+
     @discardableResult func resetLearning() -> Bool {
         guard !readOnly else { return false }
         var replacement = StudyData()

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DashboardView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var showExamDateEditor = false
     let catalog: Catalog
     let store: StudyStore
     let purchase: PurchaseManager
@@ -22,6 +23,33 @@ struct DashboardView: View {
                     Text(catalog.qualification.name + "  ·  " + catalog.qualification.subtitle)
                         .font(.subheadline).foregroundStyle(.secondary)
                 }
+                Surface {
+                    TimelineView(.periodic(from: .now, by: 60)) { timeline in
+                        if dynamicTypeSize.isAccessibilitySize {
+                            VStack(alignment: .leading, spacing: 16) {
+                                readinessValue
+                                examCountdown(asOf: timeline.date)
+                            }
+                        } else {
+                            HStack(alignment: .top, spacing: 16) {
+                                readinessValue
+                                Spacer(minLength: 0)
+                                examCountdown(asOf: timeline.date)
+                            }
+                        }
+                    }
+                    ProgressView(value: Double(stats.readiness), total: 100)
+                        .accessibilityLabel("学習準備度")
+                        .accessibilityValue("100中\(stats.readiness)")
+                    Text("記憶の安定・未学習範囲・分野の偏り・直近の演習と模試から見積もる学習指標です。合格を保証する数値ではありません。")
+                        .font(.caption).foregroundStyle(.secondary)
+                    Button {
+                        showExamDateEditor = true
+                    } label: {
+                        Label(store.data.examDay == nil ? "試験日を設定" : "試験日を変更", systemImage: "calendar")
+                    }
+                    .font(.subheadline.weight(.medium))
+                }
                 if let pending = store.data.pending {
                     Button(action: resume) {
                         HStack(spacing: 14) {
@@ -39,20 +67,6 @@ struct DashboardView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                Surface {
-                    HStack(alignment: .firstTextBaseline) {
-                        Text("学習準備度").font(.headline)
-                        Spacer()
-                        Text("\(stats.readiness) / 100").font(.title.bold()).foregroundStyle(.tint)
-                    }
-                    ProgressView(value: Double(stats.readiness), total: 100)
-                        .accessibilityLabel("学習準備度")
-                        .accessibilityValue("100中\(stats.readiness)")
-                    Text("記憶の安定・未学習範囲・分野の偏り・直近の演習と模試から見積もる学習指標です。合格を保証する数値ではありません。")
-                        .font(.caption).foregroundStyle(.secondary)
-                }
-                .accessibilityElement(children: .combine)
-
                 Button { start(SessionPlanner.recommended(catalog, data: store.data, unlocked: purchase.unlocked)) } label: {
                     VStack(alignment: .leading, spacing: 12) {
                         Label("今日のおすすめ学習", systemImage: "sparkle.magnifyingglass")
@@ -151,5 +165,38 @@ struct DashboardView: View {
                     .accessibilityLabel("設定")
             }
         }
+        .sheet(isPresented: $showExamDateEditor) {
+            NavigationStack {
+                ExamDateEditor(store: store)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) { Button("閉じる") { showExamDateEditor = false } }
+                    }
+            }
+            .tint(Palette.accent(catalog.qualification.accentHex))
+        }
+    }
+
+    private var readinessValue: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("学習準備度").font(.subheadline.weight(.semibold))
+            Text("\(stats.readiness) / 100")
+                .font(.title.bold()).foregroundStyle(.tint).monospacedDigit()
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private func examCountdown(asOf now: Date) -> some View {
+        VStack(alignment: dynamicTypeSize.isAccessibilitySize ? .leading : .trailing, spacing: 6) {
+            Text("試験日まで").font(.subheadline.weight(.semibold))
+            if let remaining = store.data.examDay?.daysRemaining(from: now) {
+                Text(remaining > 0 ? "あと\(remaining)日" : remaining == 0 ? "試験当日" : "試験日が経過")
+                    .font(remaining < 0 ? .headline : .title.bold())
+                    .foregroundStyle(remaining < 0 ? .secondary : .primary)
+                    .monospacedDigit()
+            } else {
+                Text("未設定").font(.title3.bold()).foregroundStyle(.secondary)
+            }
+        }
+        .accessibilityElement(children: .combine)
     }
 }

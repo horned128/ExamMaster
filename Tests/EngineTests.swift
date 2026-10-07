@@ -193,10 +193,12 @@ final class EngineTests: XCTestCase {
         store.toggleBookmark("p01")
         store.setRecallFirst(false)
         store.setRandomScope(.unanswered)
+        store.setExamDay(ExamDay(date: start))
         let restored = StudyStore(qualificationID: "demo-safety", directory: directory)
         XCTAssertEqual(restored.data.pending?.questionIDs, session.questions.map(\.id))
         XCTAssertEqual(restored.data.pending?.answers.count, 1)
         XCTAssertEqual(restored.data.pending?.selectedIndex, 0)
+        XCTAssertNotNil(restored.data.examDay)
         XCTAssertTrue(restored.resetLearning())
         XCTAssertTrue(restored.data.answers.isEmpty)
         XCTAssertNil(restored.data.pending)
@@ -204,6 +206,7 @@ final class EngineTests: XCTestCase {
         XCTAssertFalse(restored.data.onboardingCompleted)
         XCTAssertFalse(restored.data.recallFirst)
         XCTAssertEqual(restored.data.randomScope, .unanswered)
+        XCTAssertNil(restored.data.examDay)
         XCTAssertNil(StudyStore(qualificationID: "demo-safety", directory: directory).data.pending)
     }
 
@@ -215,12 +218,31 @@ final class EngineTests: XCTestCase {
         var dictionary = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
         dictionary.removeValue(forKey: "randomScope")
         dictionary.removeValue(forKey: "pending")
+        dictionary.removeValue(forKey: "examDay")
         let legacy = try JSONSerialization.data(withJSONObject: dictionary)
         let restored = try JSONDecoder().decode(StudyData.self, from: legacy)
         XCTAssertEqual(restored.answers.count, 1)
         XCTAssertEqual(restored.bookmarks, ["p01"])
         XCTAssertNil(restored.pending)
+        XCTAssertNil(restored.examDay)
         XCTAssertEqual(restored.randomScope, .mixed)
+    }
+
+    func testExamCountdownUsesCalendarDaysAcrossDaylightSavingAndTimeZones() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "America/New_York"))
+        let start = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 3, day: 7, hour: 23)))
+        let examDate = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 3, day: 10, hour: 9)))
+        let exam = ExamDay(date: examDate, calendar: calendar)
+        XCTAssertEqual(exam.daysRemaining(from: start, calendar: calendar), 3)
+        XCTAssertEqual(exam.daysRemaining(from: examDate, calendar: calendar), 0)
+        let next = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 3, day: 11)))
+        XCTAssertEqual(exam.daysRemaining(from: next, calendar: calendar), -1)
+        let restored = try JSONDecoder().decode(ExamDay.self, from: JSONEncoder().encode(exam))
+        XCTAssertEqual(restored, exam)
+        var japan = Calendar(identifier: .gregorian)
+        japan.timeZone = try XCTUnwrap(TimeZone(identifier: "Asia/Tokyo"))
+        XCTAssertEqual(restored.date(calendar: japan).map { japan.component(.day, from: $0) }, 10)
     }
 
     func testSharedListsUseAppropriateOrderingAndDashboardCounts() throws {
