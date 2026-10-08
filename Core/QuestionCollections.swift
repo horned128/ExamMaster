@@ -13,14 +13,14 @@ enum QuestionCollectionRoute: Hashable {
         case .year(let year): "\(year)年の問題"
         case .subject(let subject): subject
         case .category(let category): category
-        case .status(.stable): "安定して記憶"
-        case .status(.due): "復習の目安"
-        case .status(.risk): "忘却リスク"
-        case .status(.new): "未学習"
-        case .status(.misconception): "危険な思い込み"
+        case .status(.stable): "定着した問題"
+        case .status(.due): "今の復習"
+        case .status(.risk): "思い出しておきたい問題"
+        case .status(.new): "これからの問題"
+        case .status(.misconception): "勘違いをほどく"
         case .incorrect: "間違えた問題"
         case .favorites: "お気に入り"
-        case .contrast: "混同しやすい概念"
+        case .contrast: "似た問題を比べる"
         }
     }
 
@@ -32,6 +32,34 @@ enum QuestionCollectionRoute: Hashable {
         case .contrast: .contrast
         case .status(.due), .status(.risk), .status(.misconception), .status(.stable): .recommended
         case .all, .subject, .category, .status(.new): .subject
+        }
+    }
+}
+
+/// Presentation of existing due dates; never changes the scheduling model.
+/// Only available questions are counted, so the home action matches the displayed count.
+struct ReviewOutlook {
+    let dueCount: Int
+    let nextDate: Date?
+    let nextCount: Int
+
+    init(questions: [Question], data: StudyData, now: Date = .now, calendar: Calendar = .current) {
+        let dates = questions.compactMap { data.mastery[$0.id]?.dueAt }
+        dueCount = dates.filter { $0 <= now }.count
+        let next = dates.filter { $0 > now }.min()
+        nextDate = next
+        nextCount = next.map { date in dates.filter { $0 > now && calendar.isDate($0, inSameDayAs: date) }.count } ?? 0
+    }
+
+    static func label(for date: Date, now: Date = .now, calendar: Calendar = .current) -> String {
+        if date <= now { return "今" }
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now),
+                                           to: calendar.startOfDay(for: date)).day ?? 0
+        switch days {
+        case 0: return "今日中"
+        case 1: return "明日"
+        case 2: return "明後日"
+        default: return date.formatted(.dateTime.month().day())
         }
     }
 }

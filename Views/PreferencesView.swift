@@ -7,6 +7,7 @@ struct PreferencesView: View {
     let ads: AdsService
     let paywall: () -> Void
     let onReset: () -> Void
+    @State private var showLearningGuide = false
 
     private var recallBinding: Binding<Bool> {
         Binding(get: { store.data.recallFirst }, set: { store.setRecallFirst($0) })
@@ -33,17 +34,22 @@ struct PreferencesView: View {
             }
             Section {
                 Toggle(isOn: recallBinding) {
-                    Label("思い出してから選択肢を見る", systemImage: "brain.head.profile")
+                    Label("選択肢の前に、ひと呼吸", systemImage: "bubble.left")
                 }
             } header: {
                 Text("記憶定着")
             } footer: {
-                Text("おすすめ・復習・混同学習でのみ有効です。年度別演習と模擬試験は通常の出題形式で表示します。")
+                Text("今日の学習と復習で、まず答えを思い出す。")
+            }
+            Section {
+                Button { showLearningGuide = true } label: {
+                    Label("記憶と復習のしくみ", systemImage: "info.circle")
+                }
             }
             Section {
                 if purchase.unlocked {
-                    Label("購入済み · 全問題と広告なしで利用できます", systemImage: "checkmark.seal.fill")
-                        .foregroundStyle(.green)
+                    Label("購入済み · 全問題・広告なし", systemImage: "checkmark.circle")
+                        .foregroundStyle(Palette.positive)
                 } else {
                     Button("全問題を解放する", action: paywall)
                 }
@@ -56,7 +62,7 @@ struct PreferencesView: View {
             } header: {
                 Text("全問題の解放")
             } footer: {
-                Text("買い切りです。定期購入はありません。購入済みの問題はオフラインでも利用できます。")
+                Text("買い切り · 定期購入なし · オフライン対応")
             }
             Section {
                 NavigationLink {
@@ -65,11 +71,12 @@ struct PreferencesView: View {
                 } label: {
                     Label("データとプライバシー", systemImage: "hand.raised")
                 }
-            } footer: {
-                Text("端末内の学習データ、広告の同意と買い切り購入について確認できます。")
             }
         }
         .navigationTitle("設定")
+        .scrollContentBackground(.hidden)
+        .background(Palette.background)
+        .sheet(isPresented: $showLearningGuide) { LearningGuideView() }
     }
 }
 
@@ -88,27 +95,33 @@ struct PaywallView: View {
                         .background(.tint.opacity(0.12), in: RoundedRectangle(cornerRadius: 22))
                     Text(purchase.unlocked ? "全問題を利用できます" : "学習を、最後まで。")
                         .font(.largeTitle.bold())
-                    Text("\(catalog.qualification.name) の全\(catalog.questions.count)問を、1回の購入で永久に解放。")
-                        .font(.title3)
+                    Text("全\(catalog.questions.count)問を、永久に解放。")
+                        .font(.title3.bold())
+                    Text("\(catalog.qualification.name) · 買い切り")
+                        .font(.subheadline).foregroundStyle(Palette.muted)
                     Surface {
                         Label("無料の\(catalog.qualification.freeQuestionIDs.count)問は購入不要", systemImage: "checkmark.circle")
-                        Label("年度別・分野別・模擬試験の全問題", systemImage: "square.grid.2x2")
-                        Label("復習と学習履歴はそのまま継続", systemImage: "arrow.clockwise")
-                        Label("広告も永久に非表示", systemImage: "rectangle.slash")
+                        Label("年度別・分野別・模試", systemImage: "square.grid.2x2")
+                        Label("学習履歴はそのまま", systemImage: "arrow.clockwise")
+                        Label("広告なし", systemImage: "rectangle.slash")
                     }
                     if purchase.loading {
                         ProgressView("商品情報を確認中…")
                     } else if purchase.unlocked {
                         Button("学習を続ける") { dismiss() }
                             .buttonStyle(.borderedProminent)
+                            .tint(Palette.accent(catalog.qualification.accentHex))
+                            .foregroundStyle(Palette.onAccent(catalog.qualification.accentHex))
                     } else if let product = purchase.product {
                         Button {
                             Task { await purchase.buy() }
                         } label: {
-                            Text("全問題解放・広告削除 · 買い切り \(product.displayPrice)")
+                            Text("買い切り \(product.displayPrice)で解放")
                                 .frame(maxWidth: .infinity).padding(7)
                         }
                         .buttonStyle(.borderedProminent)
+                        .tint(Palette.accent(catalog.qualification.accentHex))
+                        .foregroundStyle(Palette.onAccent(catalog.qualification.accentHex))
                         .disabled(purchase.purchasing)
                     }
                     Button("購入を復元") { Task { await purchase.restore() } }
@@ -117,8 +130,8 @@ struct PaywallView: View {
                         Text(error).font(.footnote).foregroundStyle(.secondary)
                         Button("再試行") { Task { await purchase.refresh() } }
                     }
-                    Text("価格はApp Storeの商品情報から表示しています。定期購入はありません。購入の確認にはApple Accountを使用します。")
-                        .font(.footnote).foregroundStyle(.secondary)
+                    Text("定期購入なし。Apple Accountで購入。")
+                        .font(.footnote).foregroundStyle(Palette.muted)
                 }
                 .padding(24)
                 .frame(maxWidth: 600)

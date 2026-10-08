@@ -15,10 +15,8 @@ struct LibraryView: View {
         List {
             Section {
                 NavigationLink(value: QuestionCollectionRoute.all) {
-                    Label("問題文・キーワードから検索", systemImage: "magnifyingglass")
+                    Label("問題を検索", systemImage: "magnifyingglass")
                 }
-            } footer: {
-                Text("探したい問題を選んで1問ずつ学べます。各一覧から全問を順番・ランダムにも出題できます。")
             }
             Section("学習モード") {
                 Button {
@@ -33,7 +31,7 @@ struct LibraryView: View {
                     Label("お気に入り", systemImage: "bookmark")
                 }
                 NavigationLink(value: QuestionCollectionRoute.contrast) {
-                    Label("混同しやすい概念", systemImage: "square.on.square")
+                    Label("似た問題を比べる", systemImage: "square.on.square")
                 }
             }
             Section("年度から選ぶ") {
@@ -78,6 +76,8 @@ struct LibraryView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(Palette.background)
         .navigationTitle("問題を探す")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

@@ -271,4 +271,69 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: true)?.questions.map(\.id), items.map(\.id))
         XCTAssertNil(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: false))
     }
+
+    func testReviewOutlookCountsOnlyAvailableQuestionsAndGroupsNextDay() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let free = SessionPlanner.available(catalog, unlocked: false)
+        let paid = try XCTUnwrap(catalog.questions.first { !catalog.qualification.freeQuestionIDs.contains($0.id) })
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "Asia/Tokyo"))
+        let now = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 10, day: 8, hour: 12)))
+        let tomorrow = try XCTUnwrap(calendar.date(byAdding: .day, value: 1, to: now))
+        var data = StudyData()
+        data.mastery[free[0].id] = Mastery(dueAt: now.addingTimeInterval(-day))
+        data.mastery[free[1].id] = Mastery(dueAt: now)
+        data.mastery[free[2].id] = Mastery(dueAt: tomorrow)
+        data.mastery[free[3].id] = Mastery(dueAt: tomorrow.addingTimeInterval(3600))
+        data.mastery[free[4].id] = Mastery(dueAt: tomorrow.addingTimeInterval(day))
+        data.mastery[paid.id] = Mastery(dueAt: now)
+        data.mastery["removed-question"] = Mastery(dueAt: now)
+        let outlook = ReviewOutlook(questions: free, data: data, now: now, calendar: calendar)
+        XCTAssertEqual(outlook.dueCount, 2)
+        XCTAssertEqual(outlook.nextDate, tomorrow)
+        XCTAssertEqual(outlook.nextCount, 2)
+        XCTAssertEqual(ReviewOutlook.label(for: tomorrow, now: now, calendar: calendar), "明日")
+        XCTAssertEqual(ReviewOutlook(questions: catalog.questions, data: data, now: now, calendar: calendar).dueCount, 3)
+    }
+
+    func testReviewOutlookHandlesEmptyAndSameDayWithoutPretendingTomorrow() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let empty = ReviewOutlook(questions: catalog.questions, data: StudyData(), now: start)
+        XCTAssertEqual(empty.dueCount, 0)
+        XCTAssertNil(empty.nextDate)
+        XCTAssertEqual(empty.nextCount, 0)
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "America/New_York"))
+        let now = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 3, day: 7, hour: 12)))
+        XCTAssertEqual(ReviewOutlook.label(for: now, now: now, calendar: calendar), "今")
+        XCTAssertEqual(ReviewOutlook.label(for: now.addingTimeInterval(3600), now: now, calendar: calendar), "今日中")
+        let nextDay = try XCTUnwrap(calendar.date(byAdding: .day, value: 1, to: now))
+        XCTAssertEqual(ReviewOutlook.label(for: nextDay, now: now, calendar: calendar), "明日")
+        let twoDays = try XCTUnwrap(calendar.date(byAdding: .day, value: 2, to: now))
+        XCTAssertEqual(ReviewOutlook.label(for: twoDays, now: now, calendar: calendar), "明後日")
+    }
+
+    func testDiagnosticComparisonDoesNotInventRankingForTiesOrMissingSubjects() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let questions = SessionPlanner.diagnostic(catalog, unlocked: false).questions
+        let allWrong = questions.map { answer($0.id, at: start, correct: false) }
+        let allCorrect = questions.map { answer($0.id, at: start, correct: true) }
+        XCTAssertNil(SessionPlanner.diagnosticComparison(allWrong, questions: questions, subjects: catalog.qualification.subjects))
+        XCTAssertNil(SessionPlanner.diagnosticComparison(allCorrect, questions: questions, subjects: catalog.qualification.subjects))
+        XCTAssertNil(SessionPlanner.diagnosticComparison([], questions: [], subjects: catalog.qualification.subjects))
+        let singleSubject = questions.filter { $0.subject == catalog.qualification.subjects[0] }
+        XCTAssertNil(SessionPlanner.diagnosticComparison(allCorrect, questions: singleSubject, subjects: catalog.qualification.subjects))
+    }
+
+    func testDiagnosticComparisonReflectsOnlyTestedSubjectResults() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let questions = SessionPlanner.diagnostic(catalog, unlocked: false).questions
+            .filter { catalog.qualification.subjects.prefix(2).contains($0.subject) }
+        let best = catalog.qualification.subjects[0]
+        let weakest = catalog.qualification.subjects[1]
+        let answers = questions.map { answer($0.id, at: start, correct: $0.subject == best) }
+        let comparison = try XCTUnwrap(SessionPlanner.diagnosticComparison(answers, questions: questions, subjects: catalog.qualification.subjects))
+        XCTAssertEqual(comparison.best, best)
+        XCTAssertEqual(comparison.weakest, weakest)
+    }
 }

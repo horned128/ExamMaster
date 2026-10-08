@@ -86,11 +86,10 @@ struct StudyAppView: View {
                                      start: start, paywall: openPaywall,
                                      settings: { showSettings = true })
                     }
-                    .tabItem { Label("分析", systemImage: "chart.bar.xaxis") }.tag(MainTab.insights)
+                    .tabItem { Label("記録", systemImage: "chart.bar.xaxis") }.tag(MainTab.insights)
                 }
             }
         }
-        .tint(Palette.accent(catalog.qualification.accentHex))
         .task(id: adAccess) { ads.updateAccess(adAccess) }
         .sheet(item: $session, onDismiss: {
             ads.updateAccess(adAccess)
@@ -117,7 +116,7 @@ struct StudyAppView: View {
                         ToolbarItem(placement: .topBarTrailing) { Button("閉じる") { showSettings = false } }
                     }
             }
-            .tint(Palette.accent(catalog.qualification.accentHex))
+            .tint(Palette.linkAccent(catalog.qualification.accentHex))
         }
         .confirmationDialog("保存中の演習があります", isPresented: $confirmReplacement, titleVisibility: .visible) {
             Button("続きから再開") { replacement = nil; resumePending() }
@@ -137,6 +136,7 @@ struct StudyAppView: View {
         } message: {
             Text("問題データが更新されたため、途中位置を復元できませんでした。回答済みの学習履歴は残っています。")
         }
+        .tint(Palette.linkAccent(catalog.qualification.accentHex))
     }
 
     private func start(_ newSession: StudySession) {

@@ -21,7 +21,7 @@ struct ExamDateEditor: View {
                            displayedComponents: .date)
                     .datePickerStyle(.graphical)
             } footer: {
-                Text("日付のみをこの資格アプリの端末内に保存します。時刻や受験会場の情報は必要ありません。")
+                Text("あと何日かを、ホームに表示します。")
             }
             Section {
                 Button("試験日を保存") {

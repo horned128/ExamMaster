@@ -44,7 +44,7 @@ enum SessionPlanner {
             chosen.append(next)
             pool.removeAll { $0.id == next.id }
         }
-        return StudySession(title: "今日のおすすめ", mode: .recommended,
+        return StudySession(title: "今日のひと区切り", mode: .recommended,
                             questions: interleave(chosen), timed: false)
     }
 
@@ -74,7 +74,7 @@ enum SessionPlanner {
         let mistakes = items.filter { data.mastery[$0.id]?.misconception == true || data.mastery[$0.id]?.lastCorrect == false }
         let concepts = Set(mistakes.flatMap(\.concepts))
         let related = items.filter { q in mistakes.contains(q) || !concepts.isDisjoint(with: q.concepts) }
-        return StudySession(title: "混同しやすい概念", mode: .contrast,
+        return StudySession(title: "似た問題を比べる", mode: .contrast,
                             questions: interleave(Array(related.prefix(12))), timed: false)
     }
 
@@ -106,6 +106,21 @@ enum SessionPlanner {
         }
         return MockResult(date: date, score: score, total: questions.count,
                           passed: !questions.isEmpty && overall >= qualification.passingPercent && subjectPass,
-                          subjectScores: subjectScores)
+                           subjectScores: subjectScores)
+    }
+
+    /// A tied or untested subject must not become an arbitrary diagnostic ranking.
+    static func diagnosticComparison(_ answers: [Answer], questions: [Question],
+                                     subjects: [String]) -> (best: String, weakest: String)? {
+        let correctIDs = Set(answers.filter(\.correct).map(\.questionID))
+        let scores = subjects.compactMap { subject -> (subject: String, score: Double)? in
+            let items = questions.filter { $0.subject == subject }
+            guard !items.isEmpty else { return nil }
+            return (subject, Double(items.filter { correctIDs.contains($0.id) }.count) / Double(items.count))
+        }
+        guard let best = scores.max(by: { $0.score < $1.score }),
+              let weakest = scores.min(by: { $0.score < $1.score }),
+              best.score > weakest.score else { return nil }
+        return (best.subject, weakest.subject)
     }
 }

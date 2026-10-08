@@ -42,8 +42,13 @@ struct QuestionCollectionView: View {
     var body: some View {
         List {
             Section {
-                Text("\(visible.count)問中\(accessible.count)問を利用できます。問題を選ぶか、表示中の問題をまとめて演習できます。")
-                    .font(.subheadline).foregroundStyle(.secondary)
+                HStack {
+                    StudyBadge(title: "\(accessible.count)問を利用可能", symbol: "doc.text", color: Palette.positive)
+                    Spacer(minLength: 8)
+                    if accessible.count < visible.count {
+                        StudyBadge(title: "\(visible.count - accessible.count)問", symbol: "lock")
+                    }
+                }
                 Button {
                     launch(StudySession(title: route.title, mode: route.studyMode, questions: accessible, timed: false))
                 } label: {
@@ -70,22 +75,23 @@ struct QuestionCollectionView: View {
                         } else { paywall() }
                     } label: {
                         HStack(alignment: .top, spacing: 12) {
-                            Image(systemName: purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? "doc.text" : "lock")
-                                .foregroundStyle(.tint)
+                            Image(systemName: purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? statusSymbol(for: question) : "lock")
+                                .foregroundStyle(statusColor(for: question))
                                 .frame(width: 22)
+                                .accessibilityHidden(true)
                             VStack(alignment: .leading, spacing: 5) {
-                                Text(question.stem).font(.body).foregroundStyle(.primary)
+                                Text(question.stem).font(.body).foregroundStyle(Palette.ink)
                                     .fixedSize(horizontal: false, vertical: true)
-                                HStack(spacing: 8) {
-                                    Text("\(question.year.formatted(.number.grouping(.never))) · \(question.subject) / \(question.category)")
-                                    if let status = status(for: question) { Text("· \(status)") }
+                                Text(metadata(for: question))
+                                    .font(.caption).foregroundStyle(Palette.muted)
+                                if let status = status(for: question) {
+                                    Text(status).font(.caption.weight(.medium)).foregroundStyle(statusColor(for: question))
                                 }
-                                .font(.caption).foregroundStyle(.secondary)
                             }
                         }
                         .padding(.vertical, 5)
                     }
-                    .accessibilityLabel("\(question.stem)、\(purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? "利用可能" : "全問題解放が必要")")
+                    .accessibilityLabel("\(question.stem)、\(status(for: question) ?? "学習中")、\(purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? "利用可能" : "全問題解放が必要")")
                 }
                 if visible.isEmpty {
                     ContentUnavailableView("条件に合う問題がありません", systemImage: "line.3.horizontal.decrease.circle",
@@ -100,6 +106,8 @@ struct QuestionCollectionView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(Palette.background)
         .navigationTitle(route.title)
         .searchable(text: $query, prompt: "このリスト内を検索")
         .sheet(isPresented: $showRandomOptions, onDismiss: {
@@ -127,7 +135,7 @@ struct QuestionCollectionView: View {
                     } header: {
                         Text("ランダム演習の設定")
                     } footer: {
-                        Text("このリストに表示され、利用できる問題だけが対象です。選んだ条件に合う全問題を1回ずつ出題します。")
+                        Text("表示中の問題を、1問ずつ。")
                     }
                     Section {
                         let count = randomScope == .unanswered ? unanswered.count : accessible.count
@@ -158,17 +166,37 @@ struct QuestionCollectionView: View {
 
     private var showAds: Bool { !purchase.unlocked && !purchase.purchasing && ads.canShowBanner }
 
+    private func metadata(for question: Question) -> String {
+        if case .year = route { return question.subject }
+        return "\(question.year.formatted(.number.grouping(.never))) · \(question.subject)"
+    }
+
     private func launch(_ session: StudySession) {
         guard !session.questions.isEmpty else { return }
         start(session)
     }
 
     private func status(for question: Question) -> String? {
-        guard let state = store.data.mastery[question.id] else { return "未回答" }
-        if state.misconception { return "思い込み注意" }
-        if state.lastCorrect == false { return "復習したい" }
-        if MasteryEngine.isMastered(state, now: .now) { return "安定" }
-        if state.dueAt.map({ $0 <= .now }) ?? false { return "復習時期" }
+        guard let state = store.data.mastery[question.id] else { return "これから" }
+        if state.misconception { return "勘違いをほどく" }
+        if state.dueAt.map({ $0 <= .now }) ?? false { return "今、復習にいい頃" }
+        if MasteryEngine.isMastered(state, now: .now) { return "定着" }
+        if let date = state.dueAt { return "次は\(ReviewOutlook.label(for: date))" }
+        if state.lastCorrect == false { return "もう一度" }
         return nil
+    }
+
+    private func statusSymbol(for question: Question) -> String {
+        guard let state = store.data.mastery[question.id] else { return "circle.dashed" }
+        if state.misconception { return "square.on.square" }
+        if state.dueAt.map({ $0 <= .now }) ?? false { return "arrow.clockwise.circle" }
+        if MasteryEngine.isMastered(state, now: .now) { return "checkmark.circle" }
+        return "circle.lefthalf.filled"
+    }
+
+    private func statusColor(for question: Question) -> Color {
+        guard let state = store.data.mastery[question.id] else { return Palette.muted }
+        if state.misconception || (state.dueAt.map { $0 <= .now } ?? false) { return Palette.review }
+        return Palette.positive
     }
 }

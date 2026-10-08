@@ -2,4 +2,5 @@
 DerivedData/
 *.xcuserstate
 *.xcuserdatad/
-.build/
+.build
+.opencode
