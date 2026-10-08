@@ -1,0 +1,193 @@
+{
+  "source": {
+    "hiyoko.svg": "3a13f84d16747d7d6da89f634e28c68ab14a816a59131583fab9d30e12cbf958",
+    "niwatori.svg": "8fb911f29ca588f725771a2881d572cb63d0677d0247f4b9868edd33b2519da1"
+  },
+  "artboard": [
+    256,
+    256
+  ],
+  "stages": {
+    "chick": {
+      "kind": "chick",
+      "scale": 1,
+      "wingScale": 1,
+      "absOpacity": 0
+    },
+    "growingChick": {
+      "kind": "chick",
+      "scale": 1.1,
+      "wingScale": 1.18,
+      "absOpacity": 0
+    },
+    "youngChicken": {
+      "kind": "chicken",
+      "scale": 0.92,
+      "wingScale": 0.85,
+      "absOpacity": 0.45
+    },
+    "chicken": {
+      "kind": "chicken",
+      "scale": 1,
+      "wingScale": 1,
+      "absOpacity": 1
+    }
+  },
+  "poses": {
+    "ready": [
+      0,
+      0,
+      1,
+      0
+    ],
+    "encourage": [
+      4,
+      2,
+      0.85,
+      0
+    ],
+    "celebrate": [
+      8,
+      -3,
+      0.72,
+      0
+    ],
+    "review": [
+      0,
+      -5,
+      1,
+      2
+    ],
+    "recover": [
+      0,
+      2,
+      1,
+      0
+    ],
+    "rest": [
+      -2,
+      0,
+      0.12,
+      0
+    ]
+  },
+  "parts": {
+    "chick": {
+      "chickFeet": [
+        "chick_feet"
+      ],
+      "chickWingLeft": [
+        "wing_left"
+      ],
+      "chickWingRight": [
+        "wing_right"
+      ],
+      "chickBody": [
+        "chick_body"
+      ],
+      "chickFluff": [
+        "chick_fluff"
+      ],
+      "chickEyes": [
+        "eye_left",
+        "eye_right"
+      ],
+      "chickCheeks": [
+        "cheek_left",
+        "cheek_right"
+      ],
+      "chickBeak": [
+        "beak"
+      ],
+      "chickMouth": [
+        "mouth"
+      ]
+    },
+    "chicken": {
+      "chickenTail": [
+        "tail"
+      ],
+      "chickenLegs": [
+        "legs"
+      ],
+      "chickenFeet": [
+        "feet"
+      ],
+      "chickenBody": [
+        "body"
+      ],
+      "chickenShoulderLeft": [
+        "shoulder_left"
+      ],
+      "chickenShoulderRight": [
+        "shoulder_right"
+      ],
+      "chickenForearmLeft": [
+        "forearm_left"
+      ],
+      "chickenForearmRight": [
+        "forearm_right"
+      ],
+      "chickenChest": [
+        "chest"
+      ],
+      "chickenAbs": [
+        "abs"
+      ],
+      "chickenHead": [
+        "head"
+      ],
+      "chickenComb": [
+        "comb"
+      ],
+      "chickenEyes": [
+        "eye_left",
+        "eye_right"
+      ],
+      "chickenCheeks": [
+        "cheek_left",
+        "cheek_right"
+      ],
+      "chickenBeak": [
+        "beak"
+      ],
+      "chickenMouth": [
+        "mouth"
+      ]
+    }
+  },
+  "pivots": {
+    "chickRoot": [
+      128,
+      210
+    ],
+    "chickBody": [
+      128,
+      183
+    ],
+    "chickWingLeft": [
+      78,
+      144
+    ],
+    "chickWingRight": [
+      178,
+      144
+    ],
+    "chickenRoot": [
+      128,
+      225
+    ],
+    "chickenHead": [
+      128,
+      122
+    ],
+    "chickenForearmLeft": [
+      89,
+      126
+    ],
+    "chickenForearmRight": [
+      167,
+      126
+    ]
+  }
+}

@@ -59,6 +59,18 @@ targetTemplates:
     dependencies:
       - package: GoogleMobileAds
       - package: GoogleUserMessagingPlatform
+    preBuildScripts:
+      - name: Generate qualification icon
+        script: >-
+          xcrun --sdk macosx swift "${SRCROOT}/tools/GenerateIcon.swift"
+          "${SRCROOT}/Qualifications/${qualificationID}/qualification.json"
+          "${SRCROOT}/Assets.xcassets/${iconName}.appiconset/AppIcon.png"
+        inputFiles:
+          - $(SRCROOT)/tools/GenerateIcon.swift
+          - $(SRCROOT)/Qualifications/${qualificationID}/qualification.json
+          - $(SRCROOT)/design-system/exammaster/mascot/chicken-face.json
+        outputFiles:
+          - $(SRCROOT)/Assets.xcassets/${iconName}.appiconset/AppIcon.png
     settings:
       base:
         MARKETING_VERSION: '1.0'
@@ -67,6 +79,7 @@ targetTemplates:
         ASSETCATALOG_COMPILER_APPICON_NAME: ${iconName}
         PRODUCT_BUNDLE_IDENTIFIER: ${bundleID}
         PRODUCT_NAME: ${target_name}
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
 targets:
   ExamMaster:
     templates: [QualificationApp]
@@ -76,27 +89,19 @@ targets:
       bundleID: jp.example.exammaster.demo
       iconName: AppIcon
       adMobAppID: ca-app-pub-3940256099942544~1458002511
+    settings:
+      base:
+        CODE_SIGN_IDENTITY: iPhone Developer
+        DEVELOPMENT_TEAM: QZH83KGFVX
     scheme:
       testTargets: [ExamMasterTests, ExamMasterUITests]
       storeKitConfiguration: Qualifications/demo-safety/products.storekit
-  HarborStudy:
-    templates: [QualificationApp]
-    templateAttributes:
-      qualificationID: harbor-record
-      displayName: 港湾記録学習
-      bundleID: jp.example.exammaster.harbor
-      iconName: HarborIcon
-      adMobAppID: ca-app-pub-3940256099942544~1458002511
-    scheme:
-      storeKitConfiguration: Qualifications/harbor-record/products.storekit
   ExamMasterTests:
     type: bundle.unit-test
     platform: iOS
     sources:
       - path: Tests
       - path: Qualifications/demo-safety/products.storekit
-      - path: Qualifications/harbor-record
-        type: folder
     dependencies:
       - target: ExamMaster
     settings:

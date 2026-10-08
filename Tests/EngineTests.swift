@@ -116,20 +116,115 @@ final class EngineTests: XCTestCase {
                                          bank: QuestionBank(version: 2, questions: catalog.questions)))
     }
 
-    func testSecondQualificationHasIndependentCatalog() throws {
-        let folder = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "harbor-record", withExtension: nil))
-        let qualification = try JSONDecoder().decode(Qualification.self, from: Data(contentsOf: folder.appendingPathComponent("qualification.json")))
-        let bank = try JSONDecoder().decode(QuestionBank.self, from: Data(contentsOf: folder.appendingPathComponent("questions.json")))
-        let catalog = try Catalog(qualification: qualification, bank: bank)
-        XCTAssertEqual(catalog.qualification.name, "港湾安全記録士")
-        XCTAssertEqual(catalog.questions.count, 12)
-        XCTAssertEqual(SessionPlanner.available(catalog, unlocked: false).count, 6)
-        XCTAssertEqual(SessionPlanner.mock(catalog, unlocked: true).questions.count, 6)
-        XCTAssertEqual(SessionPlanner.diagnostic(catalog, unlocked: false).questions.count, 4)
-        let storeKit = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: folder.appendingPathComponent("products.storekit"))) as? [String: Any])
-        let products = try XCTUnwrap(storeKit["products"] as? [[String: Any]])
-        XCTAssertEqual(products.first?["productID"] as? String, qualification.productID)
-        XCTAssertEqual(products.first?["type"] as? String, "NonConsumable")
+    func testQualificationBrandingIsDataDrivenAndBackwardsCompatible() throws {
+        let sample = try Catalog.load(id: "demo-safety")
+        var config = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(sample.qualification)) as? [String: Any])
+        config["id"] = "another-qualification"
+        config["name"] = "別の資格名"
+        config["mascotBaseHex"] = "#D7E8FF"
+        let custom = try JSONDecoder().decode(Qualification.self, from: JSONSerialization.data(withJSONObject: config))
+        XCTAssertNoThrow(try Catalog(qualification: custom, bank: QuestionBank(version: 1, questions: sample.questions)))
+        XCTAssertEqual(custom.mascotColorHex, "#D7E8FF")
+        XCTAssertEqual(custom.iconDisplayTitle, "別の資格名")
+        config.removeValue(forKey: "mascotBaseHex")
+        config["iconTitle"] = "別の\n資格"
+        let legacy = try JSONDecoder().decode(Qualification.self, from: JSONSerialization.data(withJSONObject: config))
+        XCTAssertEqual(legacy.mascotColorHex, TankeiPalette.defaultChickenHex)
+        XCTAssertEqual(legacy.iconDisplayTitle, "別の\n資格")
+        XCTAssertNoThrow(try Catalog(qualification: legacy, bank: QuestionBank(version: 1, questions: sample.questions)))
+    }
+
+    func testQualificationRejectsInvalidMascotColorsAndEmptyIconTitles() throws {
+        let sample = try Catalog.load(id: "demo-safety")
+        var config = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(sample.qualification)) as? [String: Any])
+        for hex in ["#FFF", "#GGEEFF", ""] {
+            config["mascotBaseHex"] = hex
+            let qualification = try JSONDecoder().decode(Qualification.self, from: JSONSerialization.data(withJSONObject: config))
+            XCTAssertThrowsError(try Catalog(qualification: qualification, bank: QuestionBank(version: 1, questions: sample.questions)))
+        }
+        config["mascotBaseHex"] = "#FFF3DA"
+        config["iconTitle"] = " \n "
+        let qualification = try JSONDecoder().decode(Qualification.self, from: JSONSerialization.data(withJSONObject: config))
+        XCTAssertThrowsError(try Catalog(qualification: qualification, bank: QuestionBank(version: 1, questions: sample.questions)))
+    }
+
+    func testHomeRetentionUsesOnlyAvailableStableQuestions() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let free = SessionPlanner.available(catalog, unlocked: false)
+        let paid = try XCTUnwrap(catalog.questions.first { !catalog.qualification.freeQuestionIDs.contains($0.id) })
+        var data = StudyData()
+        let stable = Mastery(attempts: 3, distinctSuccessDays: 3, lastAnswered: start, stabilityDays: 7, lastCorrect: true)
+        for question in free.prefix(3) { data.mastery[question.id] = stable }
+        data.mastery[paid.id] = stable
+        data.mastery["removed-question"] = stable
+        let summary = RetentionSummary(questions: free, data: data, now: start)
+        XCTAssertEqual(summary.total, 12)
+        XCTAssertEqual(summary.stable, 3)
+        XCTAssertEqual(summary.growing, 0)
+        XCTAssertEqual(summary.new, 9)
+        XCTAssertEqual(summary.stable + summary.growing + summary.new, summary.total)
+        XCTAssertEqual(summary.percent, 25)
+        XCTAssertEqual(summary.fraction, 0.25)
+        XCTAssertEqual(RetentionSummary(questions: catalog.questions, data: data, now: start).stable, 4)
+        XCTAssertEqual(RetentionSummary(questions: free, data: data, now: start).stable,
+                       QuestionCollections.questions(for: .status(.stable), catalog: catalog, data: data, now: start)
+                        .filter { catalog.qualification.freeQuestionIDs.contains($0.id) }.count)
+    }
+
+    func testRetentionIsNotFirstSuccessGrowthAndDecays() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let free = SessionPlanner.available(catalog, unlocked: false)
+        var data = StudyData()
+        for question in free {
+            let result = answer(question.id, at: start, correct: true)
+            data.answers.append(result)
+            data.mastery[question.id] = MasteryEngine.update(Mastery(), answer: result, difficulty: 1)
+        }
+        XCTAssertNotEqual(TankeiGrowth(questions: free, data: data, now: start).stage, .chicken)
+        XCTAssertEqual(RetentionSummary(questions: free, data: data, now: start).percent, 0)
+        for question in free {
+            data.mastery[question.id] = Mastery(attempts: 3, distinctSuccessDays: 3, lastAnswered: start,
+                                               stabilityDays: 7, lastCorrect: true)
+        }
+        XCTAssertEqual(RetentionSummary(questions: free, data: data, now: start).percent, 100)
+        data.mastery[free[0].id]?.lastCorrect = false
+        XCTAssertEqual(RetentionSummary(questions: free, data: data, now: start).stable, 11)
+        XCTAssertEqual(RetentionSummary(questions: free, data: data, now: start.addingTimeInterval(day * 30)).percent, 0)
+        let empty = RetentionSummary(questions: [], data: data, now: start)
+        XCTAssertEqual(empty.percent, 0)
+        XCTAssertEqual(empty.fraction, 0)
+        XCTAssertEqual(empty.growing, 0)
+        XCTAssertEqual(empty.new, 0)
+    }
+
+    func testMemoryBreakdownIsExclusiveAndIncludesMistakesAsLearning() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let free = SessionPlanner.available(catalog, unlocked: false)
+        var data = StudyData()
+        for question in free.prefix(2) {
+            data.mastery[question.id] = Mastery(attempts: 3, distinctSuccessDays: 3, lastAnswered: start,
+                                               stabilityDays: 7, dueAt: start, lastCorrect: true)
+        }
+        data.mastery[free[2].id] = MasteryEngine.update(Mastery(), answer: answer(free[2].id, at: start, correct: true), difficulty: 1)
+        data.mastery[free[3].id] = MasteryEngine.update(Mastery(), answer: answer(free[3].id, at: start, correct: false,
+                                                                            confidence: .sure), difficulty: 1)
+        data.mastery["removed-question"] = Mastery(attempts: 1)
+        let memory = RetentionSummary(questions: free, data: data, now: start)
+        XCTAssertEqual(memory.stable, 2)
+        XCTAssertEqual(memory.growing, 2)
+        XCTAssertEqual(memory.new, 8)
+        XCTAssertEqual(memory.stable + memory.growing + memory.new, 12)
+        let expired = RetentionSummary(questions: free, data: data, now: start.addingTimeInterval(30 * day))
+        XCTAssertEqual(expired.stable, 0)
+        XCTAssertEqual(expired.growing, 4)
+        XCTAssertEqual(expired.new, 8)
+        let subjects = catalog.qualification.subjects.map { subject in
+            RetentionSummary(questions: free.filter { $0.subject == subject }, data: data, now: start)
+        }
+        XCTAssertEqual(subjects.reduce(0) { $0 + $1.stable }, memory.stable)
+        XCTAssertEqual(subjects.reduce(0) { $0 + $1.growing }, memory.growing)
+        XCTAssertEqual(subjects.reduce(0) { $0 + $1.new }, memory.new)
+        XCTAssertEqual(subjects.reduce(0) { $0 + $1.total }, memory.total)
     }
 
     @MainActor func testCorruptHistoryRemainsUntouched() throws {

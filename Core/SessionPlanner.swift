@@ -29,8 +29,9 @@ enum SessionPlanner {
         return StudySession(title: "はじめの診断", mode: .diagnostic, questions: selected, timed: false)
     }
 
-    static func recommended(_ catalog: Catalog, data: StudyData, unlocked: Bool, now: Date = .now) -> StudySession {
-        let items = available(catalog, unlocked: unlocked)
+    static func recommended(_ catalog: Catalog, data: StudyData, unlocked: Bool, now: Date = .now,
+                            excluding questionIDs: Set<String> = []) -> StudySession {
+        let items = available(catalog, unlocked: unlocked).filter { !questionIDs.contains($0.id) }
         let states = data.mastery
         var pool = items
         var chosen: [Question] = []
@@ -44,7 +45,7 @@ enum SessionPlanner {
             chosen.append(next)
             pool.removeAll { $0.id == next.id }
         }
-        return StudySession(title: "今日のひと区切り", mode: .recommended,
+        return StudySession(title: "今日のノルマ", mode: .recommended,
                             questions: interleave(chosen), timed: false)
     }
 

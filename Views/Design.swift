@@ -59,21 +59,6 @@ struct Surface<Content: View>: View {
     }
 }
 
-struct Metric: View {
-    let title: String
-    let value: String
-    let symbol: String
-    var body: some View {
-        Surface {
-            Image(systemName: symbol).foregroundStyle(.tint).font(.title3)
-                .accessibilityHidden(true)
-            Text(value).font(.title2.bold()).contentTransition(.numericText())
-            Text(title).font(.footnote).foregroundStyle(Palette.muted)
-        }
-        .accessibilityElement(children: .combine)
-    }
-}
-
 /// Press feedback without moving the control or its neighbours.
 struct StudyButtonStyle: ButtonStyle {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -136,44 +121,61 @@ struct MemoryBar: View {
     }
 }
 
-struct SubjectProgress: View {
-    let subject: String
-    let score: Int
+/// A shared, exhaustive partition; review flags are deliberately not extra segments.
+struct MemoryBreakdown: View {
+    let summary: RetentionSummary
+    let identifier: String
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(subject).font(.subheadline)
-                Spacer(minLength: 8)
-                Text("\(score)%").font(.subheadline.monospacedDigit()).foregroundStyle(Palette.muted)
+        VStack(alignment: .leading, spacing: 12) {
+            MemoryBar(stable: summary.stable, growing: summary.growing, new: summary.new)
+                .accessibilityHidden(true)
+            let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12)) :
+                AnyLayout(HStackLayout(alignment: .top, spacing: 12))
+            layout {
+                legend("定着", count: summary.stable, symbol: "checkmark.circle", color: Palette.positive)
+                legend("学習中", count: summary.growing, symbol: "circle.lefthalf.filled", color: Palette.muted)
+                legend("これから", count: summary.new, symbol: "circle.dashed", color: Palette.muted)
             }
-            ProgressView(value: Double(score), total: 100).tint(Palette.positive)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(subject)
-        .accessibilityValue("定着の目安 \(score)パーセント")
+        .accessibilityLabel("問題の学習状態")
+        .accessibilityValue("定着 \(summary.stable)問、学習中 \(summary.growing)問、これから \(summary.new)問")
+        .accessibilityIdentifier(identifier)
+    }
+
+    private func legend(_ title: String, count: Int, symbol: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Label { Text(title) } icon: { Image(systemName: symbol).accessibilityHidden(true) }
+                .font(.caption).foregroundStyle(color)
+                .fixedSize(horizontal: false, vertical: true)
+            Text("\(count)問").font(.subheadline.weight(.semibold).monospacedDigit())
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
-struct ReadinessRing: View {
-    let value: Int
-    @ScaledMetric(relativeTo: .title) private var diameter: CGFloat = 96
+struct SubjectProgress: View {
+    let subject: String
+    let score: Int
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        ZStack {
-            Circle().stroke(Palette.track, lineWidth: 7)
-            Circle().trim(from: 0, to: CGFloat(value) / 100)
-                .stroke(Palette.positive, style: StrokeStyle(lineWidth: 7, lineCap: .round))
-                .rotationEffect(.degrees(-90))
-            VStack(spacing: 2) {
-                Text("\(value)").font(.title.bold().monospacedDigit())
-                Text("/ 100").font(.caption).foregroundStyle(Palette.muted)
+        VStack(alignment: .leading, spacing: 8) {
+            let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4)) :
+                AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+            layout {
+                Text(subject).font(.subheadline).fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text("\(score)%").font(.subheadline.monospacedDigit()).foregroundStyle(Palette.muted)
             }
+            ProgressView(value: Double(score), total: 100).tint(Palette.positive).accessibilityHidden(true)
         }
-        .frame(width: min(diameter, 240), height: min(diameter, 240))
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("学習準備度")
-        .accessibilityValue("100中\(value)。合格確率ではありません")
+        .accessibilityLabel(subject)
+        .accessibilityValue("定着率 \(score)パーセント")
     }
 }
 
@@ -234,55 +236,5 @@ struct MemoryRhythm: View {
         Label(title, systemImage: symbol)
             .font(.caption.weight(.semibold)).foregroundStyle(Palette.positive)
             .fixedSize(horizontal: false, vertical: true)
-    }
-}
-
-struct LearningGuideView: View {
-    @Environment(\.dismiss) private var dismiss
-
-    var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    Text("忘れる前に、\nもう一度出会う。")
-                        .font(.largeTitle.bold()).fixedSize(horizontal: false, vertical: true)
-                    Surface { MemoryRhythm() }
-                    guideItem("思い出すことが練習に", symbol: "bubble.left",
-                              detail: "選択肢を開く前に、答えをひとつ考える。難しいときはすぐ開いても大丈夫。")
-                    guideItem("次の復習は、回答に合わせて", symbol: "calendar",
-                              detail: "別の日に思い出せるほど、復習の間隔が少しずつ広がります。間違えた問題の目安は翌日です。")
-                    Surface {
-                        Text("数値は、学習の目安").font(.headline)
-                        Text("定着度と復習日は回答履歴からの推定です。実測の記憶確率や、合格を保証する数値ではありません。")
-                            .font(.subheadline).foregroundStyle(Palette.muted)
-                        DisclosureGroup("指標の見方") {
-                            Text("学習準備度は、学習した範囲・記憶の目安・科目の偏り・最近の回答・模試から算出します。「定着」は、別の日に3回以上正解し、記憶が安定している問題です。")
-                                .font(.subheadline).foregroundStyle(Palette.muted).padding(.top, 8)
-                        }
-                    }
-                    Surface {
-                        Text("学び方の参考にした研究").font(.headline)
-                        Link("分散学習・想起練習のレビュー ↗", destination: URL(string: "https://www.psychologicalscience.org/publications/journals/pspi/learning-techniques.html")!)
-                        Link("別の日に学び直す研究 ↗", destination: URL(string: "https://pubmed.ncbi.nlm.nih.gov/29431462/")!)
-                        Text("研究を参考にした独自の計算です。個人ごとの最適な間隔を実証したものではありません。")
-                            .font(.caption).foregroundStyle(Palette.muted)
-                    }
-                }
-                .padding(24).frame(maxWidth: 600).frame(maxWidth: .infinity)
-            }
-            .background(Palette.background)
-            .navigationTitle("記憶と復習")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) { Button("閉じる") { dismiss() } }
-            }
-        }
-    }
-
-    private func guideItem(_ title: String, symbol: String, detail: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label(title, systemImage: symbol).font(.headline)
-            Text(detail).font(.subheadline).foregroundStyle(Palette.muted)
-        }
     }
 }

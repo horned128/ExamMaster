@@ -4,3 +4,5 @@ DerivedData/
 *.xcuserdatad/
 .build
 .opencode
+.agents/
+skills-lock.json

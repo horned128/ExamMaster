@@ -1,0 +1,79 @@
+{
+  "baseFill": "#FFF3DA",
+  "shapes": [
+    {
+      "type": "path",
+      "id": "head",
+      "d": "M93 67                Q96 45 128 45                Q160 45 163 67                L165 94                Q165 114 150 121                Q139 126 128 126                Q117 126 106 121                Q91 114 91 94 Z",
+      "fill": "#FFF3DA",
+      "stroke": "#243B3A",
+      "stroke-width": "6",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round"
+    },
+    {
+      "type": "path",
+      "id": "comb",
+      "d": "M106 49                Q101 36 108 31                Q116 26 122 37                L124 25                Q126 16 135 18                Q144 20 143 30                L142 41                Q149 31 158 34                Q166 37 162 47                L156 56 Z",
+      "fill": "#F06D5E",
+      "stroke": "#243B3A",
+      "stroke-width": "6",
+      "stroke-linecap": "round",
+      "stroke-linejoin": "round"
+    },
+    {
+      "type": "circle",
+      "id": "eye_left",
+      "cx": "115",
+      "cy": "87",
+      "r": "4.5",
+      "fill": "#243B3A",
+      "stroke": "none"
+    },
+    {
+      "type": "circle",
+      "id": "eye_right",
+      "cx": "141",
+      "cy": "87",
+      "r": "4.5",
+      "fill": "#243B3A",
+      "stroke": "none"
+    },
+    {
+      "type": "circle",
+      "id": "cheek_left",
+      "cx": "103",
+      "cy": "96",
+      "r": "5.5",
+      "fill": "#F7A38D",
+      "stroke": "none"
+    },
+    {
+      "type": "circle",
+      "id": "cheek_right",
+      "cx": "153",
+      "cy": "96",
+      "r": "5.5",
+      "fill": "#F7A38D",
+      "stroke": "none"
+    },
+    {
+      "type": "path",
+      "id": "beak",
+      "d": "M115 95 Q128 86 141 95 Q128 104 115 95 Z",
+      "fill": "#F2B544",
+      "stroke": "#243B3A",
+      "stroke-width": "5",
+      "stroke-linejoin": "round"
+    },
+    {
+      "type": "path",
+      "id": "mouth",
+      "d": "M121 106 Q128 111 135 106",
+      "stroke": "#243B3A",
+      "stroke-width": "4",
+      "stroke-linecap": "round",
+      "fill": "none"
+    }
+  ]
+}

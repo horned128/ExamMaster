@@ -2,21 +2,21 @@
 
 **iPhone向け・無料＋広告／買い切り型のWhite Label試験対策アプリ基盤。** 1つのSwiftUIコードベースから、資格ごとに異なるBundle ID・表示名・テーマ・アイコン・問題集・無料範囲・StoreKit商品・広告ユニットを持つ独立アプリを作ります。アカウントやバックエンドは不要です。
 
-現在の2つの独立したビルドターゲット:
+ベースサンプルは1つです。共通コードと資格設定を複製して、別の資格アプリにも使えます。
 
 | Scheme | 資格 | Bundle ID | 問題 / 無料 |
 | --- | --- | --- | --- |
 | `ExamMaster` | 設備安全管理士（架空） | `jp.example.exammaster.demo` | 32 / 12 |
-| `HarborStudy` | 港湾安全記録士（架空） | `jp.example.exammaster.harbor` | 12 / 6 |
 
-**両資格とも架空の教材です。実在する国家資格を扱うには、問題・解説・出典・試験基準の調査と転載許諾等を済ませて差し替えてください。** `jp.example`のBundle IDや商品IDを使ったままストアへ申請しないでください。
+**この資格は架空の教材です。実在する国家資格を扱うには、問題・解説・出典・試験基準の調査と転載許諾等を済ませて差し替えてください。** `jp.example`のBundle IDや商品IDを使ったままストアへ申請しないでください。
 
 ## 体験と技術選定
 
-- ホーム: 試験日と「今日のひと区切り」。少なめ（最大5問）／いつもの量（最大12問）を自分で選択し、選択を端末に保存。初期値は少なめです。復習タイミングは「今」「明日」などと件数で表示し、定着／学習中／これからの3区分を記憶バーで確認できます。中断中の演習は「続きから」で再開。計算と出題の優先順位は従来通りです。
+- ホーム: 大きな資格名と相棒、ランダムなセリフ、**定着・学習中・これから**の3区分のバーと件数、「今日のノルマ」。準備度・定着率の％は「記録」に集約します。3区分は利用できる問題を重複なく分け、復習・誤解の件数は足し込みません。最大5問／12問を選択し、当日すでに解いた問題を差し引きます。達成後はノルマのカードを非表示、3区分は残します。初期値は少なめ、選択は端末に保存。中断中は「続きから」で再開。出題の優先順位と学習計算は保持しています。
 - 演習: 「問題を探す」で年度・科目・カテゴリ・苦手・お気に入りなどを選ぶと共通問題リストへ進みます。リスト内検索、単問、表示中の全問を順番に回答、未回答だけ／ごちゃまぜのランダム出題に対応。単問は解説後にリストへ戻り、連続演習は結果画面へ。模試は時間制限、全体と科目ごとの基準判定、終了後の問題別復習。
 - Recall First: おすすめ/復習では選択肢を見る前に一度想起。年度別・模試・診断では無効。任意の自信度、同じ誤選択肢の繰り返し、自信ありの誤答から危険な思い込みを検知します。
-- 記録: 学習準備度のリング（合格確率ではない）、学習日カレンダー、科目別の定着度バー、模試得点の推移、日付別と全件の回答履歴。研究の根拠と推定の限界は「記憶と復習」から確認できます。初回の忘却曲線は学び方のイメージであり、個人の実測値ではありません。
+- 記録: **学習の状態**に準備度・定着率・3区分・折りたたみ式の科目別定着率を統合。準備度は従来の問題集全体の総合計算を保持し、全体／科目別の定着率は利用可能な問題のうち定着条件を満たす割合に統一します。相棒の成長は短い1つの入口から詳細へ。**学習履歴**に学習日数・回答回数・カレンダー・選択日の回答プレビュー・日別履歴をまとめ、全件回答は相棒ページに移植。模試の推移は独立して保持します。いずれも合格確率や実測の記憶確率ではありません。
+- 記憶と学習: ホーム・設定の「記憶と復習のしくみ」と、記録の「学習指標の見方」を同じ説明ページへ統一。想起練習・分散学習・答え合わせ・使い方・指標・研究の限界を解説します。手順図、切替可能な模式グラフ、練習日の配分図、3区分の例、準備度の配点図を使用。本文は読みやすいサイズと行間を確保し、目次から章へ移動できます。記録からは指標の章へ直接移動。出典5件と、研究結果／アプリ独自のルール／未検証の効果を区別します。
 - 収益化: 無料問題は何度でも利用可。無料ユーザーにはホーム・問題一覧・記録・セッションの**結果画面だけ**に広告を配置。全問題解放は資格アプリ固有の**非消耗型**IAPで、購入と同時に広告も永久に削除。サブスクリプションはありません。
 
 **Swift / SwiftUI（iOS 17+）/ StoreKit 2 / Google Mobile Ads 13.11.0 / Google UMP 3.1.0 / Codable / XCTest**を採用。Googleの公式Swift PackageはSwiftUI `UIViewRepresentable`・Privacy Manifestに対応し、広告SDKへの依存は`Ads/AdMobProvider.swift`だけに閉じ込めます。iPhone・App Store優先で、Apple標準のDynamic Type、ダークモード、VoiceOver、決済を使います。AndroidはUI層・広告/課金層を作り直す必要がありますが、JSON問題集と学習計算は移植できます。AIは不要と判断し導入していません。正答・解説のSource of Truthはレビュー済みのJSONです。
@@ -38,17 +38,39 @@ Views/AdBannerPlacement.swift  無料ユーザー用のアダプティブバナ�
 Views/QuestionCollectionView.swift 共通問題リストと出題メニュー
 Views/PrivacyDetailsView.swift  保存・広告・購入説明と学習情報リセット
 Views/ExamDateEditor.swift     ホーム/設定共通の試験日設定・解除
+Views/LearningGuideView.swift  研究・メリット・図解・指標の読み方をまとめた共通説明
+Views/Mascot/                  原案のベクター描画・成長・相棒ページ
+Core/TankeiIdentity.swift      成長判定・ノルマ・状態別セリフ
+Core/TankeiMotion.swift        待機モーションと20種類の自動アクション
+Core/AnswerHistory.swift       全回答の日付グループと新旧の並べ替え
 Views/                      診断/ホーム/問題を探す/演習/記録/設定/購入
 Qualifications/<id>/          qualification.json / questions.json / products.storekit
 Assets.xcassets/              アプリ別アイコンと色
 Config/                       XcodeGenが生成するアプリ別Info.plist
 Tests/ / UITests/             学習・統計・保存・StoreKit・初回起動の検証
-tools/GenerateIcon.swift      サンプル用1024pxアイコン生成スクリプト
+tools/GenerateIcon.swift      資格設定からチキンの顔＋資格名の1024pxアイコンを生成
+tools/GenerateMascot.py       保存した原案から描画パーツと参照SVGを生成
 ```
 
 UI、出題計画、習熟計算、端末保存、決済、広告は別ファイルです。差し替え可能な純粋計算を`MasteryEngine`/`SessionPlanner`にまとめました。問題バンクはアプリに読み取り専用で同梱し、問題IDを履歴の永続キーとします。アプリごとのバンドルには**そのターゲットの資格JSONのみ**を含めます（共有のアイコン用アセットカタログを除く）。`.storekit`は開発Schemeとテストで参照し、アプリのリソースにはコピーしません。
 
 ## 動かし方・ビルド・テスト
+
+### ブランドキャラクター
+
+ユーザー原案のひよこ／チキンSVGを部位別のSwiftUI描画に使用。利用可能な問題の**定着率と学習準備度**から内部で成長を算出し、ひよこ → 育ちざかり → 若鶏 → チキンに成長。成長の％・計算式・あと何問はユーザーに表示しません。途中は姿を変えず、学習終了後に「成長したよ！」画面で披露します。無料・模試なしでも最後まで育ち、誤答・時間経過・問題追加で獲得済みの姿は戻りません。ホーム・問題探しでは176pt、回答後は120ptで反応。待機中は呼吸に**20種類のアクション**を状態別にランダムで重ね、同じ動きを連続させません。相棒ページは日付ラベルの下にその日の全回答を並べ、既定の「新しい順」と「古い順」を切り替えられます。回答をタップすると問題を開き、閉じると相棒ページへ戻ります。問題文右上・模試中には置かず、画面外・Reduce Motion・省電力では停止します。[キャラクター設計](design-system/exammaster/mascot/README.md)、ビジュアル一覧は `design-system/exammaster/mascot/preview.html`。`python3 tools/GenerateMascot.py` でSVG・ネイティブPath・アイコン用の顔パーツを生成し、`--check` で整合性を検証できます。原案ファイル・輪郭・復習計算は変更せず、チキンのクリーム色の部位だけを資格設定から差し替えます。
+
+### アイコンと資格ごとの色
+
+`Qualifications/<id>/qualification.json` の `name` がホームとアイコンの資格名、`mascotBaseHex` がチキンのベースカラーです。未指定なら原案の `#FFF3DA`。アプリ内の若鶏／チキンの全画面と、アイコンの顔に共通で反映します。ひよこ・顔の細部・輪郭は原案色。背景は `accentHex` の淡い色。長い資格名は自動で2行に分け、必要なら任意の `iconTitle` に短縮名や `\n` で2行の名前を指定できます。
+
+```sh
+python3 tools/GenerateMascot.py
+swift tools/GenerateIcon.swift Qualifications/demo-safety/qualification.json Assets.xcassets/AppIcon.appiconset/AppIcon.png
+swift tools/GenerateIcon.swift Qualifications/demo-safety/qualification.json Assets.xcassets/AppIcon.appiconset/AppIcon.png --check
+```
+
+名前や色の変更後はビルドするだけでアイコンも自動再生成します（iOSのホーム画面アイコンはビルド時の画像です）。上のコマンドは手動プレビューと整合性確認用。別資格でもスクリプトやSwiftUIコードの編集は不要です。
 
 macOS、Xcode 27、iOS Simulator、[XcodeGen](https://github.com/yonaskolb/XcodeGen)を使用。生成済み`ExamMaster.xcodeproj`も同梱しています。Swiftソースやターゲット追加後は再生成してください。
 
@@ -56,18 +78,17 @@ macOS、Xcode 27、iOS Simulator、[XcodeGen](https://github.com/yonaskolb/Xcode
 xcodegen generate
 xcodebuild -resolvePackageDependencies -project ExamMaster.xcodeproj -scheme ExamMaster
 xcodebuild -project ExamMaster.xcodeproj -scheme ExamMaster -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build CODE_SIGNING_ALLOWED=NO
-xcodebuild -project ExamMaster.xcodeproj -scheme HarborStudy -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build CODE_SIGNING_ALLOWED=NO
 xcodebuild -project ExamMaster.xcodeproj -scheme ExamMaster -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -parallel-testing-enabled NO test CODE_SIGNING_ALLOWED=NO
 ```
 
 XcodeでSchemeを選びRunするとサンプル商品設定が自動的に読み込まれます。CLIから起動する場合は、`xcrun simctl list devices available`でUDIDを調べ、`xcrun simctl boot <UDID>`、`xcrun simctl install <UDID> <ビルドした.appのパス>`、`xcrun simctl launch <UDID> <Bundle ID>`の順に実行します。CLIの`simctl launch`だけではXcodeのローカルStoreKit商品設定は適用されないため、商品価格確認にはXcodeのRunまたはStoreKitTestを使います。
 
-テストは純粋な学習計算、資格の整合性、既存履歴の読み込み、途中演習の保存・再開・リセット、問題リストの絞り込み/順序、5桁件数の履歴統計、StoreKitTestでの**実購入・復元・取引消去**、広告権限と頻度制御（SDKを使わないFake Provider）、UIテストの診断・一覧からの単問/ランダム/連続演習・再開・プライバシー画面・模試・広告同意を対象にしています。UIテスト用`-UITestResetStudy`はDebug専用で学習データを初期化し、`-UITestDisableAds`は同意画面を不要とする学習導線のテストに使用。広告を有効にしたDebugビルドでも**常にGoogle公式テスト広告ID**しかリクエストしません。
+テストは純粋な学習計算、資格の整合性、既存履歴の読み込み、途中演習の保存・再開・リセット、問題リストの絞り込み/順序、5桁件数の履歴統計、相棒の成長保存・20アクション・日付別履歴、StoreKitTestでの**実購入・復元・取引消去**、広告権限と頻度制御（SDKを使わないFake Provider）、UIテストの診断・一覧からの単問/ランダム/連続演習・再開・プライバシー画面・模試・広告同意・学習ガイドの図と指標・最大文字と横向きを対象にしています。最新の確認範囲と画面は[検証記録](design-system/exammaster/mascot/VERIFICATION.md)を参照。UIテスト用`-UITestResetStudy`はDebug専用で学習データを初期化し、同時指定の`-UITestSeedCompanionHistory`で日付別履歴のテストデータを作成。`-UITestDisableAds`は同意画面を不要とする学習導線のテストに使用。広告を有効にしたDebugビルドでも**常にGoogle公式テスト広告ID**しかリクエストしません。
 
 ## 新しい資格アプリを追加する
 
 1. `Qualifications/<新しいid>/`を追加し、既存の`qualification.json`・`questions.json`・`products.storekit`を複製して**すべて資格専用に編集**。`id`とフォルダ名を一致させ、`productID`とStoreKit設定/後述のApp Store Connectの商品IDを一致させます。
-2. `Assets.xcassets/<新しいIcon名>.appiconset/Contents.json`と1024px PNGを用意。架空サンプル用のアイコンなら `swift tools/GenerateIcon.swift Assets.xcassets/<新しいIcon名>.appiconset/AppIcon.png '#365783'`。実アプリでは独自のデザインと権利を確認してください。
+2. `Assets.xcassets/AppIcon.appiconset/Contents.json`を`Assets.xcassets/<新しいIcon名>.appiconset/Contents.json`へ複製し、`swift tools/GenerateIcon.swift Qualifications/<新しいid>/qualification.json Assets.xcassets/<新しいIcon名>.appiconset/AppIcon.png`で生成。資格名とチキンの色はJSONだけで指定できます。公開前にキャラクターの権利も確認してください。
 3. `project.yml`の`targets:`へ以下を追加。`QualificationApp`テンプレートがSwiftソース・その資格だけの問題集・Info.plist・アプリアイコンを組み立てます。
 
    ```yaml
@@ -85,7 +106,7 @@ XcodeでSchemeを選びRunするとサンプル商品設定が自動的に読み
 
 4. `xcodegen generate`、`xcodebuild -scheme MyNewExam ... build`で生成。`Config/MyNewExam-Info.plist`は自動生成。起動して資格名・無料/有料数・診断・模試・価格・復元と広告を確認。公開時は署名チームと実際のBundle ID・AdMobアプリIDを設定します。
 
-`qualification.json`の設定項目: `id`（変更しない永続キー）、`name`・`subtitle`・`examNote`、`examMinutes`、`mockQuestionCount`、`passingPercent`、`minimumSubjectPercent`、`subjects`（科目名配列）、`freeQuestionIDs`（無料IDの明示リスト）、`productID`、`accentHex`（`#RRGGBB`）、`privacyPolicyURL`（公開時にHTTPS URLを設定、架空サンプルは`null`）、`ads`（下記）。アプリ名/Bundle ID/アイコン/AdMobアプリIDは`project.yml`のターゲット属性で指定します。価格は**資格の`products.storekit`（開発）およびApp Store Connect（公開）**の同一商品IDで設定し、アプリはStoreKitから表示します。無料範囲を変更するだけなら`freeQuestionIDs`を編集してください。診断が偏らないよう各科目2問程度を無料範囲に含めることを推奨します。
+`qualification.json`の設定項目: `id`（変更しない永続キー）、`name`・`subtitle`・`examNote`、`examMinutes`、`mockQuestionCount`、`passingPercent`、`minimumSubjectPercent`、`subjects`（科目名配列）、`freeQuestionIDs`（無料IDの明示リスト）、`productID`、`accentHex`（`#RRGGBB`）、`mascotBaseHex`（任意、チキンのベースカラー、`#RRGGBB`）、`iconTitle`（任意、アイコン用の短縮名。未指定なら`name`）、`privacyPolicyURL`（公開時にHTTPS URLを設定、架空サンプルは`null`）、`ads`（下記）。アプリ名/Bundle ID/アイコン/AdMobアプリIDは`project.yml`のターゲット属性で指定します。価格は**資格の`products.storekit`（開発）およびApp Store Connect（公開）**の同一商品IDで設定し、アプリはStoreKitから表示します。無料範囲を変更するだけなら`freeQuestionIDs`を編集してください。診断が偏らないよう各科目2問程度を無料範囲に含めることを推奨します。
 
 ## 広告の設定と運用
 
@@ -107,7 +128,7 @@ Google Mobile Ads 13.11.0（AdMob）とGoogle User Messaging Platform（UMP）3.
 }
 ```
 
-`enabled: false`なら広告リクエストを行いません。`bannerEnabled`/`interstitialEnabled`は独立して切り替え可能で、対象ユニットを無効にする場合そのIDは空文字でも構いません。無料範囲は`freeQuestionIDs`で定義。買い切り商品は`productID`で定義し、**広告削除用の別課金商品はありません**。設定検証ではインタースティシャルの最短間隔600秒以上、最低2セッション・各5問以上を要求します。サンプルは30分かつ3セッション・各8問以上。港湾サンプルはインタースティシャル無効です。表示回数と最終表示日時は`Application Support/ad-frequency-<資格id>.json`へ原子的に保存し、読み書き失敗時は全画面広告を止めます。ロード失敗・未同意・オフラインでも学習と買い切り購入に影響しません。
+`enabled: false`なら広告リクエストを行いません。`bannerEnabled`/`interstitialEnabled`は独立して切り替え可能で、対象ユニットを無効にする場合そのIDは空文字でも構いません。無料範囲は`freeQuestionIDs`で定義。買い切り商品は`productID`で定義し、**広告削除用の別課金商品はありません**。設定検証ではインタースティシャルの最短間隔600秒以上、最低2セッション・各5問以上を要求します。サンプルは30分かつ3セッション・各8問以上。表示回数と最終表示日時は`Application Support/ad-frequency-<資格id>.json`へ原子的に保存し、読み書き失敗時は全画面広告を止めます。ロード失敗・未同意・オフラインでも学習と買い切り購入に影響しません。
 
 `Core/AdsService.swift`が購入権限の確定後に`AdProvider`を起動し、購入・復元時には広告ビューとロード済みインタースティシャルを破棄します。広告SDKを差し替える場合は`AdProvider`を実装し`StudyAppView`の生成箇所を変更します。SDKを呼ばないFake Providerでテストしています。
 

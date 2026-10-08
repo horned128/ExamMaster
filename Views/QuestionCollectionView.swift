@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct QuestionCollectionView: View {
+    @Environment(\.mascotMotionEnabled) private var parentMotionEnabled
     let route: QuestionCollectionRoute
     let catalog: Catalog
     let store: StudyStore
@@ -38,6 +39,7 @@ struct QuestionCollectionView: View {
     private var unanswered: [Question] {
         accessible.filter { store.data.mastery[$0.id] == nil }
     }
+    private var growth: TankeiGrowth { TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked) }
 
     var body: some View {
         List {
@@ -94,8 +96,12 @@ struct QuestionCollectionView: View {
                     .accessibilityLabel("\(question.stem)、\(status(for: question) ?? "学習中")、\(purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? "利用可能" : "全問題解放が必要")")
                 }
                 if visible.isEmpty {
-                    ContentUnavailableView("条件に合う問題がありません", systemImage: "line.3.horizontal.decrease.circle",
-                                           description: Text("検索語を変えるか、別の一覧を選んでください。"))
+                    ContentUnavailableView {
+                        TankeiView(state: .review, stage: growth.stage, size: 96, animated: true, idle: true)
+                        Text("条件に合う問題がありません")
+                    } description: {
+                        Text("検索語を変えるか、別の一覧を選んでください。")
+                    }
                 }
             } header: {
                 Text("問題リスト · \(visible.count)問")
@@ -108,6 +114,7 @@ struct QuestionCollectionView: View {
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .background(Palette.background)
+        .environment(\.mascotMotionEnabled, parentMotionEnabled && !showRandomOptions)
         .navigationTitle(route.title)
         .searchable(text: $query, prompt: "このリスト内を検索")
         .sheet(isPresented: $showRandomOptions, onDismiss: {

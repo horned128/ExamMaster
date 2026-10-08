@@ -23,6 +23,22 @@ import Observation
             readOnly = true
             self.error = "学習履歴を読み込めませんでした。元のファイルは保持しています。\n\(error.localizedDescription)"
         }
+        #if DEBUG
+        if !readOnly && ProcessInfo.processInfo.arguments.contains("-UITestResetStudy") &&
+            ProcessInfo.processInfo.arguments.contains("-UITestSeedCompanionHistory"),
+           let catalog = try? Catalog.load(id: qualificationID) {
+            let questions = SessionPlanner.available(catalog, unlocked: false)
+            let calendar = Calendar.current
+            let today = calendar.startOfDay(for: .now)
+            for (index, question) in questions.prefix(6).enumerated() {
+                let day = calendar.date(byAdding: .day, value: index / 2 - 2, to: today) ?? today
+                let date = calendar.date(bySettingHour: 10, minute: (index % 2) * 10, second: 0, of: day) ?? day
+                record(Answer(questionID: question.id, date: date, selectedIndex: question.correctIndex,
+                              correct: true, duration: 10, confidence: nil, mode: .search), question: question)
+            }
+            completeOnboarding(diagnostic: false)
+        }
+        #endif
     }
 
     func record(_ answer: Answer, question: Question, pending: PendingStudy? = nil) {
@@ -31,6 +47,22 @@ import Observation
         data.mastery[question.id] = MasteryEngine.update(data.mastery[question.id] ?? Mastery(), answer: answer, difficulty: question.difficulty)
         if let pending { data.pending = pending }
         save()
+    }
+
+    /// Commit earned growth at session completion (or once when migrating legacy history).
+    /// Recording answers and suspending a session never change the visible stage.
+    func updateMascotGrowth(questions: [Question], now: Date = .now) {
+        guard !readOnly, !questions.isEmpty else { return }
+        let stage = TankeiGrowth(questions: questions, data: data, now: now).stage.rawValue
+        guard stage != data.mascotHighestStage || data.mascotNeedsMigration else { return }
+        data.mascotHighestStage = stage
+        data.mascotNeedsMigration = false
+        save()
+    }
+
+    func migrateMascotGrowthIfNeeded(questions: [Question], now: Date = .now) {
+        guard data.mascotNeedsMigration, data.pending == nil else { return }
+        updateMascotGrowth(questions: questions, now: now)
     }
 
     func setPending(_ pending: PendingStudy) {

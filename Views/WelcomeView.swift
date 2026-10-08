@@ -20,8 +20,7 @@ struct WelcomeView: View {
                     Surface { MemoryRhythm() }
                     VStack(alignment: .leading, spacing: 16) {
                         HStack(alignment: .top, spacing: 12) {
-                            Image(systemName: "pencil.line").foregroundStyle(.tint).font(.title2)
-                                .accessibilityHidden(true)
+                            TankeiView(size: 80, animated: true, idle: true)
                             VStack(alignment: .leading, spacing: 6) {
                                 Text("まずは、今の得意を知る").font(.headline)
                                 Text("\(SessionPlanner.diagnostic(catalog, unlocked: false).questions.count)問 · 無料")

@@ -3,6 +3,7 @@ import SwiftUI
 
 struct InsightsView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.mascotMotionEnabled) private var parentMotionEnabled
     let catalog: Catalog
     let store: StudyStore
     let purchase: PurchaseManager
@@ -10,6 +11,7 @@ struct InsightsView: View {
     let start: (StudySession) -> Void
     let paywall: () -> Void
     let settings: () -> Void
+    let openCompanion: () -> Void
 
     @State private var month = Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now
     @State private var selectedDay = Calendar.current.startOfDay(for: .now)
@@ -19,175 +21,26 @@ struct InsightsView: View {
 
     var body: some View {
         ScrollView {
-            let stats = StudyStats(catalog: catalog, data: store.data)
-            let byDay = Dictionary(grouping: store.data.answers, by: { Calendar.current.startOfDay(for: $0.date) })
-            let dates = calendarDays
-            VStack(alignment: .leading, spacing: 20) {
-                Text("学んだぶんが、\n見えてくる。")
-                    .font(.largeTitle.bold()).fixedSize(horizontal: false, vertical: true)
-                Surface {
-                    if dynamicTypeSize.isAccessibilitySize {
-                        VStack(alignment: .leading, spacing: 20) { ReadinessRing(value: stats.readiness); readinessDescription }
-                    } else {
-                        HStack(spacing: 20) { ReadinessRing(value: stats.readiness); readinessDescription }
+            TimelineView(.periodic(from: .now, by: 60)) { timeline in
+                let stats = StudyStats(catalog: catalog, data: store.data, now: timeline.date)
+                let available = SessionPlanner.available(catalog, unlocked: purchase.unlocked)
+                let retention = RetentionSummary(questions: available, data: store.data, now: timeline.date)
+                let growth = TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked)
+                let byDay = Dictionary(grouping: store.data.answers, by: { Calendar.current.startOfDay(for: $0.date) })
+                VStack(alignment: .leading, spacing: 20) {
+                    learningSummary(stats: stats, retention: retention, available: available, now: timeline.date)
+                    companionSummary(growth: growth)
+                    studyHistory(stats: stats, byDay: byDay)
+                    mockHistory
+                    if !purchase.unlocked && !purchase.purchasing && ads.canShowBanner {
+                        AdBannerPlacement(ads: ads)
                     }
                 }
-                LazyVGrid(columns: dynamicTypeSize.isAccessibilitySize ? [GridItem(.flexible())] :
-                            [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    Metric(title: "学習した日", value: "\(stats.studyDays)日", symbol: "calendar")
-                    Metric(title: "回答履歴", value: "\(store.data.answers.count)回", symbol: "pencil.line")
-                }
-
-            Surface(inset: 12) {
-                Text("学習カレンダー").font(.title3.bold())
-                    .padding(.horizontal, 8)
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack {
-                        Button { changeMonth(-1) } label: { Image(systemName: "chevron.left").frame(width: 44, height: 44) }
-                            .accessibilityLabel("前の月")
-                        Spacer()
-                        Text(monthLabel).font(.headline)
-                        Spacer()
-                        Button { changeMonth(1) } label: { Image(systemName: "chevron.right").frame(width: 44, height: 44) }
-                            .accessibilityLabel("次の月")
-                            .disabled(month >= (Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now))
-                            .opacity(month >= (Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now) ? 0.35 : 1)
-                    }
-                    .buttonStyle(StudyButtonStyle())
-                    if dynamicTypeSize.isAccessibilitySize {
-                        LazyVStack(spacing: 8) {
-                            ForEach(dates.compactMap { $0 }, id: \.self) { date in
-                                let count = byDay[date]?.count ?? 0
-                                Button { selectedDay = date } label: {
-                                    VStack(alignment: .leading, spacing: 6) {
-                                        Text(date, format: .dateTime.month().day().weekday())
-                                             .foregroundStyle(Palette.ink)
-                                        Text(count > 0 ? "\(count)回回答" : "記録なし")
-                                            .font(.caption).foregroundStyle(Palette.muted)
-                                    }
-                                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading).padding(8)
-                                    .background(Calendar.current.isDate(date, inSameDayAs: selectedDay) ? Palette.linkAccent(catalog.qualification.accentHex).opacity(0.1) : .clear,
-                                                in: RoundedRectangle(cornerRadius: 8))
-                                }
-                                .buttonStyle(StudyButtonStyle())
-                                .accessibilityAddTraits(Calendar.current.isDate(date, inSameDayAs: selectedDay) ? .isSelected : [])
-                            }
-                        }
-                    } else {
-                    let weekdays = ["月", "火", "水", "木", "金", "土", "日"]
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 8) {
-                        ForEach(weekdays, id: \.self) { Text($0).font(.caption).foregroundStyle(.secondary) }
-                        ForEach(0..<dates.count, id: \.self) { index in
-                            if let date = dates[index] {
-                                let count = byDay[date]?.count ?? 0
-                                Button {
-                                    selectedDay = date
-                                } label: {
-                                    VStack(spacing: 4) {
-                                        Text("\(Calendar.current.component(.day, from: date))")
-                                            .font(.subheadline.weight(Calendar.current.isDate(date, inSameDayAs: selectedDay) ? .bold : .regular))
-                                        Circle().fill(count > 0 ? Palette.positive : .clear).frame(width: 5, height: 5)
-                                            .accessibilityHidden(true)
-                                    }
-                                    .frame(maxWidth: .infinity, minHeight: 44)
-                                    .background(Calendar.current.isDate(date, inSameDayAs: selectedDay) ? Palette.linkAccent(catalog.qualification.accentHex).opacity(0.15) : .clear,
-                                                in: RoundedRectangle(cornerRadius: 8))
-                                }
-                                 .buttonStyle(StudyButtonStyle())
-                                 .accessibilityLabel("\(date.formatted(date: .complete, time: .omitted))、\(count > 0 ? "\(count)回回答" : "学習記録なし")")
-                                 .accessibilityAddTraits(Calendar.current.isDate(date, inSameDayAs: selectedDay) ? .isSelected : [])
-                            } else {
-                                Color.clear.frame(height: 44)
-                            }
-                        }
-                    }
-                    }
-                    let answers = byDay[selectedDay] ?? []
-                     VStack(alignment: .leading, spacing: 6) {
-                         Text(selectedDay.formatted(date: .abbreviated, time: .omitted))
-                        Text(answers.isEmpty ? "学習記録なし" : "\(answers.count)回答 · \(answers.filter(\.correct).count)正解")
-                             .foregroundStyle(Palette.muted)
-                    }
-                    .font(.subheadline)
-                    if !answers.isEmpty {
-                        NavigationLink("この日の回答を見る") {
-                            StudyHistoryView(title: selectedDay.formatted(date: .complete, time: .omitted),
-                                             answers: answers, catalog: catalog, purchase: purchase,
-                                             start: start, paywall: paywall)
-                        }
-                        .frame(minHeight: 44)
-                    }
-                }
-                .padding(.vertical, 6)
+                .padding(20).frame(maxWidth: 640).frame(maxWidth: .infinity)
             }
-
-            Surface {
-                Text("科目別の定着度").font(.title3.bold())
-                 ForEach(catalog.qualification.subjects, id: \.self) { subject in
-                     SubjectProgress(subject: subject, score: stats.subjectScores[subject] ?? 0)
-                 }
-                 Text("回答と時間経過からの目安").font(.caption).foregroundStyle(Palette.muted)
-            }
-
-            Surface {
-                Text("模擬試験の推移").font(.title3.bold())
-                if recentMocks.isEmpty {
-                     Label("記録はこれから", systemImage: "chart.xyaxis.line")
-                         .font(.subheadline).foregroundStyle(Palette.muted)
-                     Button("模擬試験を試す") { start(SessionPlanner.mock(catalog, unlocked: purchase.unlocked)) }
-                         .frame(minHeight: 44)
-                } else {
-                    Chart {
-                        ForEach(recentMocks) { mock in
-                            LineMark(x: .value("受験日", mock.date),
-                                     y: .value("正答率", Double(mock.score * 100) / Double(max(mock.total, 1))))
-                                .foregroundStyle(Palette.linkAccent(catalog.qualification.accentHex))
-                            PointMark(x: .value("受験日", mock.date),
-                                      y: .value("正答率", Double(mock.score * 100) / Double(max(mock.total, 1))))
-                                .foregroundStyle(Palette.linkAccent(catalog.qualification.accentHex))
-                        }
-                        RuleMark(y: .value("全体の設定基準", catalog.qualification.passingPercent))
-                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
-                            .foregroundStyle(.secondary)
-                    }
-                    .chartYScale(domain: 0...100)
-                    .frame(height: 210)
-                     Text("破線：全体の基準 \(catalog.qualification.passingPercent)%")
-                         .font(.caption).foregroundStyle(Palette.muted)
-                    ForEach(store.data.mocks.suffix(5).reversed()) { mock in
-                        HStack {
-                            Text(mock.date, style: .date)
-                            Spacer()
-                             Text("\(mock.score) / \(mock.total) · \(mock.passed ? "基準到達" : "見直し")")
-                                 .font(.subheadline).foregroundStyle(Palette.muted)
-                        }
-                    }
-                }
-            }
-
-            Surface {
-                Text("最近の回答").font(.title3.bold())
-                if store.data.answers.isEmpty {
-                     Text("最初の1問から、ここに記録。")
-                         .font(.subheadline).foregroundStyle(Palette.muted)
-                } else {
-                    ForEach(Array(store.data.answers.suffix(5).reversed())) { answer in
-                        HistoryAnswerRow(answer: answer, catalog: catalog, purchase: purchase,
-                                         start: start, paywall: paywall)
-                    }
-                    NavigationLink("すべての回答を見る") {
-                        StudyHistoryView(title: "回答履歴", answers: store.data.answers,
-                                         catalog: catalog, purchase: purchase, start: start, paywall: paywall)
-                    }
-                }
-            }
-            if !purchase.unlocked && !purchase.purchasing && ads.canShowBanner {
-                AdBannerPlacement(ads: ads)
-            }
-            }
-            .padding(20).frame(maxWidth: 640).frame(maxWidth: .infinity)
         }
         .background(Palette.background)
+        .environment(\.mascotMotionEnabled, parentMotionEnabled && !showLearningGuide)
         .navigationTitle("学習の記録")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -196,15 +49,228 @@ struct InsightsView: View {
                     .accessibilityLabel("設定")
             }
         }
-        .sheet(isPresented: $showLearningGuide) { LearningGuideView() }
+        .sheet(isPresented: $showLearningGuide) {
+            LearningGuideView(stage: TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked).stage,
+                              initialSection: .metrics)
+                .environment(\.mascotMotionEnabled, true)
+        }
     }
 
-    private var readinessDescription: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("学習準備度").font(.headline)
-            Text("合格確率ではありません").font(.caption).foregroundStyle(Palette.muted)
-            Button("目安の見方") { showLearningGuide = true }
-                .font(.subheadline).frame(minHeight: 44)
+    private func learningSummary(stats: StudyStats, retention: RetentionSummary, available: [Question], now: Date) -> some View {
+        Surface {
+            HStack {
+                Text("学習の状態").font(.title3.bold()).accessibilityAddTraits(.isHeader)
+                Spacer(minLength: 8)
+                Button { showLearningGuide = true } label: {
+                    Image(systemName: "info.circle").frame(width: 44, height: 44).contentShape(Rectangle())
+                }
+                .buttonStyle(StudyButtonStyle()).accessibilityLabel("学習指標の見方")
+            }
+            let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 16)) :
+                AnyLayout(HStackLayout(alignment: .top, spacing: 20))
+            layout {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("学習準備度").font(.subheadline)
+                    Text("\(stats.readiness) / 100").font(.title2.bold().monospacedDigit())
+                    Text("問題集全体").font(.caption).foregroundStyle(Palette.muted)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .ignore).accessibilityLabel("学習準備度")
+                .accessibilityValue("100中\(stats.readiness)、問題集全体の総合目安")
+                .accessibilityIdentifier("recordReadiness")
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("定着率").font(.subheadline)
+                    Text("\(retention.percent)%").font(.title2.bold().monospacedDigit())
+                    Text("\(retention.stable) / \(retention.total)問").font(.caption.monospacedDigit()).foregroundStyle(Palette.muted)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .ignore).accessibilityLabel("定着率")
+                .accessibilityValue("\(retention.percent)パーセント、利用できる\(retention.total)問のうち\(retention.stable)問が定着")
+                .accessibilityIdentifier("recordRetention")
+            }
+            MemoryBreakdown(summary: retention, identifier: "recordMemory")
+            DisclosureGroup {
+                ForEach(catalog.qualification.subjects, id: \.self) { subject in
+                    let summary = RetentionSummary(questions: available.filter { $0.subject == subject }, data: store.data, now: now)
+                    SubjectProgress(subject: subject, score: summary.percent).padding(.vertical, 6)
+                        .accessibilityIdentifier("subjectRetention-\(subject)")
+                }
+            } label: {
+                Text("科目別の定着率").font(.subheadline).frame(minHeight: 44)
+            }
+            Text("回答と時間経過からの目安。合格確率ではありません。")
+                .font(.caption).foregroundStyle(Palette.muted)
+        }
+    }
+
+    private func companionSummary(growth: TankeiGrowth) -> some View {
+        Button(action: openCompanion) {
+            HStack(spacing: 12) {
+                TankeiView(stage: growth.stage, size: 56, idle: true)
+                VStack(alignment: .leading, spacing: 4) {
+                    let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4)) :
+                        AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+                    layout {
+                        Text("相棒の成長").font(.subheadline)
+                        Text(growth.stage.title).font(.subheadline.bold())
+                    }
+                    Text(growth.stage.companionMessage)
+                        .font(.caption).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: "chevron.right").font(.caption).foregroundStyle(Palette.muted).accessibilityHidden(true)
+            }
+            .foregroundStyle(Palette.ink).frame(minHeight: 44).contentShape(Rectangle())
+        }
+        .buttonStyle(StudyButtonStyle()).accessibilityIdentifier("recordCompanion")
+        .accessibilityLabel("相棒の成長、\(growth.stage.title)")
+        .accessibilityHint("相棒に会えます")
+    }
+
+    private func studyHistory(stats: StudyStats, byDay: [Date: [Answer]]) -> some View {
+        Surface(inset: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("学習履歴").font(.title3.bold()).accessibilityAddTraits(.isHeader)
+                Text("学習 \(stats.studyDays)日 · 回答 \(store.data.answers.count)回")
+                    .font(.caption.monospacedDigit()).foregroundStyle(Palette.muted)
+                    .accessibilityIdentifier("studyHistorySummary")
+            }
+            .padding(.horizontal, 8)
+            VStack(alignment: .leading, spacing: 16) {
+                HStack {
+                    Button { changeMonth(-1) } label: {
+                        Image(systemName: "chevron.left").frame(width: 44, height: 44).contentShape(Rectangle())
+                    }
+                    .accessibilityLabel("前の月")
+                    Spacer()
+                    Text(monthLabel).font(.headline)
+                    Spacer()
+                    Button { changeMonth(1) } label: {
+                        Image(systemName: "chevron.right").frame(width: 44, height: 44).contentShape(Rectangle())
+                    }
+                    .accessibilityLabel("次の月")
+                    .disabled(month >= (Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now))
+                    .opacity(month >= (Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now) ? 0.35 : 1)
+                }
+                .buttonStyle(StudyButtonStyle())
+                studyCalendar(byDay: byDay)
+                let answers = byDay[selectedDay] ?? []
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(selectedDay.formatted(date: .abbreviated, time: .omitted))
+                    Text(answers.isEmpty ? "学習記録なし" : "\(answers.count)回答 · \(answers.filter(\.correct).count)正解")
+                        .foregroundStyle(Palette.muted)
+                }
+                .font(.subheadline)
+                if !answers.isEmpty {
+                    ForEach(Array(answers.suffix(3).reversed())) { answer in
+                        HistoryAnswerRow(answer: answer, catalog: catalog, purchase: purchase,
+                                         start: start, paywall: paywall)
+                    }
+                    NavigationLink("この日の回答を見る") {
+                        StudyHistoryView(title: selectedDay.formatted(date: .complete, time: .omitted),
+                                         answers: answers, catalog: catalog, purchase: purchase,
+                                         start: start, paywall: paywall)
+                    }
+                    .frame(minHeight: 44)
+                    .accessibilityIdentifier("selectedDayHistory")
+                }
+                if !store.data.answers.isEmpty {
+                    Divider()
+                    Button("すべての回答を見る", action: openCompanion)
+                    .frame(minHeight: 44)
+                    .accessibilityIdentifier("allAnswerHistory")
+                }
+            }
+            .padding(.vertical, 6)
+        }
+    }
+
+    @ViewBuilder private func studyCalendar(byDay: [Date: [Answer]]) -> some View {
+        let dates = calendarDays
+        if dynamicTypeSize.isAccessibilitySize {
+            LazyVStack(spacing: 8) {
+                ForEach(dates.compactMap { $0 }, id: \.self) { date in
+                    let count = byDay[date]?.count ?? 0
+                    Button { selectedDay = date } label: {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(date, format: .dateTime.month().day().weekday()).foregroundStyle(Palette.ink)
+                            Text(count > 0 ? "\(count)回回答" : "記録なし")
+                                .font(.caption).foregroundStyle(Palette.muted)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading).padding(8)
+                        .background(Calendar.current.isDate(date, inSameDayAs: selectedDay) ? Palette.linkAccent(catalog.qualification.accentHex).opacity(0.1) : .clear,
+                                    in: RoundedRectangle(cornerRadius: 8))
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(StudyButtonStyle())
+                    .accessibilityAddTraits(Calendar.current.isDate(date, inSameDayAs: selectedDay) ? .isSelected : [])
+                }
+            }
+        } else {
+            let weekdays = ["月", "火", "水", "木", "金", "土", "日"]
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 8) {
+                ForEach(weekdays, id: \.self) { Text($0).font(.caption).foregroundStyle(.secondary) }
+                ForEach(0..<dates.count, id: \.self) { index in
+                    if let date = dates[index] {
+                        let count = byDay[date]?.count ?? 0
+                        Button { selectedDay = date } label: {
+                            VStack(spacing: 4) {
+                                Text("\(Calendar.current.component(.day, from: date))")
+                                    .font(.subheadline.weight(Calendar.current.isDate(date, inSameDayAs: selectedDay) ? .bold : .regular))
+                                Circle().fill(count > 0 ? Palette.positive : .clear).frame(width: 5, height: 5)
+                                    .accessibilityHidden(true)
+                            }
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .background(Calendar.current.isDate(date, inSameDayAs: selectedDay) ? Palette.linkAccent(catalog.qualification.accentHex).opacity(0.15) : .clear,
+                                        in: RoundedRectangle(cornerRadius: 8))
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(StudyButtonStyle())
+                        .accessibilityLabel("\(date.formatted(date: .complete, time: .omitted))、\(count > 0 ? "\(count)回回答" : "学習記録なし")")
+                        .accessibilityAddTraits(Calendar.current.isDate(date, inSameDayAs: selectedDay) ? .isSelected : [])
+                    } else {
+                        Color.clear.frame(height: 44)
+                    }
+                }
+            }
+        }
+    }
+
+    private var mockHistory: some View {
+        Surface {
+            Text("模擬試験の推移").font(.title3.bold())
+            if recentMocks.isEmpty {
+                Label("記録はこれから", systemImage: "chart.xyaxis.line")
+                    .font(.subheadline).foregroundStyle(Palette.muted)
+                Button("模擬試験を試す") { start(SessionPlanner.mock(catalog, unlocked: purchase.unlocked)) }
+                    .frame(minHeight: 44)
+            } else {
+                Chart {
+                    ForEach(recentMocks) { mock in
+                        LineMark(x: .value("受験日", mock.date),
+                                 y: .value("正答率", Double(mock.score * 100) / Double(max(mock.total, 1))))
+                            .foregroundStyle(Palette.linkAccent(catalog.qualification.accentHex))
+                        PointMark(x: .value("受験日", mock.date),
+                                  y: .value("正答率", Double(mock.score * 100) / Double(max(mock.total, 1))))
+                            .foregroundStyle(Palette.linkAccent(catalog.qualification.accentHex))
+                    }
+                    RuleMark(y: .value("全体の設定基準", catalog.qualification.passingPercent))
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
+                        .foregroundStyle(.secondary)
+                }
+                .chartYScale(domain: 0...100)
+                .frame(height: 210)
+                Text("破線：全体の基準 \(catalog.qualification.passingPercent)%")
+                    .font(.caption).foregroundStyle(Palette.muted)
+                ForEach(store.data.mocks.suffix(5).reversed()) { mock in
+                    HStack {
+                        Text(mock.date, style: .date)
+                        Spacer()
+                        Text("\(mock.score) / \(mock.total) · \(mock.passed ? "基準到達" : "見直し")")
+                            .font(.subheadline).foregroundStyle(Palette.muted)
+                    }
+                }
+            }
         }
     }
 
@@ -257,12 +323,13 @@ struct StudyHistoryView: View {
     }
 }
 
-private struct HistoryAnswerRow: View {
+struct HistoryAnswerRow: View {
     let answer: Answer
     let catalog: Catalog
     let purchase: PurchaseManager
     let start: (StudySession) -> Void
     let paywall: () -> Void
+    var showDate = true
 
     var body: some View {
         if let question = catalog.questions.first(where: { $0.id == answer.questionID }) {
@@ -277,7 +344,7 @@ private struct HistoryAnswerRow: View {
                          .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 4) {
                         Text(question.stem).font(.subheadline).foregroundStyle(Palette.ink).lineLimit(2)
-                        Text("\(answer.date.formatted(date: .abbreviated, time: .shortened)) · \(question.subject)")
+                        Text("\(answer.date.formatted(date: showDate ? .abbreviated : .omitted, time: .shortened)) · \(question.subject)")
                              .font(.caption).foregroundStyle(Palette.muted)
                     }
                     Spacer(minLength: 0)
@@ -288,8 +355,17 @@ private struct HistoryAnswerRow: View {
                  .padding(.vertical, 4).frame(minHeight: 44)
             }
             .buttonStyle(StudyButtonStyle())
+            .accessibilityIdentifier("historyAnswer-\(answer.id.uuidString)")
             .accessibilityLabel("\(answer.correct ? "正解" : "見直し")、\(question.stem)、\(answer.date.formatted(date: .abbreviated, time: .shortened))")
             .accessibilityHint(purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? "この問題を開きます" : "全問題解放の購入画面を開きます")
+        } else {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("更新前の問題 · \(answer.questionID)").font(.subheadline)
+                Text("\(answer.correct ? "正解" : "見直し") · \(answer.date.formatted(date: showDate ? .abbreviated : .omitted, time: .shortened))")
+                    .font(.caption).foregroundStyle(Palette.muted)
+            }
+            .padding(.vertical, 4).accessibilityElement(children: .combine)
+            .accessibilityIdentifier("historyAnswer-\(answer.id.uuidString)")
         }
     }
 }

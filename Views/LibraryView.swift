@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct LibraryView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let catalog: Catalog
     let store: StudyStore
     let purchase: PurchaseManager
@@ -13,6 +14,18 @@ struct LibraryView: View {
 
     var body: some View {
         List {
+            Section {
+                let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 0)) :
+                    AnyLayout(HStackLayout(alignment: .center, spacing: 0))
+                layout {
+                    Text("どこから学ぼう？").font(.title2.bold())
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    TankeiView(state: .review, stage: TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked).stage,
+                               size: dynamicTypeSize.isAccessibilitySize ? 128 : 176, animated: true, idle: true, expressive: true)
+                }
+                    .listRowBackground(Color.clear)
+            }
             Section {
                 NavigationLink(value: QuestionCollectionRoute.all) {
                     Label("問題を検索", systemImage: "magnifyingglass")
@@ -79,6 +92,7 @@ struct LibraryView: View {
         .scrollContentBackground(.hidden)
         .background(Palette.background)
         .navigationTitle("問題を探す")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button(action: settings) { Image(systemName: "gearshape") }

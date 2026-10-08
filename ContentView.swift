@@ -37,6 +37,11 @@ struct StudyAppView: View {
     @State private var completedForAds: (mode: StudyMode, answered: Int)?
     @State private var showPaywall = false
     @State private var showSettings = false
+    @State private var showCompanion = false
+    @State private var queuedCompanion = false
+    @State private var companionSession: StudySession?
+    @State private var returnToCompanion = false
+    @State private var companionHistoryOrder: AnswerHistoryOrder = .newest
     @State private var queuedPaywall = false
     @State private var selectedTab: MainTab = .home
     @State private var replacement: StudySession?
@@ -55,7 +60,7 @@ struct StudyAppView: View {
     private var adAccess: AdAccess {
         AdAccess(entitlementResolved: purchase.entitlementResolved, unlocked: purchase.unlocked,
                  purchasing: purchase.purchasing,
-                 safeScreen: store.data.onboardingCompleted && !store.readOnly && session == nil && !showPaywall && !showSettings)
+                 safeScreen: store.data.onboardingCompleted && !store.readOnly && session == nil && !showPaywall && !showSettings && !showCompanion)
     }
 
     var body: some View {
@@ -70,8 +75,8 @@ struct StudyAppView: View {
                 TabView(selection: $selectedTab) {
                     NavigationStack {
                         DashboardView(catalog: catalog, store: store, purchase: purchase, ads: ads, start: start,
-                                      paywall: openPaywall, resume: resumePending,
-                                      openAnalysis: { selectedTab = .insights }, settings: { showSettings = true })
+                                      resume: resumePending, openLibrary: { selectedTab = .finder }, settings: { showSettings = true },
+                                      openCompanion: openCompanion)
                             .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
                     }
                     .tabItem { Label("ホーム", systemImage: "house") }.tag(MainTab.home)
@@ -84,14 +89,21 @@ struct StudyAppView: View {
                     NavigationStack {
                         InsightsView(catalog: catalog, store: store, purchase: purchase, ads: ads,
                                      start: start, paywall: openPaywall,
-                                     settings: { showSettings = true })
+                                     settings: { showSettings = true }, openCompanion: openCompanion)
                     }
                     .tabItem { Label("記録", systemImage: "chart.bar.xaxis") }.tag(MainTab.insights)
                 }
             }
         }
-        .task(id: adAccess) { ads.updateAccess(adAccess) }
+        .environment(\.mascotMotionEnabled, session == nil && !showPaywall && !showSettings && !showCompanion)
+        .task(id: adAccess) {
+            ads.updateAccess(adAccess)
+            if purchase.entitlementResolved {
+                store.migrateMascotGrowthIfNeeded(questions: SessionPlanner.available(catalog, unlocked: purchase.unlocked))
+            }
+        }
         .sheet(item: $session, onDismiss: {
+            if returnToCompanion { returnToCompanion = false; showCompanion = true }
             ads.updateAccess(adAccess)
             if let completedForAds {
                 ads.completedSession(mode: completedForAds.mode, answered: completedForAds.answered)
@@ -99,19 +111,37 @@ struct StudyAppView: View {
             }
         }) { active in
             SessionView(session: active, qualification: catalog.qualification, store: store, purchase: purchase,
-                        ads: ads, resume: store.data.pending?.id == active.id ? store.data.pending : nil) { answered in
+                        ads: ads, growthQuestions: SessionPlanner.available(catalog, unlocked: purchase.unlocked),
+                        resume: store.data.pending?.id == active.id ? store.data.pending : nil) { answered in
                 if active.mode == .diagnostic { store.completeOnboarding(diagnostic: true) }
                 completedForAds = (active.mode, answered)
                 session = nil
             }
+            .environment(\.mascotMotionEnabled, true)
         }
         .sheet(isPresented: $showPaywall) { PaywallView(catalog: catalog, purchase: purchase) }
+        .sheet(isPresented: $showCompanion, onDismiss: {
+            if let next = companionSession {
+                companionSession = nil
+                start(next)
+            } else if queuedPaywall {
+                queuedPaywall = false
+                showPaywall = true
+            }
+        }) {
+            TankeiCompanionView(catalog: catalog, store: store, purchase: purchase, order: $companionHistoryOrder, start: { next in
+                returnToCompanion = true
+                companionSession = next
+                showCompanion = false
+            }, paywall: openPaywall)
+        }
         .sheet(isPresented: $showSettings, onDismiss: {
             if queuedPaywall { queuedPaywall = false; showPaywall = true }
+            else if queuedCompanion { queuedCompanion = false; showCompanion = true }
         }) {
             NavigationStack {
                 PreferencesView(catalog: catalog, store: store, purchase: purchase, ads: ads,
-                                paywall: openPaywall, onReset: { showSettings = false })
+                                paywall: openPaywall, onReset: { showSettings = false }, openCompanion: openCompanion)
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) { Button("閉じる") { showSettings = false } }
                     }
@@ -137,6 +167,7 @@ struct StudyAppView: View {
             Text("問題データが更新されたため、途中位置を復元できませんでした。回答済みの学習履歴は残っています。")
         }
         .tint(Palette.linkAccent(catalog.qualification.accentHex))
+        .environment(\.mascotBaseColor, Palette.accent(catalog.qualification.mascotColorHex))
     }
 
     private func start(_ newSession: StudySession) {
@@ -190,6 +221,13 @@ struct StudyAppView: View {
         ads.updateAccess(AdAccess(entitlementResolved: purchase.entitlementResolved, unlocked: purchase.unlocked,
                                   purchasing: purchase.purchasing, safeScreen: false))
         if showSettings { queuedPaywall = true; showSettings = false }
+        else if showCompanion { queuedPaywall = true; showCompanion = false }
         else { showPaywall = true }
+    }
+
+    private func openCompanion() {
+        companionHistoryOrder = .newest
+        if showSettings { queuedCompanion = true; showSettings = false }
+        else { showCompanion = true }
     }
 }

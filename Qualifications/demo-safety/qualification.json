@@ -11,6 +11,7 @@
   "productID": "jp.example.exammaster.demo.unlock",
   "privacyPolicyURL": null,
   "accentHex": "#2F6E70",
+  "mascotBaseHex": "#FFF3DA",
   "examNote": "この資格・基準・問題は製品確認用の架空データです。実在する国家資格の試験内容ではありません。",
   "ads": {
     "enabled": true,

@@ -46,6 +46,26 @@ enum MasteryEngine {
     }
 }
 
+/// One shared partition of available questions: stable, answered-but-learning, new.
+/// The stable share is the retention rate; review flags never add extra segments.
+/// Unlike mascot growth, this can decrease with time or an incorrect answer.
+struct RetentionSummary {
+    let stable: Int
+    let new: Int
+    let total: Int
+    var growing: Int { total - stable - new }
+    var fraction: Double { total == 0 ? 0 : Double(stable) / Double(total) }
+    var percent: Int { total == 0 ? 0 : stable * 100 / total }
+
+    init(questions: [Question], data: StudyData, now: Date) {
+        total = questions.count
+        new = questions.filter { data.mastery[$0.id] == nil }.count
+        stable = questions.filter { question in
+            data.mastery[question.id].map { MasteryEngine.isMastered($0, now: now) } ?? false
+        }.count
+    }
+}
+
 struct StudyStats {
     let stable: Int
     let atRisk: Int
@@ -57,16 +77,20 @@ struct StudyStats {
     let subjectScores: [String: Int]
 
     init(catalog: Catalog, data: StudyData, now: Date = .now, calendar: Calendar = .current) {
-        let questions = catalog.questions
+        self.init(questions: catalog.questions, data: data, now: now, calendar: calendar)
+    }
+
+    init(questions: [Question], data: StudyData, now: Date = .now, calendar: Calendar = .current) {
         let grouped = Dictionary(grouping: questions, by: \.subject)
         let states = data.mastery
-        stable = questions.filter { states[$0.id].map { MasteryEngine.isMastered($0, now: now) } ?? false }.count
+        let memory = RetentionSummary(questions: questions, data: data, now: now)
+        stable = memory.stable
         atRisk = questions.filter { q in
             guard let s = states[q.id] else { return false }
             return s.lastCorrect && !MasteryEngine.isMastered(s, now: now) && MasteryEngine.retention(s, now: now) < 0.8
         }.count
         due = questions.filter { q in states[q.id]?.dueAt.map { $0 <= now } ?? false }.count
-        new = questions.filter { states[$0.id] == nil }.count
+        new = memory.new
         misconceptions = questions.filter { states[$0.id]?.misconception == true }.count
         studyDays = Set(data.answers.map { calendar.startOfDay(for: $0.date) }).count
         subjectScores = grouped.mapValues { items in

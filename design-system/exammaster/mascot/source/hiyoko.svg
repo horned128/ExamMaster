@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <title>コロンと丸いひよこ（羽背面配置版）</title>
+
+  <!-- 1. 足（体の後ろ） -->
+  <g id="chick_feet" fill="#F2B544" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path id="foot_left"  d="M104 195 L95 210 L115 210 Q120 210 120 205 Z" />
+    <path id="foot_right" d="M152 195 L161 210 L141 210 Q136 210 136 205 Z" />
+  </g>
+
+  <!-- 2. 小さな翼（体の後ろ：胴体の下に重なるよう手前に配置） -->
+  <g id="chick_wings" fill="#FFE259" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path id="wing_left"  d="M80 135 Q48 142 52 162 Q64 174 80 158 Z" />
+    <path id="wing_right" d="M176 135 Q208 142 204 162 Q192 174 176 158 Z" />
+  </g>
+
+  <!-- 3. まん丸ボディ（翼の上から覆いかぶさる） -->
+  <path id="chick_body"
+        d="M128 78
+           Q182 78 184 135
+           Q186 195 128 195
+           Q70 195 72 135
+           Q74 78 128 78 Z"
+        fill="#FFE259"
+        stroke="#243B3A"
+        stroke-width="6"
+        stroke-linecap="round"
+        stroke-linejoin="round" />
+
+  <!-- 4. 頭頂の産毛 -->
+  <g id="chick_fluff" stroke="#243B3A" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M125 78 Q121 64 116 60" />
+    <path d="M128 78 Q132 63 139 59" />
+  </g>
+
+  <!-- 5. 顔パーツ -->
+  <g id="chick_face">
+    <!-- 目 -->
+    <circle id="eye_left"  cx="114" cy="124" r="4.5" fill="#243B3A" />
+    <circle id="eye_right" cx="142" cy="124" r="4.5" fill="#243B3A" />
+
+    <!-- ほっぺ -->
+    <circle id="cheek_left"  cx="102" cy="133" r="6" fill="#F7A38D" />
+    <circle id="cheek_right" cx="154" cy="133" r="6" fill="#F7A38D" />
+
+    <!-- くちばし -->
+    <path id="beak"
+          d="M115 132 Q128 123 141 132 Q128 141 115 132 Z"
+          fill="#F2B544"
+          stroke="#243B3A"
+          stroke-width="5"
+          stroke-linejoin="round" />
+
+    <!-- 口元 -->
+    <path id="mouth"
+          d="M121 143 Q128 148 135 143"
+          stroke="#243B3A"
+          stroke-width="4"
+          stroke-linecap="round"
+          fill="none" />
+  </g>
+</svg>

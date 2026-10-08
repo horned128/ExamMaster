@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none"><title>学習の相棒 / chick / recover</title><g id="root-rig" transform="translate(128 210) rotate(0) scale(1 1) translate(-128 -210)"><g id="chickFeet"><path id="foot_left" d="M104 195 L95 210 L115 210 Q120 210 120 205 Z" fill="#F2B544" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    <path id="foot_right" d="M152 195 L161 210 L141 210 Q136 210 136 205 Z" fill="#F2B544" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  </g><g id="body-rig" transform="translate(128 183) rotate(2) scale(1 1) translate(-128 -183)"><g id="chickWingLeft" transform="translate(78 144) rotate(0) scale(1 1) translate(-78 -144)"><path id="wing_left" d="M80 135 Q48 142 52 162 Q64 174 80 158 Z" fill="#FFE259" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    </g><g id="chickWingRight" transform="translate(178 144) rotate(0) scale(1 1) translate(-178 -144)"><path id="wing_right" d="M176 135 Q208 142 204 162 Q192 174 176 158 Z" fill="#FFE259" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+  </g><g id="chickBody"><path id="chick_body" d="M128 78            Q182 78 184 135            Q186 195 128 195            Q70 195 72 135            Q74 78 128 78 Z" fill="#FFE259" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+  
+  </g><g id="chickFluff"><path d="M125 78 Q121 64 116 60" fill="none" stroke="#243B3A" stroke-width="4" stroke-linecap="round" />
+    <path d="M128 78 Q132 63 139 59" fill="none" stroke="#243B3A" stroke-width="4" stroke-linecap="round" />
+  </g><g id="chickEyes" transform="translate(0 0) translate(128 124) rotate(0) scale(1 1) translate(-128 -124)"><circle id="eye_left" cx="114" cy="124" r="4.5" fill="#243B3A" stroke="none" />
+    <circle id="eye_right" cx="142" cy="124" r="4.5" fill="#243B3A" stroke="none" />
+
+    
+    </g><g id="chickCheeks"><circle id="cheek_left" cx="102" cy="133" r="6" fill="#F7A38D" stroke="none" />
+    <circle id="cheek_right" cx="154" cy="133" r="6" fill="#F7A38D" stroke="none" />
+
+    
+    </g><g id="chickBeak"><path id="beak" d="M115 132 Q128 123 141 132 Q128 141 115 132 Z" fill="#F2B544" stroke="#243B3A" stroke-width="5" stroke-linejoin="round" />
+
+    
+    </g><g id="chickMouth"><path id="mouth" d="M121 143 Q128 148 135 143" stroke="#243B3A" stroke-width="4" stroke-linecap="round" fill="none" />
+  </g></g></g></svg>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none"><title>学習の相棒 / youngChicken / encourage</title><g id="root-rig" transform="translate(128 225) rotate(0) scale(0.92 0.92) translate(-128 -225)"><g id="chickenTail"><path d="M174 158 Q188 151 191 161 Q193 173 178 178 Z" fill="#FFF3DA" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    </g><g id="chickenLegs"><path id="leg_left" d="M108 188 Q99 196 101 211 L114 211 Q115 199 119 191 Z" fill="#FFF3DA" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+      <path id="leg_right" d="M148 188 Q157 196 155 211 L142 211 Q141 199 137 191 Z" fill="#FFF3DA" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    </g><g id="chickenFeet"><path id="foot_left" d="M100 211 L95 225 L114 225 Q120 225 120 221 Q120 217 113 215 L109 211 Z" fill="#F2B544" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+      <path id="foot_right" d="M156 211 L161 225 L142 225 Q136 225 136 221 Q136 217 143 215 L147 211 Z" fill="#F2B544" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    </g><g id="chickenBody"><path id="body" d="M89 112              Q100 98 128 98              Q156 98 167 112              Q177 124 177 149              Q177 176 164 191              Q151 206 128 206              Q105 206 92 191              Q79 176 79 149              Q79 124 89 112 Z" fill="#FFF3DA" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+    
+    </g><g id="chickenShoulderLeft"><path id="shoulder_left" d="M57 121 Q53 110 59 101 Q67 91 82 94 Q96 97 100 110 Q103 122 94 129 Q85 135 74 132" fill="#FFF3DA" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+      
+      </g><g id="chickenForearmLeft" transform="translate(89 126) rotate(4) scale(0.85 0.85) translate(-89 -126)"><path id="forearm_left" d="M89 126                Q72 114 57 121                Q42 129 43 145                Q44 161 58 169                Q74 177 89 168                Q98 162 101 151                Q104 140 97 132 Z" fill="#FFF3DA" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+      
+      </g><g id="chickenShoulderRight"><path id="shoulder_right" d="M199 121 Q203 110 197 101 Q189 91 174 94 Q160 97 156 110 Q153 122 162 129 Q171 135 182 132" fill="#FFF3DA" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+      
+      </g><g id="chickenForearmRight" transform="translate(167 126) rotate(-4) scale(0.85 0.85) translate(-167 -126)"><path id="forearm_right" d="M167 126                Q184 114 199 121                Q214 129 213 145                Q212 161 198 169                Q182 177 167 168                Q158 162 155 151                Q152 140 159 132 Z" fill="#FFF3DA" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+    </g><g id="chickenChest"><path id="chest_left" d="M104 139 Q114 132 124 139" fill="none" stroke="#243B3A" stroke-width="5" stroke-linecap="round" />
+      <path id="chest_right" d="M132 139 Q142 132 152 139" fill="none" stroke="#243B3A" stroke-width="5" stroke-linecap="round" />
+    </g><g id="chickenAbs" opacity="0.45"><path id="abs_center" d="M128 149 L128 181" fill="none" stroke="#E7D3AE" stroke-width="4" stroke-linecap="round" />
+      <path id="abs_top" d="M114 159 Q128 155 142 159" fill="none" stroke="#E7D3AE" stroke-width="4" stroke-linecap="round" />
+      <path id="abs_bottom" d="M114 173 Q128 169 142 173" fill="none" stroke="#E7D3AE" stroke-width="4" stroke-linecap="round" />
+    </g><g id="head-rig" transform="translate(128 122) rotate(2) scale(1 1) translate(-128 -122)"><g id="chickenHead"><path id="head" d="M93 67                Q96 45 128 45                Q160 45 163 67                L165 94                Q165 114 150 121                Q139 126 128 126                Q117 126 106 121                Q91 114 91 94 Z" fill="#FFF3DA" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+      
+      </g><g id="chickenComb"><path id="comb" d="M106 49                Q101 36 108 31                Q116 26 122 37                L124 25                Q126 16 135 18                Q144 20 143 30                L142 41                Q149 31 158 34                Q166 37 162 47                L156 56 Z" fill="#F06D5E" stroke="#243B3A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+
+      
+      </g><g id="chickenEyes" transform="translate(0 0) translate(128 87) rotate(0) scale(1 0.85) translate(-128 -87)"><circle id="eye_left" cx="115" cy="87" r="4.5" fill="#243B3A" stroke="none" />
+        <circle id="eye_right" cx="141" cy="87" r="4.5" fill="#243B3A" stroke="none" />
+
+        
+        </g><g id="chickenCheeks"><circle id="cheek_left" cx="103" cy="96" r="5.5" fill="#F7A38D" stroke="none" />
+        <circle id="cheek_right" cx="153" cy="96" r="5.5" fill="#F7A38D" stroke="none" />
+
+        
+        </g><g id="chickenBeak"><path id="beak" d="M115 95 Q128 86 141 95 Q128 104 115 95 Z" fill="#F2B544" stroke="#243B3A" stroke-width="5" stroke-linejoin="round" />
+
+        
+        </g><g id="chickenMouth"><path id="mouth" d="M121 106 Q128 111 135 106" stroke="#243B3A" stroke-width="4" stroke-linecap="round" fill="none" />
+      </g></g></g></svg>

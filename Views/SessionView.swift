@@ -7,6 +7,8 @@ struct SessionView: View {
     let store: StudyStore
     let purchase: PurchaseManager
     let ads: AdsService
+    let growthQuestions: [Question]
+    @State private var initialGrowthStage: TankeiStage
     let resume: PendingStudy?
     let onFinish: (Int) -> Void
 
@@ -21,6 +23,7 @@ struct SessionView: View {
     @State private var revealed = false
     @State private var submitted = false
     @State private var finished = false
+    @State private var showGrowthCelebration = false
     @State private var startedAt = Date()
     @State private var answers: [Answer] = []
     @State private var visibleSteps = 0
@@ -30,6 +33,7 @@ struct SessionView: View {
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     init(session: StudySession, qualification: Qualification, store: StudyStore, purchase: PurchaseManager, ads: AdsService,
+         growthQuestions: [Question],
          resume: PendingStudy? = nil,
          onFinish: @escaping (Int) -> Void) {
         self.session = session
@@ -37,6 +41,8 @@ struct SessionView: View {
         self.store = store
         self.purchase = purchase
         self.ads = ads
+        self.growthQuestions = growthQuestions
+        _initialGrowthStage = State(initialValue: TankeiGrowth(questions: growthQuestions, data: store.data, earnedOnly: true).stage)
         self.resume = resume
         self.onFinish = onFinish
         _index = State(initialValue: min(max(0, resume?.index ?? 0), max(0, session.questions.count - 1)))
@@ -57,7 +63,13 @@ struct SessionView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if finished { summary }
+                if showGrowthCelebration {
+                    TankeiGrowthCelebration(initialStage: initialGrowthStage, stage: growth.stage, accentHex: qualification.accentHex,
+                                            buttonTitle: session.mode == .search ? "一覧へ戻る" : "結果を見る") {
+                        if session.mode == .search { closeSession() }
+                        else { showGrowthCelebration = false }
+                    }
+                } else if finished { summary }
                 else { questionScreen }
             }
             .background(Palette.background)
@@ -206,6 +218,7 @@ struct SessionView: View {
                 .disabled(selected == nil && !submitted)
                 .padding(16).frame(maxWidth: 672).frame(maxWidth: .infinity)
                 .background(.bar)
+                .accessibilityIdentifier("submitOrAdvance")
             }
         }
     }
@@ -241,11 +254,27 @@ struct SessionView: View {
     }
 
     private var feedback: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Label(selected == question.correctIndex ? "正解です" : "答えを確認",
-                  systemImage: selected == question.correctIndex ? "checkmark.circle.fill" : "arrow.uturn.backward.circle.fill")
-                .font(.headline).foregroundStyle(selected == question.correctIndex ? Palette.positive : Palette.review)
-                .accessibilityFocused($feedbackFocused)
+        let correct = selected == question.correctIndex
+        let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) :
+            AnyLayout(HStackLayout(alignment: .center, spacing: 8))
+        return VStack(alignment: .leading, spacing: 14) {
+            layout {
+                HStack(spacing: 10) {
+                    Image(systemName: correct ? "checkmark.circle.fill" : "arrow.uturn.backward.circle.fill")
+                        .font(.system(size: 32, weight: .semibold)).accessibilityHidden(true)
+                    Text(correct ? "正解です" : "答えを確認")
+                        .font(.title3.bold()).fixedSize(horizontal: false, vertical: true)
+                        .accessibilityFocused($feedbackFocused)
+                        .accessibilityIdentifier("answerOutcome")
+                        #if DEBUG
+                        .accessibilityValue("相棒：\(initialGrowthStage.title)")
+                        #endif
+                }
+                .foregroundStyle(correct ? Palette.positive : Palette.review)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                TankeiView(state: correct ? .celebrate : .recover,
+                           stage: initialGrowthStage, size: 120, animated: true, idle: true, expressive: true, eventID: index)
+            }
             if let steps = question.steps {
                 Text("解き方").font(.headline)
                 ForEach(0..<visibleSteps, id: \.self) { step in
@@ -297,8 +326,8 @@ struct SessionView: View {
 
     private func advance() {
         if session.mode == .search {
-            onFinish(answers.count)
-            dismiss()
+            finish()
+            if !showGrowthCelebration { closeSession() }
             return
         }
         if index + 1 == session.questions.count { finish(); return }
@@ -323,16 +352,20 @@ struct SessionView: View {
         if session.timed {
             store.finishMock(SessionPlanner.mockResult(answers, questions: session.questions, qualification: qualification))
         }
+        store.updateMascotGrowth(questions: growthQuestions)
+        showGrowthCelebration = growth.stage.rawValue > initialGrowthStage.rawValue
         finished = true
+    }
+
+    private func closeSession() {
+        onFinish(answers.count)
+        dismiss()
     }
 
     private var summary: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Image(systemName: session.timed ? "chart.bar" : "checkmark.circle")
-                    .font(.system(size: 40)).foregroundStyle(Palette.positive).accessibilityHidden(true)
-                Text(session.mode == .diagnostic ? "診断が完了しました" : "ひと区切り、\nおつかれさま。")
-                    .font(.largeTitle.bold()).fixedSize(horizontal: false, vertical: true)
+                summaryHeading
                 Surface {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Text("\(answers.filter(\.correct).count)")
@@ -405,10 +438,7 @@ struct SessionView: View {
                 if !purchase.unlocked && !purchase.purchasing {
                     AdBannerPlacement(ads: ads, placement: .sessionResult)
                 }
-                Button {
-                    onFinish(answers.count)
-                    dismiss()
-                } label: {
+                Button(action: closeSession) {
                     Text(session.mode == .diagnostic ? "ホームへ進む" : "学習を終える")
                         .frame(maxWidth: .infinity).padding(6)
                 }
@@ -416,6 +446,26 @@ struct SessionView: View {
                 .tint(Palette.accent(qualification.accentHex)).foregroundStyle(Palette.onAccent(qualification.accentHex))
             }
             .padding(24).frame(maxWidth: 640).frame(maxWidth: .infinity)
+        }
+    }
+
+    private var completionState: TankeiState {
+        return TankeiState.completion(mode: session.mode, answered: answers.count,
+                               correct: answers.filter(\.correct).count, total: session.questions.count,
+                               mockPassed: session.timed ? SessionPlanner.mockResult(answers, questions: session.questions,
+                                                                                    qualification: qualification).passed : nil)
+    }
+
+    private var summaryHeading: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12)) :
+            AnyLayout(HStackLayout(alignment: .center, spacing: 16))
+        return layout {
+            Text(session.mode == .diagnostic ? "診断が完了しました" : "おつかれさま")
+                .font(.title.bold()).fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityAddTraits(.isHeader)
+            TankeiView(state: completionState, stage: growth.stage,
+                       size: dynamicTypeSize.isAccessibilitySize ? 96 : 120, animated: true, idle: true, expressive: true)
         }
     }
 
@@ -431,9 +481,9 @@ struct SessionView: View {
             if outlook.dueCount > 0 {
                 Text("今、復習にいい頃 · \(outlook.dueCount)問").font(.subheadline).foregroundStyle(Palette.review)
             }
-            Text("今日はここまででも、大丈夫。")
-                .font(.subheadline).foregroundStyle(Palette.muted)
         }
     }
+
+    private var growth: TankeiGrowth { TankeiGrowth(questions: growthQuestions, data: store.data, earnedOnly: true) }
 
 }

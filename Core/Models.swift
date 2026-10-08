@@ -12,9 +12,14 @@ struct Qualification: Codable {
     let freeQuestionIDs: [String]
     let productID: String
     let accentHex: String
+    let mascotBaseHex: String?
+    let iconTitle: String?
     let examNote: String
     let privacyPolicyURL: String?
     let ads: AdsConfiguration
+
+    var mascotColorHex: String { mascotBaseHex ?? TankeiPalette.defaultChickenHex }
+    var iconDisplayTitle: String { iconTitle ?? name }
 }
 
 struct AdsConfiguration: Codable {
@@ -98,6 +103,8 @@ struct Catalog {
               (0...100).contains(qualification.minimumSubjectPercent),
               qualification.minimumSubjectPercent <= qualification.passingPercent,
               qualification.accentHex.range(of: "^#[0-9A-Fa-f]{6}$", options: .regularExpression) != nil,
+              qualification.mascotColorHex.range(of: "^#[0-9A-Fa-f]{6}$", options: .regularExpression) != nil,
+              !qualification.iconDisplayTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !qualification.subjects.isEmpty, Set(qualification.subjects).count == qualification.subjects.count,
               !qualification.productID.isEmpty, qualification.ads.isValid,
               qualification.privacyPolicyURL.map({ URL(string: $0)?.scheme == "https" }) ?? true else {
@@ -241,9 +248,11 @@ struct StudyData: Codable {
     var randomScope: RandomScope = .mixed
     var pending: PendingStudy?
     var examDay: ExamDay?
+    var mascotHighestStage = TankeiStage.chick.rawValue
+    var mascotNeedsMigration = false
 
     private enum CodingKeys: String, CodingKey {
-        case schemaVersion, answers, mastery, bookmarks, mocks, onboardingCompleted, diagnosticCompleted, recallFirst, randomScope, pending, examDay
+        case schemaVersion, answers, mastery, bookmarks, mocks, onboardingCompleted, diagnosticCompleted, recallFirst, randomScope, pending, examDay, mascotHighestStage
     }
 
     init() {}
@@ -262,5 +271,7 @@ struct StudyData: Codable {
         randomScope = try c.decodeIfPresent(RandomScope.self, forKey: .randomScope) ?? .mixed
         pending = try c.decodeIfPresent(PendingStudy.self, forKey: .pending)
         examDay = try c.decodeIfPresent(ExamDay.self, forKey: .examDay)
+        mascotHighestStage = try c.decodeIfPresent(Int.self, forKey: .mascotHighestStage) ?? TankeiStage.chick.rawValue
+        mascotNeedsMigration = !c.contains(.mascotHighestStage)
     }
 }

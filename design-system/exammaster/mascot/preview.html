@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>原案の相棒 — ひよこからチキンへ</title>
+  <style>
+    :root { color-scheme:light dark; --bg:#f5f4f0; --ink:#243b3a; --muted:#636b65; --line:#d6dbd4; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.7 -apple-system,BlinkMacSystemFont,sans-serif; }
+    main { max-width:1160px; margin:auto; padding:56px 32px; }
+    h1 { margin:0; font-size:clamp(32px,5vw,60px); line-height:1.3; letter-spacing:-.03em; }
+    h2 { margin:0 0 24px; font-size:26px; line-height:1.4; } h3 { margin:12px 0 6px; font-size:21px; }
+    p { margin:8px 0; max-width:70ch; } .muted { color:var(--muted); }
+    a { color:inherit; text-underline-offset:4px; } a:focus-visible { outline:3px solid var(--ink); outline-offset:4px; }
+    header { padding-bottom:48px; } header p:first-of-type { font-size:20px; margin-top:20px; }
+    section { padding:40px 0; border-top:1px solid var(--line); }
+    figure { margin:0; } figure img { width:100%; max-width:250px; display:block; margin:auto; } figcaption { padding-top:12px; }
+    .originals { display:grid; grid-template-columns:repeat(2,1fr); gap:32px; }
+    .growth { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; } .growth figcaption { text-align:center; }
+    .poses { display:grid; grid-template-columns:repeat(6,1fr); gap:20px; } .poses figcaption { text-align:center; padding:0; }
+    .sizes { display:flex; flex-wrap:wrap; align-items:flex-end; gap:32px; } .sizes figure { text-align:center; } .sizes img { margin:0 auto 12px; }
+    footer { border-top:1px solid var(--line); padding-top:24px; color:var(--muted); }
+    ::selection { background:#ffe259; color:#243b3a; }
+    @media(prefers-color-scheme:dark) { :root { --bg:#181c1a; --ink:#e8eee8; --muted:#b5beb7; --line:#465048; } }
+    @media(max-width:760px) { main { padding:32px 24px; } .growth { grid-template-columns:repeat(2,1fr); } .poses { grid-template-columns:repeat(3,1fr); } }
+    @media(max-width:420px) { .originals { grid-template-columns:1fr; } .poses { grid-template-columns:repeat(2,1fr); } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>学んだぶんだけ、<br>ひよこからチキンへ。</h1>
+    <p>いただいた原案が、そのまま相棒に。</p>
+    <p class="muted">輪郭も、笑顔もそのまま。部位分けを活かして、呼吸・羽ばたき・力こぶ・まばたき・うなずきを作りました。チキンのベースカラーは資格ごとに設定できます。</p>
+    <p><a href="README.md">成長・動き・実装の仕様</a> · <a href="VERIFICATION.md">アプリの実画面と検証</a></p>
+  </header>
+  <section>
+    <h2>正本は、この2つ。</h2>
+    <div class="originals">
+      <figure><img src="source/hiyoko.svg" alt="原案の黄色いまん丸ひよこ"><figcaption><h3>ひよこ</h3><p>羽は体の後ろ。小さな羽ばたきと、産毛の揺れ。</p><a href="source/hiyoko.svg">原案SVG</a></figcaption></figure>
+      <figure><img src="source/niwatori.svg" alt="原案のクリーム色で筋肉のあるチキン"><figcaption><h3>チキン</h3><p>肩と前腕が別部位。肩を残して、力こぶを動かす。</p><a href="source/niwatori.svg">原案SVG</a></figcaption></figure>
+    </div>
+  </section>
+  <section>
+    <h2>学びの積み重ねとともに、4段階で成長。</h2>
+    <div class="growth">
+      <figure><img src="growth-poses/chick-ready.svg" alt="原案のひよこ"><figcaption><h3>ひよこ</h3><p>いっしょに、ひとつずつ。</p></figcaption></figure>
+      <figure><img src="growth-poses/growingChick-ready.svg" alt="体と羽が少し大きくなった育ちざかり"><figcaption><h3>育ちざかり</h3><p>少しずつ、たくましく。</p></figcaption></figure>
+      <figure><img src="growth-poses/youngChicken-ready.svg" alt="少し小さなチキン、若鶏"><figcaption><h3>若鶏</h3><p>今日もいっしょに学ぼう。</p></figcaption></figure>
+      <figure><img src="growth-poses/chicken-ready.svg" alt="原案のチキン"><figcaption><h3>チキン</h3><p>これからも、いっしょに。</p></figcaption></figure>
+    </div>
+    <p class="muted">定着率と学習準備度から内部で算出。数値や計算は意識しなくて大丈夫。学習終了後だけ成長を披露し、無料・模試なしでも最後まで育ちます。誤答・時間経過・問題追加で獲得済みの姿が戻ることはありません。合格判定とは別です。</p>
+  </section>
+  <section>
+    <h2>アイコンも、同じチキンの顔。</h2>
+    <figure><img src="../../../Assets.xcassets/AppIcon.appiconset/AppIcon.png" alt="原案チキンの顔と設備安全管理士の資格名のアプリアイコン" style="border-radius:24%;margin:0;max-width:192px"><figcaption>資格名とベースカラーは <code>qualification.json</code> から。別の資格でも同じ生成スクリプトを使用できます。</figcaption></figure>
+    <p class="muted">ホームは定着・学習中・これからの3区分のバーと件数。準備度・定着率・科目別の状態は「記録」に統合し、相棒の成長とは区別します。ノルマ達成後も3区分は残ります。</p>
+  </section>
+  <section>
+    <h2>ひよこの6状態。</h2>
+    <div class="poses">
+      <figure><img src="growth-poses/chick-ready.svg" alt="応援するひよこ"><figcaption>応援</figcaption></figure>
+      <figure><img src="growth-poses/chick-encourage.svg" alt="羽を少し張るひよこ"><figcaption>ひと区切り</figcaption></figure>
+      <figure><img src="growth-poses/chick-celebrate.svg" alt="羽を上げたひよこ"><figcaption>達成</figcaption></figure>
+      <figure><img src="growth-poses/chick-review.svg" alt="首と視線を傾けたひよこ"><figcaption>復習</figcaption></figure>
+      <figure><img src="growth-poses/chick-recover.svg" alt="普通の笑顔でうなずくひよこ"><figcaption>再挑戦</figcaption></figure>
+      <figure><img src="growth-poses/chick-rest.svg" alt="目を細めたひよこ"><figcaption>ひと休み</figcaption></figure>
+    </div>
+  </section>
+  <section>
+    <h2>チキンも、同じやさしさ。</h2>
+    <div class="poses">
+      <figure><img src="growth-poses/chicken-ready.svg" alt="原案の力こぶ姿勢"><figcaption>応援</figcaption></figure>
+      <figure><img src="growth-poses/chicken-encourage.svg" alt="力こぶを少し上げたチキン"><figcaption>ひと区切り</figcaption></figure>
+      <figure><img src="growth-poses/chicken-celebrate.svg" alt="首を傾け力こぶを上げたチキン"><figcaption>達成</figcaption></figure>
+      <figure><img src="growth-poses/chicken-review.svg" alt="視線を下げたチキン"><figcaption>復習</figcaption></figure>
+      <figure><img src="growth-poses/chicken-recover.svg" alt="笑顔を変えずうなずくチキン"><figcaption>再挑戦</figcaption></figure>
+      <figure><img src="growth-poses/chicken-rest.svg" alt="目を細めたチキン"><figcaption>ひと休み</figcaption></figure>
+    </div>
+  </section>
+  <section>
+    <h2>小さくしても、同じ相棒。</h2>
+    <div class="sizes">
+      <figure><img src="chick-compact.svg" alt="24ピクセルのひよこ" style="width:24px"><figcaption>24px</figcaption></figure>
+      <figure><img src="chicken-compact.svg" alt="32ピクセルのチキン" style="width:32px"><figcaption>32px</figcaption></figure>
+      <figure><img src="growth-poses/chicken-ready.svg" alt="48ピクセルのチキン" style="width:48px"><figcaption>48px</figcaption></figure>
+      <figure><img src="growth-poses/chicken-ready.svg" alt="64ピクセルのチキン" style="width:64px"><figcaption>64px</figcaption></figure>
+      <figure><img src="chicken-silhouette.svg" alt="単色シルエット" style="width:96px"><figcaption>単色</figcaption></figure>
+    </div>
+  </section>
+  <section>
+    <h2>アプリの中で、一緒に学ぶ。</h2>
+    <p>初回・ホーム・問題探し・回答後・結果・記録・復習ガイドへ。ホームの相棒をタップすると、「応援して」「力こぶ！」「ひと休み」で反応を楽しめます。その下には日付ごとの全回答。新しい順／古い順を切り替え、回答から問題を開けます。</p>
+    <p class="muted">待機中も呼吸と20種類のランダムなアクションで動き続けます。状態に合わせた候補から選び、同じ動きは連続させません。正解にはジャンプと羽ばたき、誤答には笑顔のうなずき。問題文右上には置きません。成長は学習終了後の「成長したよ！」画面で。画面外・Reduce Motion・省電力では停止。</p>
+    <p class="muted">このページは静止姿の比較です。動きは通常アプリの「学習の相棒」、Xcode Preview、またはDebug起動引数 <code>-TankeiGallery</code> で確認できます。</p>
+  </section>
+  <footer>ユーザー提供SVG／SwiftUIネイティブPath。原案は変更せず保管。Riveは未導入。</footer>
+</main>
+</body>
+</html>

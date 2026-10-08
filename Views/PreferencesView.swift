@@ -7,6 +7,7 @@ struct PreferencesView: View {
     let ads: AdsService
     let paywall: () -> Void
     let onReset: () -> Void
+    let openCompanion: () -> Void
     @State private var showLearningGuide = false
 
     private var recallBinding: Binding<Bool> {
@@ -42,6 +43,12 @@ struct PreferencesView: View {
                 Text("今日の学習と復習で、まず答えを思い出す。")
             }
             Section {
+                Button(action: openCompanion) {
+                    HStack(spacing: 12) {
+                        TankeiView(stage: TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked).stage, size: 48, idle: true)
+                        Text("相棒の成長を見る")
+                    }
+                }
                 Button { showLearningGuide = true } label: {
                     Label("記憶と復習のしくみ", systemImage: "info.circle")
                 }
@@ -76,7 +83,10 @@ struct PreferencesView: View {
         .navigationTitle("設定")
         .scrollContentBackground(.hidden)
         .background(Palette.background)
-        .sheet(isPresented: $showLearningGuide) { LearningGuideView() }
+        .sheet(isPresented: $showLearningGuide) {
+            LearningGuideView(stage: TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked).stage)
+                .environment(\.mascotMotionEnabled, true)
+        }
     }
 }
 
