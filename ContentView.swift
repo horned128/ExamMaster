@@ -47,6 +47,7 @@ struct StudyAppView: View {
     @State private var replacement: StudySession?
     @State private var confirmReplacement = false
     @State private var resumeUnavailable = false
+    @Environment(\.scenePhase) private var scenePhase
 
     init(catalog: Catalog) {
         self.catalog = catalog
@@ -82,7 +83,7 @@ struct StudyAppView: View {
                     .tabItem { Label("ホーム", systemImage: "house") }.tag(MainTab.home)
                     NavigationStack {
                         LibraryView(catalog: catalog, store: store, purchase: purchase, ads: ads, start: start,
-                                    settings: { showSettings = true })
+                                    settings: { showSettings = true }, paywall: openPaywall)
                             .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
                     }
                     .tabItem { Label("問題を探す", systemImage: "square.grid.2x2") }.tag(MainTab.finder)
@@ -102,6 +103,14 @@ struct StudyAppView: View {
                 store.migrateMascotGrowthIfNeeded(questions: SessionPlanner.available(catalog, unlocked: purchase.unlocked))
             }
         }
+        .onAppear { gradeExpiredMock() }
+        .onChange(of: scenePhase) { _, phase in if phase == .active { gradeExpiredMock() } }
+        .onChange(of: purchase.unlocked) { wasUnlocked, unlocked in
+            if wasUnlocked && !unlocked, let active = session,
+               active.questions.contains(where: { !catalog.qualification.freeQuestionIDs.contains($0.id) }) {
+                session = nil
+            }
+        }
         .sheet(item: $session, onDismiss: {
             if returnToCompanion { returnToCompanion = false; showCompanion = true }
             ads.updateAccess(adAccess)
@@ -110,7 +119,13 @@ struct StudyAppView: View {
                 self.completedForAds = nil
             }
         }) { active in
-            SessionView(session: active, qualification: catalog.qualification, store: store, purchase: purchase,
+            if active.timed {
+                MockExamSessionView(session: active, catalog: catalog, store: store, purchase: purchase) { answered in
+                    completedForAds = (active.mode, answered)
+                    session = nil
+                }
+            } else {
+              SessionView(session: active, qualification: catalog.qualification, store: store, purchase: purchase,
                         ads: ads, growthQuestions: SessionPlanner.available(catalog, unlocked: purchase.unlocked),
                         resume: store.data.pending?.id == active.id ? store.data.pending : nil) { answered in
                 if active.mode == .diagnostic { store.completeOnboarding(diagnostic: true) }
@@ -118,6 +133,7 @@ struct StudyAppView: View {
                 session = nil
             }
             .environment(\.mascotMotionEnabled, true)
+            }
         }
         .sheet(isPresented: $showPaywall) { PaywallView(catalog: catalog, purchase: purchase) }
         .sheet(isPresented: $showCompanion, onDismiss: {
@@ -172,6 +188,14 @@ struct StudyAppView: View {
 
     private func start(_ newSession: StudySession) {
         if newSession.questions.isEmpty { return }
+        guard newSession.questions.allSatisfy({ purchase.unlocked || catalog.qualification.freeQuestionIDs.contains($0.id) }) else {
+            openPaywall(); return
+        }
+        if newSession.timed, let pending = store.data.pendingMock, pending.id != newSession.id {
+            if let restored = MockExam.restore(pending, catalog: catalog, unlocked: purchase.unlocked) { startImmediately(restored) }
+            else { openPaywall() }
+            return
+        }
         if newSession.mode != .search && newSession.mode != .diagnostic && newSession.mode != .mock,
            let pending = store.data.pending, pending.id != newSession.id {
             replacement = newSession
@@ -182,6 +206,10 @@ struct StudyAppView: View {
     }
 
     private func startImmediately(_ newSession: StudySession) {
+        if newSession.timed, store.data.pendingMock?.id != newSession.id {
+            let minutes = catalog.mockSets.first { $0.id == newSession.mockSetID }?.minutes ?? catalog.qualification.examMinutes
+            guard store.beginMock(session: newSession, minutes: minutes) else { return }
+        }
         if newSession.mode != .search && newSession.mode != .diagnostic && newSession.mode != .mock,
            store.data.pending?.id != newSession.id {
             store.setPending(PendingStudy(session: newSession))
@@ -190,6 +218,13 @@ struct StudyAppView: View {
         ads.updateAccess(AdAccess(entitlementResolved: purchase.entitlementResolved, unlocked: purchase.unlocked,
                                   purchasing: purchase.purchasing, safeScreen: false))
         session = newSession
+    }
+
+    private func gradeExpiredMock() {
+        guard session == nil, let pending = store.data.pendingMock, pending.remaining() == 0 else { return }
+        if store.completeMock(attemptID: pending.id, catalog: catalog) != nil {
+            store.updateMascotGrowth(questions: SessionPlanner.available(catalog, unlocked: purchase.unlocked))
+        }
     }
 
     private func resumePending() {

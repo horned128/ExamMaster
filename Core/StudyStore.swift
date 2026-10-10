@@ -25,6 +25,19 @@ import Observation
         }
         #if DEBUG
         if !readOnly && ProcessInfo.processInfo.arguments.contains("-UITestResetStudy") &&
+            ProcessInfo.processInfo.arguments.contains("-UITestSeedFixedMock"),
+           let catalog = try? Catalog.load(id: qualificationID) {
+            completeOnboarding(diagnostic: false)
+            let session = StudySession(title: "UIテスト用10問（公式模試ではありません）", mode: .mock,
+                                       questions: Array(SessionPlanner.available(catalog, unlocked: false).prefix(10)), timed: true)
+            let expired = ProcessInfo.processInfo.arguments.contains("-UITestExpiredMock")
+            let start = expired ? Date.now.addingTimeInterval(-2500) : .now
+            beginMock(session: session, minutes: 40, now: start)
+            if expired, let question = session.questions.first {
+                selectMock(question.correctIndex, question: question, attemptID: session.id, now: start)
+            }
+        }
+        if !readOnly && ProcessInfo.processInfo.arguments.contains("-UITestResetStudy") &&
             ProcessInfo.processInfo.arguments.contains("-UITestSeedCompanionHistory"),
            let catalog = try? Catalog.load(id: qualificationID) {
             let questions = SessionPlanner.available(catalog, unlocked: false)
@@ -75,6 +88,63 @@ import Observation
         guard !readOnly, data.pending != nil else { return }
         data.pending = nil
         save()
+    }
+
+    @discardableResult func beginMock(session: StudySession, minutes: Int, now: Date = .now) -> Bool {
+        guard !readOnly, session.timed, !session.questions.isEmpty, minutes > 0, data.pendingMock == nil else { return false }
+        var replacement = data
+        replacement.pendingMock = PendingMock(session: session, minutes: minutes, now: now)
+        return commit(replacement)
+    }
+
+    @discardableResult func selectMock(_ index: Int?, question: Question, attemptID: UUID, now: Date = .now) -> Bool {
+        guard !readOnly, var pending = data.pendingMock, pending.id == attemptID,
+              pending.remaining(at: now) > 0, pending.questionIDs.contains(question.id),
+              index.map({ question.choices.indices.contains($0) }) ?? true else { return false }
+        pending.selections[question.id] = index
+        var replacement = data
+        replacement.pendingMock = pending
+        return commit(replacement)
+    }
+
+    @discardableResult func moveMock(to index: Int, attemptID: UUID) -> Bool {
+        guard !readOnly, var pending = data.pendingMock, pending.id == attemptID,
+              pending.questionIDs.indices.contains(index) else { return false }
+        pending.index = index
+        var replacement = data
+        replacement.pendingMock = pending
+        return commit(replacement)
+    }
+
+    /// One write commits the result, learning updates and removal of the active attempt.
+    /// Failure leaves the pending exam intact; repeated completion returns the same result.
+    @discardableResult func completeMock(attemptID: UUID, catalog: Catalog, now: Date = .now) -> MockResult? {
+        if let existing = data.mocks.first(where: { $0.id == attemptID }) { return existing }
+        guard !readOnly, let pending = data.pendingMock, pending.id == attemptID,
+              let session = MockExam.restore(pending, catalog: catalog, unlocked: true) else { return nil }
+        let graded = MockExam.grade(pending, questions: session.questions, qualification: catalog.qualification, now: now)
+        var replacement = data
+        for answer in graded.answers {
+            guard let question = session.questions.first(where: { $0.id == answer.questionID }) else { continue }
+            replacement.answers.append(answer)
+            replacement.mastery[question.id] = MasteryEngine.update(replacement.mastery[question.id] ?? Mastery(),
+                                                                   answer: answer, difficulty: question.difficulty)
+        }
+        replacement.mocks.append(graded.result)
+        replacement.pendingMock = nil
+        return commit(replacement) ? graded.result : nil
+    }
+
+    private func commit(_ replacement: StudyData) -> Bool {
+        do {
+            try JSONEncoder().encode(replacement).write(to: url, options: .atomic)
+            data = replacement
+            error = nil
+            return true
+        } catch {
+            self.error = "学習履歴を保存できませんでした: \(error.localizedDescription)"
+            return false
+        }
     }
 
     func setRandomScope(_ scope: RandomScope) {

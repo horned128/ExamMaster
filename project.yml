@@ -107,6 +107,43 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: jp.example.exammaster.tests
+  NetworkSpecialist:
+    templates: [QualificationApp]
+    templateAttributes:
+      qualificationID: network-specialist
+      displayName: ネットワーク学習
+      bundleID: jp.example.exammaster.networkspecialist
+      iconName: NetworkSpecialistIcon
+      adMobAppID: ca-app-pub-3940256099942544~1458002511
+    sources:
+      - path: Qualifications/network-specialist/Figures
+        type: folder
+        buildPhase: resources
+    scheme:
+      testTargets: [NetworkSpecialistTests, NetworkSpecialistUITests]
+      storeKitConfiguration: Qualifications/network-specialist/products.storekit
+  NetworkSpecialistTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: NetworkTests
+      - path: Qualifications/network-specialist/products.storekit
+    dependencies:
+      - target: NetworkSpecialist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.example.exammaster.networkspecialist.tests
+  NetworkSpecialistUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: NetworkUITests
+      - path: Qualifications/network-specialist/products.storekit
+    dependencies:
+      - target: NetworkSpecialist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.example.exammaster.networkspecialist.uitests
   ExamMasterUITests:
     type: bundle.ui-testing
     platform: iOS

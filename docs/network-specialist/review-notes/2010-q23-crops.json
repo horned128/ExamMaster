@@ -1,0 +1,12 @@
+{
+  "status": "reviewed-and-promoted-2026-10-09",
+  "booklet": "2010h22a_nw_am2_qs.pdf",
+  "page": 10,
+  "scale": 4,
+  "coordinateSystem": "normalized top-left, 1-based PDF page",
+  "crops": [
+    {"asset": "nw-2010-q23-plan-a.png", "box": [0.137, 0.708, 0.345, 0.805]},
+    {"asset": "nw-2010-q23-plan-b.png", "box": [0.373, 0.708, 0.575, 0.825]},
+    {"asset": "nw-2010-q23-plan-c.png", "box": [0.600, 0.708, 0.860, 0.805]}
+  ]
+}

@@ -6,13 +6,15 @@ struct StudySession: Identifiable {
     let mode: StudyMode
     let questions: [Question]
     let timed: Bool
+    let mockSetID: String?
 
-    init(id: UUID = UUID(), title: String, mode: StudyMode, questions: [Question], timed: Bool) {
+    init(id: UUID = UUID(), title: String, mode: StudyMode, questions: [Question], timed: Bool, mockSetID: String? = nil) {
         self.id = id
         self.title = title
         self.mode = mode
         self.questions = questions
         self.timed = timed
+        self.mockSetID = mockSetID
     }
 }
 

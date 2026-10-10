@@ -17,9 +17,17 @@ struct Qualification: Codable {
     let examNote: String
     let privacyPolicyURL: String?
     let ads: AdsConfiguration
+    var choiceLabels: [String]? = nil
+    var mockPassTitle: String? = nil
+    var usesFixedMocks: Bool? = nil
+    var contentCredit: String? = nil
 
     var mascotColorHex: String { mascotBaseHex ?? TankeiPalette.defaultChickenHex }
     var iconDisplayTitle: String { iconTitle ?? name }
+    func choiceLabel(_ index: Int) -> String {
+        if let labels = choiceLabels, labels.indices.contains(index) { return labels[index] }
+        return String(UnicodeScalar(65 + index)!)
+    }
 }
 
 struct AdsConfiguration: Codable {
@@ -47,6 +55,9 @@ struct AdsConfiguration: Codable {
 struct QuestionBank: Codable {
     let version: Int
     let questions: [Question]
+    var mockSets: [MockSet]? = nil
+    /// Partial coverage during development, never a claim of a complete bank.
+    var isDraft: Bool? = nil
 }
 
 struct Question: Codable, Identifiable, Hashable {
@@ -65,8 +76,17 @@ struct Question: Codable, Identifiable, Hashable {
     let tags: [String]
     let concepts: [String]
     let steps: [String]?
+    var administration: String? = nil
+    var kind: QuestionKind? = nil
+    var mockSetID: String? = nil
+    var bodyBlocks: [ContentBlock]? = nil
+    var choiceBlocks: [[ContentBlock]]? = nil
+    var explanationBlocks: [ContentBlock]? = nil
+    var choiceExplanations: [String]? = nil
 
-    var searchText: String { ([stem, explanation, subject, category] + choices + tags + concepts).joined(separator: " ") }
+    var searchText: String { ([stem, explanation, source, subject, category] + choices + tags + concepts +
+        (bodyBlocks ?? []).map(\.searchText)).joined(separator: " ") }
+    var kindTitle: String? { kind?.title }
 }
 
 enum CatalogError: LocalizedError {
@@ -79,6 +99,7 @@ enum CatalogError: LocalizedError {
 struct Catalog {
     let qualification: Qualification
     let questions: [Question]
+    let mockSets: [MockSet]
 
     static func load(id: String) throws -> Catalog {
         guard let config = Bundle.main.url(forResource: "qualification", withExtension: "json"),
@@ -90,15 +111,23 @@ struct Catalog {
         guard qualification.ads.adMobAppID == Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") as? String else {
             throw CatalogError.invalid("AdMobアプリIDと資格設定が一致しません")
         }
-        return try Catalog(qualification: qualification,
-                           bank: JSONDecoder().decode(QuestionBank.self, from: Data(contentsOf: bank)))
+        let catalog = try Catalog(qualification: qualification,
+                                  bank: JSONDecoder().decode(QuestionBank.self, from: Data(contentsOf: bank)))
+        for question in catalog.questions {
+            for block in question.allBlocks where block.type == .image {
+                guard let name = block.assetName, ContentAsset.url(name: name) != nil else {
+                    throw CatalogError.invalid("図版がありません: \(question.id)")
+                }
+            }
+        }
+        return catalog
     }
 
     init(qualification: Qualification, bank: QuestionBank) throws {
-        guard bank.version == 1, !qualification.id.isEmpty, !qualification.name.isEmpty,
+        guard [1, 2].contains(bank.version), !qualification.id.isEmpty, !qualification.name.isEmpty,
               qualification.examMinutes > 0,
               qualification.mockQuestionCount >= qualification.subjects.count,
-              qualification.mockQuestionCount <= bank.questions.count,
+              (qualification.mockQuestionCount <= bank.questions.count || (bank.version == 2 && bank.isDraft == true)),
               (1...100).contains(qualification.passingPercent),
               (0...100).contains(qualification.minimumSubjectPercent),
               qualification.minimumSubjectPercent <= qualification.passingPercent,
@@ -107,6 +136,9 @@ struct Catalog {
               !qualification.iconDisplayTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !qualification.subjects.isEmpty, Set(qualification.subjects).count == qualification.subjects.count,
               !qualification.productID.isEmpty, qualification.ads.isValid,
+              qualification.choiceLabels.map({ labels in
+                  (2...6).contains(labels.count) && Set(labels).count == labels.count && labels.allSatisfy { !$0.isBlank }
+              }) ?? true,
               qualification.privacyPolicyURL.map({ URL(string: $0)?.scheme == "https" }) ?? true else {
             throw CatalogError.invalid("資格設定・広告設定・プライバシーポリシーURL")
         }
@@ -118,14 +150,27 @@ struct Catalog {
               qualification.subjects.allSatisfy({ subject in bank.questions.contains { $0.subject == subject } }),
               qualification.subjects.allSatisfy({ subject in bank.questions.contains { $0.subject == subject && qualification.freeQuestionIDs.contains($0.id) } }),
               bank.questions.allSatisfy({ q in
-                  !q.id.isEmpty && !q.stem.isEmpty && !q.explanation.isEmpty && !q.source.isEmpty &&
+                  !q.id.isBlank && !q.stem.isBlank && !q.explanation.isBlank && !q.source.isBlank &&
                   qualification.subjects.contains(q.subject) && !q.category.isEmpty &&
                   (1...5).contains(q.difficulty) && (2...6).contains(q.choices.count) &&
-                  q.choices.indices.contains(q.correctIndex) && Set(q.choices).count == q.choices.count &&
-                  (q.steps == nil || !(q.steps?.isEmpty ?? true))
+                  q.choices.indices.contains(q.correctIndex) && Set(q.choices).count == q.choices.count && q.choices.allSatisfy { !$0.isBlank } &&
+                  (q.steps == nil || (!(q.steps?.isEmpty ?? true) && q.steps!.allSatisfy { !$0.isBlank })) &&
+                  (qualification.choiceLabels.map { $0.count >= q.choices.count } ?? true) && q.validContent
               }) else { throw CatalogError.invalid("問題ID・科目・正答・無料範囲") }
+        let sets = bank.mockSets ?? []
+        guard Set(sets.map(\.id)).count == sets.count else { throw CatalogError.invalid("模試セットID重複") }
+        for set in sets {
+            guard !set.id.isBlank, !set.title.isBlank, set.minutes > 0, set.questionCount > 0,
+                  set.questionIDs.count == set.questionCount,
+                  Set(set.questionIDs).count == set.questionCount,
+                  Set(set.questionIDs).isSubset(of: Set(ids)),
+                  set.questionIDs.allSatisfy({ id in bank.questions.first { $0.id == id }?.mockSetID == set.id }) else {
+                throw CatalogError.invalid("模試セット構成: \(set.id)")
+            }
+        }
         self.qualification = qualification
         self.questions = bank.questions
+        self.mockSets = sets
     }
 }
 
@@ -197,6 +242,12 @@ struct MockResult: Codable, Identifiable {
     let total: Int
     let passed: Bool
     let subjectScores: [String: Int]
+    var setID: String? = nil
+    var title: String? = nil
+    var startedAt: Date? = nil
+    var duration: TimeInterval? = nil
+    var questionResults: [MockQuestionResult]? = nil
+    var percent: Int { total == 0 ? 0 : score * 100 / total }
 }
 
 struct Mastery: Codable {
@@ -247,12 +298,13 @@ struct StudyData: Codable {
     var recallFirst = true
     var randomScope: RandomScope = .mixed
     var pending: PendingStudy?
+    var pendingMock: PendingMock?
     var examDay: ExamDay?
     var mascotHighestStage = TankeiStage.chick.rawValue
     var mascotNeedsMigration = false
 
     private enum CodingKeys: String, CodingKey {
-        case schemaVersion, answers, mastery, bookmarks, mocks, onboardingCompleted, diagnosticCompleted, recallFirst, randomScope, pending, examDay, mascotHighestStage
+        case schemaVersion, answers, mastery, bookmarks, mocks, onboardingCompleted, diagnosticCompleted, recallFirst, randomScope, pending, pendingMock, examDay, mascotHighestStage
     }
 
     init() {}
@@ -270,6 +322,7 @@ struct StudyData: Codable {
         recallFirst = try c.decode(Bool.self, forKey: .recallFirst)
         randomScope = try c.decodeIfPresent(RandomScope.self, forKey: .randomScope) ?? .mixed
         pending = try c.decodeIfPresent(PendingStudy.self, forKey: .pending)
+        pendingMock = try c.decodeIfPresent(PendingMock.self, forKey: .pendingMock)
         examDay = try c.decodeIfPresent(ExamDay.self, forKey: .examDay)
         mascotHighestStage = try c.decodeIfPresent(Int.self, forKey: .mascotHighestStage) ?? TankeiStage.chick.rawValue
         mascotNeedsMigration = !c.contains(.mascotHighestStage)

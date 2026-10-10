@@ -1,0 +1,795 @@
+{
+  "checkedOn": "2026-10-08",
+  "years": [
+    {
+      "year": 2009,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2009h21.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f3yi-att/2009h21a_nw_am2_qs.pdf",
+          "file": "2009h21a_nw_am2_qs.pdf",
+          "sha256": "5361eb466b6b8f11082df5b7c4f46a54d1e3778203e8d91761b08c0190891606",
+          "pages": 12,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f3yi-att/2009h21a_nw_am2_ans.pdf",
+          "file": "2009h21a_nw_am2_ans.pdf",
+          "sha256": "1e19f90a55fb122846d3a3fb01ee13db1221996c7ca0f4acbeac2537a3579243",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2010,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2010h22.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000004d6f-att/2010h22a_nw_am2_qs.pdf",
+          "file": "2010h22a_nw_am2_qs.pdf",
+          "sha256": "d2ff02bf2c31c52106003b635535c74cfbe8aca310e3a7ee92d3659de0448490",
+          "pages": 12,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000004d6f-att/2010h22a_nw_am2_ans.pdf",
+          "file": "2010h22a_nw_am2_ans.pdf",
+          "sha256": "895349c8651460d80ccb6b986870e23efff865a8d1c02ca8aa15285f1c80adb9",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2011,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2011h23.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000003ojp-att/2011h23a_nw_am2_qs.pdf",
+          "file": "2011h23a_nw_am2_qs.pdf",
+          "sha256": "f64bc05a4317394d1195c4898e32a00092d72c9120e51e965789e5dcbb819581",
+          "pages": 16,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000003ojp-att/2011h23a_nw_am2_ans.pdf",
+          "file": "2011h23a_nw_am2_ans.pdf",
+          "sha256": "de7dfeb77b781030121a91d98c206963825d157bd0a0f3a2e60b06cfd3caf125",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2012,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2012h24.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000002h5m-att/2012h24a_nw_am2_qs.pdf",
+          "file": "2012h24a_nw_am2_qs.pdf",
+          "sha256": "76adbd7be52371aa7ce7e55da8aadbb6543ab06977503e9d9231bd08fb9fc04c",
+          "pages": 12,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000002h5m-att/2012h24a_nw_am2_ans.pdf",
+          "file": "2012h24a_nw_am2_ans.pdf",
+          "sha256": "0358e03d33f016ddd91796e7e145fe976671dbe3ed98da92b96c4e77e2d97657",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2013,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2013h25.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p900000027za-att/2013h25a_nw_am2_qs.pdf",
+          "file": "2013h25a_nw_am2_qs.pdf",
+          "sha256": "d0455dbb89fa2da42d77a1e0f386cae95698f6e782281633778112ff2d917105",
+          "pages": 16,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p900000027za-att/2013h25a_nw_am2_ans.pdf",
+          "file": "2013h25a_nw_am2_ans.pdf",
+          "sha256": "cad8b6ffb9aa6fdc0bd8c339c4a1415bd5a370bdaeff86c58d96cffd97f2c6f2",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2014,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2014h26.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000000ye5-att/2014h26a_nw_am2_qs.pdf",
+          "file": "2014h26a_nw_am2_qs.pdf",
+          "sha256": "70ad80659351ee8f90ed418519dbc1eb27d582671cba7e4c60946a8d78b9292a",
+          "pages": 16,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000000ye5-att/2014h26a_nw_am2_ans.pdf",
+          "file": "2014h26a_nw_am2_ans.pdf",
+          "sha256": "f6981b2f71816666252ce259fb7ebc24d65a83cddc502c56ae555b2fab705b95",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2015,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2015h27.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000gxj0-att/2015h27a_nw_am2_qs.pdf",
+          "file": "2015h27a_nw_am2_qs.pdf",
+          "sha256": "197b3654299e4aee98f9d8fb11fc0e4c8efef8077294d236cb96c600384c2ff3",
+          "pages": 16,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000gxj0-att/2015h27a_nw_am2_ans.pdf",
+          "file": "2015h27a_nw_am2_ans.pdf",
+          "sha256": "b780523726b42ad542146c05f8fd19a3e1809c3c0098911190d9691c035a1a6e",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2016,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2016h28.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_am2_qs.pdf",
+          "file": "2016h28a_nw_am2_qs.pdf",
+          "sha256": "92f962289246ab1eafb3275230febc920251201ba3cc77815bd6e9b646c0630e",
+          "pages": 16,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_nw_am2_ans.pdf",
+          "file": "2016h28a_nw_am2_ans.pdf",
+          "sha256": "b89ff3686ed1aea474df0e09d36af0f6948716737371826781470b1ea3dc03ac",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2017,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2017h29.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fqpm-att/2017h29a_nw_am2_qs.pdf",
+          "file": "2017h29a_nw_am2_qs.pdf",
+          "sha256": "35163a8c035f3a02f3ad5532c029523325aede38e24d3dd11cdb3a335d29dc0d",
+          "pages": 12,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fqpm-att/2017h29a_nw_am2_ans.pdf",
+          "file": "2017h29a_nw_am2_ans.pdf",
+          "sha256": "9de5fb39d3ad2a1996da73eeaf8c12b96ae7224954de2df7c65b200fdc481130",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2018,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2018h30.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_nw_am2_qs.pdf",
+          "file": "2018h30a_nw_am2_qs.pdf",
+          "sha256": "2448a3cb987b6ea8792b4950c292cfed305fa605b0f331ca08b01391fdf9f029",
+          "pages": 16,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_nw_am2_ans.pdf",
+          "file": "2018h30a_nw_am2_ans.pdf",
+          "sha256": "ace80ab5d960f618a11720459b3779df6dbca3bf0f9b518d6881ea2f95a716fe",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2019,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2019h31.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_am2_qs.pdf",
+          "file": "2019r01a_nw_am2_qs.pdf",
+          "sha256": "0f786e1f286ec0535f3133eda22e2ecc4009d09c87412a355647cb0ef3ebac25",
+          "pages": 12,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_nw_am2_ans.pdf",
+          "file": "2019r01a_nw_am2_ans.pdf",
+          "sha256": "7dee83325b23c86c8b69c3a1ef76093f0633da716d4622a8d775d928c4e265fc",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2020,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2020r02.html",
+      "documents": [],
+      "status": "no-nw-am2-links"
+    },
+    {
+      "year": 2021,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2021r03.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_nw_am2_qs.pdf",
+          "file": "2021r03h_nw_am2_qs.pdf",
+          "sha256": "6f7497e20d8e42ad3e4871bcccd962de312bf9421cb3da13053f69974733ad80",
+          "pages": 12,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_nw_am2_ans.pdf",
+          "file": "2021r03h_nw_am2_ans.pdf",
+          "sha256": "36c4a17386f191c4ef6e1cd946b9a0fb0063dfd78b2a40a44a96c13fa14d1773",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2022,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2022r04.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_am2_qs.pdf",
+          "file": "2022r04h_nw_am2_qs.pdf",
+          "sha256": "bff91041bc093499c82499bac421b021fb3ea8bd679b32bdce6c99b217d6557a",
+          "pages": 12,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_nw_am2_ans.pdf",
+          "file": "2022r04h_nw_am2_ans.pdf",
+          "sha256": "44434e2f7f94963325ef195f054b49a1937b74e4f4667f7a69749d1222cbb4d5",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2023,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2023r05.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_am2_qs.pdf",
+          "file": "2023r05h_nw_am2_qs.pdf",
+          "sha256": "3d7d1e8f9215c582e4157d560f73c93e296db9c46997609e358bc2f6558275a9",
+          "pages": 16,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_nw_am2_ans.pdf",
+          "file": "2023r05h_nw_am2_ans.pdf",
+          "sha256": "1c99df5e8f4df5c88da2fd35b0c7987271a4950b031970872f7e924950342ad9",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2024,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2024r06.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_am2_qs.pdf",
+          "file": "2024r06h_nw_am2_qs.pdf",
+          "sha256": "773ca23c1abbd9c252ab3dda71fdd67597a86942d9467327c3027559d13ba8fb",
+          "pages": 16,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_nw_am2_ans.pdf",
+          "file": "2024r06h_nw_am2_ans.pdf",
+          "sha256": "0e53b3fdfb8711b0adf16fb994bf2c67a9d4c34ac5218f3ba5a4c95fbda68131",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    },
+    {
+      "year": 2025,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2025r07.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_am2_qs.pdf",
+          "file": "2025r07h_nw_am2_qs.pdf",
+          "sha256": "3ac3560e459d7e683c913569e3ed118992010c639d13c88d1840481b5e64cb2b",
+          "pages": 16,
+          "role": "questions",
+          "questionNumbers": []
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_nw_am2_ans.pdf",
+          "file": "2025r07h_nw_am2_ans.pdf",
+          "sha256": "5c920bfbd8e7ca82e4812f07a2596f6e26b95b53ca215413d0ad94ee990908ff",
+          "pages": 1,
+          "role": "answers",
+          "questionNumbers": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25
+          ]
+        }
+      ],
+      "status": "requires-booklet-review"
+    }
+  ]
+}

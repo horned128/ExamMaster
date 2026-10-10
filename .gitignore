@@ -6,3 +6,6 @@ DerivedData/
 .opencode
 .agents/
 skills-lock.json
+docs/network-specialist/evidence/
+.venv-network/
+tools/network-specialist/__pycache__/

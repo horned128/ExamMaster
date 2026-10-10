@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object", "additionalProperties": false,
+  "required": ["version", "questions"],
+  "properties": {
+    "version": {"enum": [1, 2]},
+    "isDraft": {"type": ["boolean", "null"]},
+    "mockSets": {"type": ["array", "null"], "items": {"$ref": "#/$defs/set"}},
+    "questions": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/question"}}
+  },
+  "$defs": {
+    "string": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "strings": {"type": "array", "items": {"$ref": "#/$defs/string"}},
+    "block": {
+      "type": "object", "additionalProperties": false, "required": ["type"],
+      "properties": {
+        "type": {"enum": ["text", "image", "table", "monospace", "formula"]},
+        "text": {"$ref": "#/$defs/string"}, "assetName": {"type": "string", "pattern": "^[A-Za-z0-9_-]+\\.png$"},
+        "altText": {"$ref": "#/$defs/string"}, "caption": {"$ref": "#/$defs/string"},
+        "headers": {"$ref": "#/$defs/strings"},
+        "rows": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/strings"}}
+      },
+      "allOf": [
+        {"if": {"properties": {"type": {"enum": ["text", "monospace", "formula"]}}}, "then": {"required": ["text"]}},
+        {"if": {"properties": {"type": {"const": "image"}}}, "then": {"required": ["assetName", "altText"]}},
+        {"if": {"properties": {"type": {"const": "table"}}}, "then": {"required": ["headers", "rows"]}}
+      ]
+    },
+    "blocks": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/block"}},
+    "question": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "year", "subject", "category", "stem", "choices", "correctIndex", "explanation", "source", "difficulty", "tags", "concepts", "questionNumber", "administration", "kind", "mockSetID"],
+      "properties": {
+        "id": {"$ref": "#/$defs/string"}, "year": {"type": "integer"},
+        "subject": {"$ref": "#/$defs/string"}, "category": {"$ref": "#/$defs/string"}, "stem": {"$ref": "#/$defs/string"},
+        "choices": {"type": "array", "minItems": 2, "maxItems": 6, "uniqueItems": true, "items": {"$ref": "#/$defs/string"}},
+        "correctIndex": {"type": "integer", "minimum": 0, "maximum": 5},
+        "explanation": {"$ref": "#/$defs/string"}, "source": {"$ref": "#/$defs/string"},
+        "questionNumber": {"type": ["integer", "null"], "minimum": 1}, "imageName": {"type": ["string", "null"]},
+        "difficulty": {"type": "integer", "minimum": 1, "maximum": 5},
+        "tags": {"$ref": "#/$defs/strings"}, "concepts": {"$ref": "#/$defs/strings"},
+        "steps": {"type": ["array", "null"], "items": {"$ref": "#/$defs/string"}, "minItems": 1},
+        "administration": {"enum": ["spring", "autumn", "prediction"]}, "kind": {"enum": ["past", "prediction"]},
+        "mockSetID": {"$ref": "#/$defs/string"}, "bodyBlocks": {"$ref": "#/$defs/blocks"},
+        "choiceBlocks": {"type": "array", "items": {"$ref": "#/$defs/blocks"}},
+        "explanationBlocks": {"$ref": "#/$defs/blocks"}, "choiceExplanations": {"$ref": "#/$defs/strings"}
+      }
+    },
+    "set": {
+      "type": "object", "additionalProperties": false, "required": ["id", "title", "kind", "questionIDs", "questionCount", "minutes"],
+      "properties": {
+        "id": {"$ref": "#/$defs/string"}, "title": {"$ref": "#/$defs/string"}, "kind": {"enum": ["past", "prediction"]},
+        "questionIDs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/string"}},
+        "questionCount": {"type": "integer", "minimum": 1}, "minutes": {"type": "integer", "minimum": 1}
+      }
+    }
+  }
+}

@@ -242,8 +242,11 @@ struct InsightsView: View {
             if recentMocks.isEmpty {
                 Label("記録はこれから", systemImage: "chart.xyaxis.line")
                     .font(.subheadline).foregroundStyle(Palette.muted)
-                Button("模擬試験を試す") { start(SessionPlanner.mock(catalog, unlocked: purchase.unlocked)) }
-                    .frame(minHeight: 44)
+                if catalog.qualification.usesFixedMocks == true {
+                    NavigationLink("固定模試を選ぶ") { MockExamLibraryView(catalog: catalog, store: store, purchase: purchase, start: start, paywall: paywall) }
+                } else {
+                    Button("模擬試験を試す") { start(SessionPlanner.mock(catalog, unlocked: purchase.unlocked)) }.frame(minHeight: 44)
+                }
             } else {
                 Chart {
                     ForEach(recentMocks) { mock in
@@ -263,13 +266,15 @@ struct InsightsView: View {
                 Text("破線：全体の基準 \(catalog.qualification.passingPercent)%")
                     .font(.caption).foregroundStyle(Palette.muted)
                 ForEach(store.data.mocks.suffix(5).reversed()) { mock in
-                    HStack {
+                    NavigationLink { MockResultDetailView(result: mock, catalog: catalog, purchase: purchase) } label: { HStack {
                         Text(mock.date, style: .date)
                         Spacer()
                         Text("\(mock.score) / \(mock.total) · \(mock.passed ? "基準到達" : "見直し")")
                             .font(.subheadline).foregroundStyle(Palette.muted)
                     }
+                    }
                 }
+                NavigationLink("すべての模試結果") { MockExamLibraryView(catalog: catalog, store: store, purchase: purchase, start: start, paywall: paywall) }
             }
         }
     }

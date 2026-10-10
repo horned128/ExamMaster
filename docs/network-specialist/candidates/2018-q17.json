@@ -1,0 +1,14 @@
+{
+  "version": 2, "isDraft": true, "mockSets": [],
+  "questions": [{
+    "id": "nw-2018-autumn-q17", "year": 2018, "administration": "autumn", "kind": "past", "mockSetID": "nw-2018-autumn",
+    "subject": "セキュリティ", "category": "EAP認証",
+    "stem": "認証にクライアント証明書を用いるプロトコルはどれか。",
+    "choices": ["EAP-FAST", "EAP-MD5", "EAP-TLS", "EAP-TTLS"], "correctIndex": 2,
+    "explanation": "未承認の調査草稿です。公式正答はEAP-TLSです。RFC5216とRFC9190で証明書による相互認証を確認できます。一方，RFC5281 §7/§7.6はEAP-TTLSでも任意のクライアント証明書認証を規定しており，エを誤りとする一意性の説明は未解決です。原文には『必須』『基本』『代表的』という限定がなく，限定を推測追加してレビューを通過させません。",
+    "choiceExplanations": ["EAP-FASTはPAC等でトンネルを作り内部認証を保護します。これだけで原文の全構成を排除できるとは断言しません。", "EAP-MD5はチャレンジレスポンスによる方式で，証明書による相互認証ではありません。", "公式正答はウで，EAP-TLSの証明書による相互認証は仕様から確認済みです。", "RFC5281はphase1でクライアント証明書による認証を許し，phase2へ入らない構成も示します。この肢の誤答理由を『証明書を使えない』とは説明できません。"],
+    "steps": ["公式正答ウを変更しない。", "RFC5281の任意クライアント認証と原問の限定のない文言を比較する。", "技術的一意性の根拠が解決するまで同梱せず，2018公式模試も登録しない。"],
+    "source": "ネットワークスペシャリスト試験 2018年秋期 午前Ⅱ 問17", "questionNumber": 17, "imageName": null,
+    "difficulty": 3, "tags": ["EAP-TLS", "クライアント証明書", "保留"], "concepts": ["EAP方式比較", "認証条件"]
+  }]
+}

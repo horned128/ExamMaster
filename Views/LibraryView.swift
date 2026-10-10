@@ -8,6 +8,7 @@ struct LibraryView: View {
     let ads: AdsService
     let start: (StudySession) -> Void
     let settings: () -> Void
+    var paywall: () -> Void = {}
 
     private var years: [Int] { Array(Set(catalog.questions.map(\.year))).sorted(by: >) }
     private var categories: [String] { Array(Set(catalog.questions.map(\.category))).sorted() }
@@ -32,10 +33,14 @@ struct LibraryView: View {
                 }
             }
             Section("学習モード") {
-                Button {
-                    start(SessionPlanner.mock(catalog, unlocked: purchase.unlocked))
-                } label: {
-                    Label("模擬試験 · \(catalog.qualification.examMinutes)分", systemImage: "timer")
+                if catalog.qualification.usesFixedMocks == true {
+                    NavigationLink {
+                        MockExamLibraryView(catalog: catalog, store: store, purchase: purchase, start: start, paywall: paywall)
+                    } label: { Label("年度別・オリジナル模試", systemImage: "timer") }
+                } else {
+                    Button { start(SessionPlanner.mock(catalog, unlocked: purchase.unlocked)) } label: {
+                        Label("模擬試験 · \(catalog.qualification.examMinutes)分", systemImage: "timer")
+                    }
                 }
                 NavigationLink(value: QuestionCollectionRoute.incorrect) {
                     Label("間違えた問題", systemImage: "arrow.uturn.backward")

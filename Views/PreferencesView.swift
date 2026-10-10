@@ -79,6 +79,9 @@ struct PreferencesView: View {
                     Label("データとプライバシー", systemImage: "hand.raised")
                 }
             }
+            if let credit = catalog.qualification.contentCredit {
+                Section("教材について") { Text(credit).font(.footnote) }
+            }
         }
         .navigationTitle("設定")
         .scrollContentBackground(.hidden)

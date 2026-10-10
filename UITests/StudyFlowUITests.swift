@@ -445,7 +445,7 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertTrue(app.buttons["順番に回答 · 8問"].waitForExistence(timeout: 5))
         app.tabBars.buttons["ホーム"].tap()
         XCTAssertTrue(app.buttons["homeHeading"].waitForExistence(timeout: 5))
-        let resume = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "続きから")).firstMatch
+        let resume = app.buttons["resumeStudy"]
         XCTAssertTrue(resume.waitForExistence(timeout: 5))
         resume.tap()
         XCTAssertTrue(app.staticTexts["正解です"].waitForExistence(timeout: 5))
@@ -552,9 +552,11 @@ final class StudyFlowUITests: XCTestCase {
         let mock = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "模擬試験")).firstMatch
         XCTAssertTrue(mock.exists)
         mock.tap()
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "40:00")).firstMatch.waitForExistence(timeout: 5) ||
-                      app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "39:")).firstMatch.exists)
-        app.buttons["学習を中断"].tap()
+        let timer = app.descendants(matching: .any).matching(identifier: "mockRemainingTime").firstMatch
+        XCTAssertTrue(timer.waitForExistence(timeout: 5))
+        XCTAssertTrue(timer.label.hasPrefix("残り時間 "))
+        XCTAssertTrue(app.buttons["mockChoice-0"].exists)
+        app.buttons["mockSuspend"].tap()
         app.buttons["模試を中断する"].tap()
     }
 
@@ -630,7 +632,8 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertTrue(app.buttons["startDailyStudy"].isHittable)
         app.swipeUp()
         app.buttons["記憶と復習のしくみ"].tap()
-        XCTAssertTrue(app.staticTexts["間隔をあけて、記憶を育てる。"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["記憶と学習"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["覚えたつもりを、\n思い出せる力に。"].exists)
         capture(app, name: "詳細・必要なときだけ読む")
         app.buttons["閉じる"].tap()
         app.swipeDown()
@@ -658,11 +661,14 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertTrue(app.buttons["選択肢を見る"].isHittable)
         capture(app, name: "最大文字サイズ・想起")
         app.buttons["選択肢を見る"].tap()
+        XCTAssertFalse(app.buttons["submitOrAdvance"].isEnabled)
+        capture(app, name: "最大文字サイズ・未回答の確定操作名")
         app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch.tap()
         XCTAssertTrue(app.buttons["回答を確定"].isHittable)
     }
 
     func testCompactHomeAndLandscape() {
+        XCUIDevice.shared.orientation = .portrait
         let app = XCUIApplication()
         app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
         app.launch()
@@ -674,15 +680,28 @@ final class StudyFlowUITests: XCTestCase {
         capture(app, name: "コンパクト・ホーム")
         XCUIDevice.shared.orientation = .landscapeLeft
         defer { XCUIDevice.shared.orientation = .portrait }
-        let rotated = NSPredicate { _, _ in app.frame.width > app.frame.height }
+        // Application attributes may remain empty/stale after rotation on iOS 26.
+        // The rendered window, not XCUIApplication.frame, is the layout under test.
+        let window = app.windows.firstMatch
+        let rotated = NSPredicate { _, _ in window.frame.width > window.frame.height }
         let rotation = XCTNSPredicateExpectation(predicate: rotated, object: app)
-        XCTAssertEqual(XCTWaiter.wait(for: [rotation], timeout: 5), .completed)
+        guard XCTWaiter.wait(for: [rotation], timeout: 10) == .completed else {
+            capture(app, name: "回転要求後も縦向き・横向き未検証")
+            XCTFail("実ウィンドウが横向きになりませんでした")
+            return
+        }
+        capture(app, name: "横向き・ホームの実画面")
         // XCTest scrolls this specific control into view. Whole-screen swipes can
         // overshoot it in a compact landscape viewport.
         app.buttons["startDailyStudy"].tap()
         XCTAssertTrue(app.buttons["選択肢を見る"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["選択肢を見る"].isHittable)
         capture(app, name: "横向き・下部操作")
+        app.buttons["選択肢を見る"].tap()
+        let submit = app.buttons["submitOrAdvance"]
+        XCTAssertTrue(submit.isHittable)
+        XCTAssertFalse(submit.isEnabled)
+        capture(app, name: "横向き・未回答の確定操作名")
     }
 
     private func capture(_ app: XCUIApplication, name: String) {
@@ -759,7 +778,7 @@ final class StudyFlowUITests: XCTestCase {
             let origin = app.coordinate(withNormalizedOffset: .zero)
             let start = origin.withOffset(CGVector(dx: app.frame.midX, dy: startY))
             let end = origin.withOffset(CGVector(dx: app.frame.midX, dy: startY + (down ? distance : -distance)))
-            start.press(forDuration: 0.05, thenDragTo: end)
+            start.press(forDuration: 0.1, thenDragTo: end, withVelocity: .slow, thenHoldForDuration: 0.2)
         }
         XCTAssertTrue(element.isHittable)
         XCTAssertGreaterThanOrEqual(element.frame.minY, top)

@@ -113,7 +113,7 @@ final class EngineTests: XCTestCase {
     func testCatalogRejectsUnsupportedDataVersion() throws {
         let catalog = try Catalog.load(id: "demo-safety")
         XCTAssertThrowsError(try Catalog(qualification: catalog.qualification,
-                                         bank: QuestionBank(version: 2, questions: catalog.questions)))
+                                         bank: QuestionBank(version: 99, questions: catalog.questions)))
     }
 
     func testQualificationBrandingIsDataDrivenAndBackwardsCompatible() throws {

@@ -174,6 +174,7 @@ struct QuestionCollectionView: View {
     private var showAds: Bool { !purchase.unlocked && !purchase.purchasing && ads.canShowBanner }
 
     private func metadata(for question: Question) -> String {
+        if question.kind != nil { return "\(question.kindTitle ?? "") · \(question.source)" }
         if case .year = route { return question.subject }
         return "\(question.year.formatted(.number.grouping(.never))) · \(question.subject)"
     }

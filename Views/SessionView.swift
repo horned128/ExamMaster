@@ -144,13 +144,8 @@ struct SessionView: View {
                             .font(.caption).foregroundStyle(Palette.muted)
                     }
                     .id("questionTop")
-                    Text(question.stem).font(.title3.weight(.semibold))
-                        .fixedSize(horizontal: false, vertical: true)
-                        .accessibilityAddTraits(.isHeader)
-                    if let image = question.imageName {
-                        Image(image).resizable().scaledToFit()
-                            .accessibilityLabel("問題図版")
-                    }
+                    if let kind = question.kindTitle { Text(kind).font(.caption).foregroundStyle(Palette.muted) }
+                    QuestionBodyView(question: question)
                     if recallMode && !revealed {
                         Surface {
                             Label("答えを思い浮かべる", systemImage: "bubble.left")
@@ -162,6 +157,7 @@ struct SessionView: View {
                         VStack(spacing: 10) {
                             ForEach(question.choices.indices, id: \.self) { choice in
                                 choiceButton(choice)
+                                if let blocks = question.choiceBlocks { RichContentView(blocks: blocks[choice]) }
                             }
                         }
                         if !submitted && !session.timed {
@@ -187,6 +183,7 @@ struct SessionView: View {
                 .frame(maxWidth: 640)
                 .frame(maxWidth: .infinity)
               }
+              .accessibilityIdentifier("studyQuestionScroll")
               .onChange(of: index) { _, _ in proxy.scrollTo("questionTop", anchor: .top) }
               .onChange(of: submitted) { _, value in
                   if value {
@@ -206,16 +203,29 @@ struct SessionView: View {
                     .tint(Palette.accent(qualification.accentHex)).foregroundStyle(Palette.onAccent(qualification.accentHex))
                     .padding(16).frame(maxWidth: .infinity).background(.bar)
             } else {
-                Button {
+                let unavailable = selected == nil && !submitted
+                let action = Button {
                     if submitted { advance() } else { submit() }
                 } label: {
                     Text(submitted ? (session.mode == .search ? "一覧へ戻る" : (index + 1 == session.questions.count ? "結果を見る" : "次の問題へ")) :
                          (session.timed && index + 1 == session.questions.count ? "回答して採点する" : "回答を確定"))
                          .font(.headline).frame(maxWidth: .infinity, minHeight: 44)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Palette.accent(qualification.accentHex)).foregroundStyle(Palette.onAccent(qualification.accentHex))
-                .disabled(selected == nil && !submitted)
+                Group {
+                    if unavailable {
+                        // The system prominent style fades disabled ink too far
+                        // on light surfaces. Keep a readable, non-interactive state.
+                        action.buttonStyle(StudyButtonStyle())
+                            .foregroundStyle(Palette.ink)
+                            .padding(.vertical, 8)
+                            .background(Palette.track, in: Capsule())
+                    } else {
+                        action.buttonStyle(.borderedProminent)
+                            .tint(Palette.accent(qualification.accentHex))
+                            .foregroundStyle(Palette.onAccent(qualification.accentHex))
+                    }
+                }
+                .disabled(unavailable)
                 .padding(16).frame(maxWidth: 672).frame(maxWidth: .infinity)
                 .background(.bar)
                 .accessibilityIdentifier("submitOrAdvance")
@@ -230,7 +240,7 @@ struct SessionView: View {
             if !submitted { selected = choice }
         } label: {
             HStack(alignment: .top, spacing: 12) {
-                Text(String(UnicodeScalar(65 + choice)!))
+                Text(qualification.choiceLabel(choice))
                     .font(.subheadline.bold())
                     .frame(width: choiceMarkerSize, height: choiceMarkerSize)
                     .background(.tint.opacity(0.12), in: Circle())
@@ -275,6 +285,9 @@ struct SessionView: View {
                 TankeiView(state: correct ? .celebrate : .recover,
                            stage: initialGrowthStage, size: 120, animated: true, idle: true, expressive: true, eventID: index)
             }
+            if question.choiceExplanations != nil {
+                QuestionExplanationView(question: question, qualification: qualification)
+            }
             if let steps = question.steps {
                 Text("解き方").font(.headline)
                 ForEach(0..<visibleSteps, id: \.self) { step in
@@ -289,7 +302,7 @@ struct SessionView: View {
                     .frame(minHeight: 44)
                 }
             }
-            if question.steps == nil || visibleSteps == question.steps?.count {
+            if question.choiceExplanations == nil && (question.steps == nil || visibleSteps == question.steps?.count) {
                 Text(question.explanation).font(.body)
                 DisclosureGroup("出典") {
                     Text(question.source).font(.caption).foregroundStyle(Palette.muted)
