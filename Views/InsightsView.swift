@@ -10,8 +10,7 @@ struct InsightsView: View {
     let ads: AdsService
     let start: (StudySession) -> Void
     let paywall: () -> Void
-    let settings: () -> Void
-    let openCompanion: () -> Void
+    var settings: (() -> Void)? = nil
 
     @State private var month = Calendar.current.dateInterval(of: .month, for: .now)?.start ?? .now
     @State private var selectedDay = Calendar.current.startOfDay(for: .now)
@@ -29,7 +28,7 @@ struct InsightsView: View {
                 let byDay = Dictionary(grouping: store.data.answers, by: { Calendar.current.startOfDay(for: $0.date) })
                 VStack(alignment: .leading, spacing: 20) {
                     learningSummary(stats: stats, retention: retention, available: available, now: timeline.date)
-                    companionSummary(growth: growth)
+                    TankeiRecordCompanion(growth: growth)
                     studyHistory(stats: stats, byDay: byDay)
                     mockHistory
                     if !purchase.unlocked && !purchase.purchasing && ads.canShowBanner {
@@ -41,13 +40,13 @@ struct InsightsView: View {
         }
         .background(Palette.background)
         .environment(\.mascotMotionEnabled, parentMotionEnabled && !showLearningGuide)
-        .navigationTitle("学習の記録")
+        .navigationTitle("学習記録")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            if let settings { ToolbarItem(placement: .topBarTrailing) {
                 Button(action: settings) { Image(systemName: "gearshape") }
                     .accessibilityLabel("設定")
-            }
+            } }
         }
         .sheet(isPresented: $showLearningGuide) {
             LearningGuideView(stage: TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked).stage,
@@ -103,30 +102,6 @@ struct InsightsView: View {
         }
     }
 
-    private func companionSummary(growth: TankeiGrowth) -> some View {
-        Button(action: openCompanion) {
-            HStack(spacing: 12) {
-                TankeiView(stage: growth.stage, size: 56, idle: true)
-                VStack(alignment: .leading, spacing: 4) {
-                    let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4)) :
-                        AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
-                    layout {
-                        Text("相棒の成長").font(.subheadline)
-                        Text(growth.stage.title).font(.subheadline.bold())
-                    }
-                    Text(growth.stage.companionMessage)
-                        .font(.caption).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                Image(systemName: "chevron.right").font(.caption).foregroundStyle(Palette.muted).accessibilityHidden(true)
-            }
-            .foregroundStyle(Palette.ink).frame(minHeight: 44).contentShape(Rectangle())
-        }
-        .buttonStyle(StudyButtonStyle()).accessibilityIdentifier("recordCompanion")
-        .accessibilityLabel("相棒の成長、\(growth.stage.title)")
-        .accessibilityHint("相棒に会えます")
-    }
-
     private func studyHistory(stats: StudyStats, byDay: [Date: [Answer]]) -> some View {
         Surface(inset: 12) {
             VStack(alignment: .leading, spacing: 4) {
@@ -176,7 +151,10 @@ struct InsightsView: View {
                 }
                 if !store.data.answers.isEmpty {
                     Divider()
-                    Button("すべての回答を見る", action: openCompanion)
+                    NavigationLink("すべての回答を見る") {
+                        StudyHistoryView(title: "回答履歴", answers: store.data.answers, catalog: catalog, purchase: purchase,
+                                         start: start, paywall: paywall)
+                    }
                     .frame(minHeight: 44)
                     .accessibilityIdentifier("allAnswerHistory")
                 }
@@ -242,11 +220,8 @@ struct InsightsView: View {
             if recentMocks.isEmpty {
                 Label("記録はこれから", systemImage: "chart.xyaxis.line")
                     .font(.subheadline).foregroundStyle(Palette.muted)
-                if catalog.qualification.usesFixedMocks == true {
-                    NavigationLink("固定模試を選ぶ") { MockExamLibraryView(catalog: catalog, store: store, purchase: purchase, start: start, paywall: paywall) }
-                } else {
-                    Button("模擬試験を試す") { start(SessionPlanner.mock(catalog, unlocked: purchase.unlocked)) }.frame(minHeight: 44)
-                }
+                Text("年度別の問題一覧から、模擬試験を始められます。")
+                    .font(.caption).foregroundStyle(Palette.muted)
             } else {
                 Chart {
                     ForEach(recentMocks) { mock in
@@ -274,7 +249,7 @@ struct InsightsView: View {
                     }
                     }
                 }
-                NavigationLink("すべての模試結果") { MockExamLibraryView(catalog: catalog, store: store, purchase: purchase, start: start, paywall: paywall) }
+                NavigationLink("すべての模試結果") { MockResultHistoryView(catalog: catalog, store: store, purchase: purchase) }
             }
         }
     }
@@ -303,28 +278,42 @@ struct InsightsView: View {
 }
 
 struct StudyHistoryView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let title: String
     let answers: [Answer]
     let catalog: Catalog
     let purchase: PurchaseManager
     let start: (StudySession) -> Void
     let paywall: () -> Void
+    @State private var order: AnswerHistoryOrder = .newest
+
+    private var orderPicker: some View {
+        Picker("回答履歴の並び順", selection: $order) {
+            ForEach(AnswerHistoryOrder.allCases) { item in Text(item.title).tag(item) }
+        }.accessibilityIdentifier("historyOrder")
+    }
 
     var body: some View {
         List {
-            if answers.isEmpty {
-                ContentUnavailableView("この日の学習記録はありません", systemImage: "calendar")
-            } else {
-                Section("\(answers.count)回答 · \(answers.filter(\.correct).count)正解") {
-                    ForEach(Array(answers.reversed())) { answer in
+            Section {
+                Text("\(answers.count)回答 · \(answers.filter(\.correct).count)正解").font(.subheadline)
+                if dynamicTypeSize.isAccessibilitySize { orderPicker.pickerStyle(.menu) }
+                else { orderPicker.pickerStyle(.segmented) }
+            }
+            if answers.isEmpty { ContentUnavailableView("学習記録はありません", systemImage: "calendar") }
+            ForEach(AnswerHistoryDay.grouped(answers, order: order)) { day in
+                Section {
+                    ForEach(day.answers) { answer in
                         HistoryAnswerRow(answer: answer, catalog: catalog, purchase: purchase,
-                                         start: start, paywall: paywall)
+                                         start: start, paywall: paywall, showDate: false)
                     }
+                } header: {
+                    Text(day.date, format: .dateTime.year().month().day().weekday())
+                        .accessibilityIdentifier("historyDay")
                 }
             }
         }
-        .navigationTitle(title)
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationTitle(title).navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -348,7 +337,7 @@ struct HistoryAnswerRow: View {
                          .foregroundStyle(answer.correct ? Palette.positive : Palette.review)
                          .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(question.stem).font(.subheadline).foregroundStyle(Palette.ink).lineLimit(2)
+                        Text(purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? question.stem : "有料問題").font(.subheadline).foregroundStyle(Palette.ink).lineLimit(2)
                         Text("\(answer.date.formatted(date: showDate ? .abbreviated : .omitted, time: .shortened)) · \(question.subject)")
                              .font(.caption).foregroundStyle(Palette.muted)
                     }
@@ -361,7 +350,7 @@ struct HistoryAnswerRow: View {
             }
             .buttonStyle(StudyButtonStyle())
             .accessibilityIdentifier("historyAnswer-\(answer.id.uuidString)")
-            .accessibilityLabel("\(answer.correct ? "正解" : "見直し")、\(question.stem)、\(answer.date.formatted(date: .abbreviated, time: .shortened))")
+            .accessibilityLabel("\(answer.correct ? "正解" : "見直し")、\(purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? question.stem : "有料問題")、\(answer.date.formatted(date: .abbreviated, time: .shortened))")
             .accessibilityHint(purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? "この問題を開きます" : "全問題解放の購入画面を開きます")
         } else {
             VStack(alignment: .leading, spacing: 4) {

@@ -1,10 +1,9 @@
-"""Check actual 2018 data; never complete its held question or mock."""
+"""Verify the complete 2018 bank, official keys, and historical-answer caveats."""
 from fractions import Fraction
 import ipaddress
 import re
 import unittest
 from urllib.parse import urlsplit
-from assemble_bank import assemble
 from validate import APP, DOCS, load, official_answers
 
 
@@ -14,22 +13,22 @@ class Calculations2018Tests(unittest.TestCase):
         cls.part = load(DOCS / "content/2018.json")
         cls.questions = {q["questionNumber"]: q for q in cls.part["questions"]}
 
-    def test_original_answers_and_hold_not_bundled_or_mocked(self):
+    def test_official_answers_complete_mock_and_historical_caveat(self):
         answers = official_answers(DOCS / "evidence/2018h30a_nw_am2_ans.pdf")
-        self.assertEqual(set(answers), set(range(1, 26)))
-        self.assertEqual(set(self.questions), set(range(1, 26)) - {17})
+        self.assertEqual(set(self.questions), set(range(1, 26)))
         self.assertTrue(all(q["correctIndex"] == answers[n] for n, q in self.questions.items()))
-        self.assertEqual(self.part["mockSets"], [])
-        candidate = load(DOCS / "candidates/2018-q17.json")
-        question = candidate["questions"][0]
-        self.assertEqual(question["correctIndex"], answers[17])
-        reviews = load(DOCS / "reviews.json")["questionReviews"]
-        self.assertEqual(reviews[question["id"]]["stage2"], "held")
-        with self.assertRaisesRegex(ValueError, "Unreviewed or held question"):
-            assemble([candidate], reviews, load(DOCS / "review-snapshots.json"))
+        question = self.questions[17]
+        self.assertIn("当時の公式正答で採点", question["explanation"])
+        self.assertIn("任意", question["explanation"])
+        self.assertIn("RFC5281", question["explanation"])
+        self.assertIn("任意で利用", question["choiceExplanations"][3])
+        mock, = self.part["mockSets"]
+        self.assertEqual(mock["questionIDs"], [self.questions[n]["id"] for n in range(1, 26)])
+        self.assertEqual((mock["questionCount"], mock["minutes"]), (25, 40))
         bank = load(APP / "questions.json")
-        self.assertNotIn(question["id"], {q["id"] for q in bank["questions"]})
-        self.assertNotIn("nw-2018-autumn", {s["id"] for s in bank["mockSets"]})
+        self.assertIn(question, bank["questions"])
+        self.assertIn(mock, bank["mockSets"])
+        self.assertFalse(self.part["isDraft"])
 
     def test_hexadecimal_mask_host_count(self):
         q = self.questions[10]

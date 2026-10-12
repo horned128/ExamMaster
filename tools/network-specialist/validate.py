@@ -51,6 +51,7 @@ def main():
     def require(condition, message):
         if not condition: errors.append(message)
     require(len(by_id) == len(questions), "問題ID重複")
+    require(all(2013 <= q["year"] <= 2025 for q in questions if q["kind"] == "past"), "公開過去問の対象年度2013〜2025")
     require(config["mockQuestionCount"] == 25 and config["examMinutes"] == 40, "試験設定25問/40分")
     require(config["passingPercent"] == 60 and config["minimumSubjectPercent"] == 0, "基準点/足切り")
     require(config["choiceLabels"] == list("アイウエ"), "選択肢記号")
@@ -116,7 +117,7 @@ def main():
         verified = sum(reviews.get(q["id"], {}).get("stage1") == "passed" and reviews.get(q["id"], {}).get("stage2") == "passed" and snapshots.get(q["id"]) == digest(q) for q in items)
         holds = {key: reviews[key]["notes"] for key in expected_ids if reviews.get(key, {}).get("stage2") == "held"}
         counts.append({"year": year["year"], "period": period, "official": official, "included": len(items), "verified": verified, "held": official - verified, "missingQuestionIDs": [f'nw-{year["year"]}-{period}-q{n:02d}' for n in answer["questionNumbers"] if n not in nums], "heldReviewNotes": holds, "reason": "未転記・未解説・未レビュー，個別保留はheldReviewNotes参照" if verified < official else None})
-        if set(nums) != set(answer["questionNumbers"]): incomplete.append(f'{year["year"]}:収録{len(items)}/{official}')
+        if year["year"] >= 2013 and set(nums) != set(answer["questionNumbers"]): incomplete.append(f'{year["year"]}:収録{len(items)}/{official}')
     sets = bank.get("mockSets", [])
     require(all(q["id"] in official_ids for q in questions if q["kind"] == "past"), "公式原本にない年度/期/問番号")
     require(sum(row["official"] for row in counts) == 400, "公式原本400問の調査不整合")
@@ -128,7 +129,7 @@ def main():
         require([by_id[i]["questionNumber"] for i in s["questionIDs"] if i in by_id] == list(range(1, 26)), f'{s["id"]}:原問順')
         if s["kind"] == "past": require(s["questionIDs"] == official_sets.get(s["id"]), f'{s["id"]}:公式年度セット不一致')
     for row in counts:
-        if row["official"] and f'nw-{row["year"]}-{row["period"]}' not in {s["id"] for s in sets}: incomplete.append(f'{row["year"]}:固定模試未完成')
+        if row["year"] >= 2013 and row["official"] and f'nw-{row["year"]}-{row["period"]}' not in {s["id"] for s in sets}: incomplete.append(f'{row["year"]}:固定模試未完成')
     prediction = [q for q in questions if q.get("kind") == "prediction"]
     if len(prediction) != 75: incomplete.append(f"予想問題{len(prediction)}/75")
     prediction_counts = {}
@@ -141,6 +142,10 @@ def main():
             require(sum(q["difficulty"] <= 2 for q in items) == 5 and sum(q["difficulty"] == 3 for q in items) == 15 and sum(q["difficulty"] >= 4 for q in items) == 5, f"{set_id}:難易度配分")
         if set_id not in {s["id"] for s in sets}: incomplete.append(f"{set_id}:固定模試未完成")
     require(all(q["mockSetID"] in prediction_counts and q["administration"] == "prediction" for q in prediction), "予想セットID/実施区分")
+    for q in prediction:
+        require(q["year"] == 2026 and q["id"] == f'{q["mockSetID"]}-q{q["questionNumber"]:02d}', f'{q["id"]}:予想年度/問ID')
+        number = int(q["mockSetID"].rsplit("-", 1)[-1]) if q["mockSetID"] in prediction_counts else 0
+        require(q["source"] == f'ExamMaster オリジナル 2026年予想問題 第{number}回 問{q["questionNumber"]}', f'{q["id"]}:予想出典')
     # Independent numeric checks for the prototype's calculation/diagram problems.
     require(180 / 180 * 80 == 80, "呼量計算")
     require(abs(2000 * (1 - (1 - 1e-5) ** 800) - 16) < 0.1, "誤り電文計算")
@@ -148,7 +153,7 @@ def main():
     candidates = [ipaddress.ip_network(s) for s in ["172.16.1.0/25", "172.16.1.128/25", "172.16.1.128/26", "172.16.1.192/26"]]
     require([i for i, c in enumerate(candidates) if not any(c.overlaps(e) for e in existing)] == [2], "サブネット正答一意性")
     products = load(APP / "products.storekit")["products"]
-    require(len(products) == 1 and products[0]["productID"] == config["productID"] and products[0]["type"] == "NonConsumable" and products[0]["displayPrice"] == "500", "資格固有IAP")
+    require(len(products) == 1 and products[0]["productID"] == config["productID"] and products[0]["type"] == "NonConsumable" and products[0]["displayPrice"] == "480", "資格固有IAP")
     if bank.get("isDraft"): incomplete.append("問題集は試作版")
     report = {"years": counts, "included": len(questions), "free": len(expected_free), "paid": len(questions) - len(expected_free), "figures": len(figures), "predictions": len(prediction), "predictionDifficulty": prediction_counts, "errors": errors, "incomplete": incomplete, "releaseReady": not errors and not incomplete}
     (DOCS / "validation-report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")

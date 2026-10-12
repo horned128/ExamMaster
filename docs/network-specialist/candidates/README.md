@@ -7,3 +7,6 @@
 2010年秋期問23は2026-10-09に正式な制作内レビューを終えて移動した。
 記録は[`../review-notes/2010-q23.md`](../review-notes/2010-q23.md)。
 独立専門家校閲・全画面/実機検証の完了を意味しない。
+
+
+2015問9・2018問17の旧保留草稿は`../archive/held-drafts/`へ保存した。2026-10-11の最新指定に従った現行本文は`../content/2015.json`と`../content/2018.json`に収録済み。2024問22も`../content/2024.json`に収録。[公式正答による採点・注意書きの方針](../review-notes/historical-answer-policy.md)を参照。

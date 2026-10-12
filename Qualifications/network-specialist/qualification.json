@@ -1,6 +1,7 @@
 {
   "id": "network-specialist",
   "name": "ネットワークスペシャリスト",
+  "brandName": "ピヨトレ！",
   "subtitle": "科目A-2（旧午前Ⅱ）対策",
   "examMinutes": 40,
   "mockQuestionCount": 25,
@@ -59,6 +60,7 @@
     "nw-2024-spring-q19",
     "nw-2024-spring-q20",
     "nw-2024-spring-q21",
+    "nw-2024-spring-q22",
     "nw-2024-spring-q23",
     "nw-2024-spring-q24",
     "nw-2024-spring-q25",
@@ -88,8 +90,8 @@
     "nw-2023-spring-q24",
     "nw-2023-spring-q25"
   ],
-  "productID": "jp.example.exammaster.networkspecialist.unlock",
-  "privacyPolicyURL": null,
+  "productID": "jp.hino.piyotre.networkspecialist.unlock",
+  "privacyPolicyURL": "https://submitdock-ios-pages.netlify.app/privacy/mv3sm6om-8784abde",
   "accentHex": "#2F6E70",
   "mascotBaseHex": "#FFF3DA",
   "iconTitle": "ネットワーク\nスペシャリスト",
@@ -102,7 +104,7 @@
   "usesFixedMocks": true,
   "mockPassTitle": "科目A-2基準点クリア",
   "contentCredit": "過去問題の著作権は独立行政法人情報処理推進機構（IPA）に帰属します。年度・期・試験区分・時間区分・問番号は各問題に表示しています。解説は本アプリ独自のもので、IPAが作成・監修したものではありません。改行と図表の表示をスマートフォン向けに調整しています。",
-  "examNote": "開発中の教材です。2025年春期25問，2024年春期24問，2023年春期25問の計74問を無料収録。2024年問22は公式正答と仕様の整合確認のため保留し，同年度の固定模試は未提供です。有料過去問は2013年・2014年・2016年・2017年・2019年秋期・2021年と2022年春期の各25問，2015年と2018年秋期の各24問，2010年秋期問23の計224問を収録し，残り101問と予想75問は未収録です。2015年問9と2018年問17も仕様との整合確認のため保留しています。2013年・2014年・2016年・2017年・2019年・2021年・2022年・2023年・2025年の公式25問の固定模試を利用できます。2010年・2015年・2018年は部分年度のため固定模試を提供していません。科目A-2（旧午前Ⅱ）は25問・40分・基準点60点で、試験全体の合格を判定する教材ではありません。",
+  "examNote": "2013〜2025年の過去問300問（2020年は対象試験なし）と，2026年オリジナル予想問題3セット・75問の計375問を収録。2023〜2025年の全75問は無料で，その他の過去問と予想問題は買い切りで利用できます。年度別・予想問題の模擬試験は各25問・40分です。過去問は当時のIPA公式正答に沿って採点し，仕様や表現の解釈に注意が必要な問題には回答後の解説で補足します。科目A-2（旧午前Ⅱ）の基準点は60点で，試験全体の合否を判定する教材ではありません。",
   "ads": {
     "enabled": true,
     "bannerEnabled": true,
@@ -110,8 +112,8 @@
     "interstitialMinimumIntervalSeconds": 1800,
     "interstitialMinimumSessions": 3,
     "interstitialMinimumAnsweredQuestions": 8,
-    "adMobAppID": "ca-app-pub-3940256099942544~1458002511",
-    "bannerAdUnitID": "ca-app-pub-3940256099942544/2435281174",
-    "interstitialAdUnitID": "ca-app-pub-3940256099942544/4411468910"
+    "adMobAppID": "ca-app-pub-9785585722959806~8954413240",
+    "bannerAdUnitID": "ca-app-pub-9785585722959806/1252937062",
+    "interstitialAdUnitID": "ca-app-pub-9785585722959806/2374447042"
   }
 }

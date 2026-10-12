@@ -1,0 +1,33 @@
+{
+  "appStoreConnectID": "6821629759",
+  "bundleID": "jp.hino.piyotre.networkspecialist",
+  "teamID": "QZH83KGFVX",
+  "productID": "jp.hino.piyotre.networkspecialist.unlock",
+  "priceJPY": 480,
+  "territories": [
+    "JPN"
+  ],
+  "releaseMethod": "MANUAL",
+  "adMobAppID": "ca-app-pub-9785585722959806~8954413240",
+  "bannerAdUnitID": "ca-app-pub-9785585722959806/1252937062",
+  "interstitialAdUnitID": "ca-app-pub-9785585722959806/2374447042",
+  "appAdsText": "google.com, pub-9785585722959806, DIRECT, f08c47fec0942fa0\n",
+  "iapAppleID": "6821756732",
+  "appAdsVerified": true,
+  "consentMessageLanguages": [
+    "ja",
+    "en"
+  ],
+  "maximumAdContentRating": "G",
+  "appPrivacyPublished": true,
+  "highEngagementAdsEnabled": false,
+  "appPrivacyTypes": [
+    "COARSE_LOCATION",
+    "DEVICE_ID",
+    "PRODUCT_INTERACTION",
+    "ADVERTISING_DATA",
+    "CRASH_DATA",
+    "PERFORMANCE_DATA",
+    "OTHER_DIAGNOSTIC_DATA"
+  ]
+}

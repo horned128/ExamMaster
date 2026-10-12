@@ -7,16 +7,17 @@ struct DashboardView: View {
     @State private var showLearningGuide = false
     @State private var greeting = "いっしょに、\nはじめよう。"
     @State private var greetingReplay = 0
-    @AppStorage("shortDailyStudy") private var shortSession = true
     let catalog: Catalog
     let store: StudyStore
     let purchase: PurchaseManager
     let ads: AdsService
     let start: (StudySession) -> Void
-    let resume: () -> Void
     let openLibrary: () -> Void
+    let openSubjects: () -> Void
+    let openIncorrect: () -> Void
+    let openBookmarks: () -> Void
+    let paywall: () -> Void
     let settings: () -> Void
-    let openCompanion: () -> Void
 
     private var accent: Color { Palette.accent(catalog.qualification.accentHex) }
     private var growth: TankeiGrowth { TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked) }
@@ -27,72 +28,75 @@ struct DashboardView: View {
                 let available = SessionPlanner.available(catalog, unlocked: purchase.unlocked)
                 let outlook = ReviewOutlook(questions: available, data: store.data, now: timeline.date)
                 let retention = RetentionSummary(questions: available, data: store.data, now: timeline.date)
-                let goal = TankeiDailyGoal(questionIDs: Set(available.map(\.id)), data: store.data, short: shortSession, now: timeline.date)
-                let recommended = SessionPlanner.recommended(catalog, data: store.data, unlocked: purchase.unlocked,
-                                                           now: timeline.date, excluding: goal.answeredIDs)
-                let selectedQuestions = Array(recommended.questions.prefix(goal.remaining))
-                VStack(alignment: .leading, spacing: 24) {
-                    header(asOf: timeline.date, goal: goal, dueCount: outlook.dueCount)
-                    MemoryBreakdown(summary: retention, identifier: "homeMemory")
-                    if let pending = store.data.pending {
-                        Button(action: resume) {
-                            Surface {
-                                HStack(spacing: 12) {
-                                    Image(systemName: "play.circle").font(.title2).foregroundStyle(accent)
-                                        .accessibilityHidden(true)
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text("続きから").font(.headline).foregroundStyle(Palette.ink)
-                                        Text("\(pending.answers.count) / \(pending.questionIDs.count)問 · \(pending.title)")
-                                            .font(.caption).foregroundStyle(Palette.muted)
-                                    }
-                                    Spacer(minLength: 0)
-                                    Image(systemName: "chevron.right").font(.caption).foregroundStyle(Palette.muted)
-                                        .accessibilityHidden(true)
-                                }
-                            }
-                        }
-                        .buttonStyle(StudyButtonStyle())
-                        .accessibilityIdentifier("resumeStudy")
-                    }
-                    if !goal.completed && goal.target > 0 {
-                        studyCard(goal: goal, questions: selectedQuestions, availableCount: available.count)
-                    } else {
-                        Button(action: openLibrary) {
-                            Label("問題を探す", systemImage: "magnifyingglass")
-                                .font(.headline).frame(maxWidth: .infinity, minHeight: 44)
-                        }
-                        .buttonStyle(.bordered).controlSize(.large)
+                VStack(alignment: .leading, spacing: 8) {
+                    Surface(inset: 12, spacing: 6) {
+                        examSchedule(asOf: timeline.date)
+                        Divider()
+                        header(retention: retention, dueCount: outlook.dueCount)
+                        MemoryBreakdown(summary: retention, identifier: "homeMemory", compact: true)
                     }
                     HStack {
+                        Text("学習メニュー").font(.headline).accessibilityAddTraits(.isHeader)
+                        Spacer()
                         if outlook.dueCount > 0 {
                             NavigationLink(value: QuestionCollectionRoute.status(.due)) {
-                                Label("復習 \(outlook.dueCount)問", systemImage: "arrow.clockwise")
-                            }
+                                Text("復習 \(outlook.dueCount)問").font(.caption.weight(.semibold))
+                            }.frame(minHeight: 44)
                         }
-                        Spacer(minLength: 8)
-                        Button { showLearningGuide = true } label: {
-                            Image(systemName: "info.circle").frame(width: 44, height: 44)
-                        }
-                        .accessibilityLabel("記憶と復習のしくみ")
                     }
-                    .font(.subheadline).buttonStyle(StudyButtonStyle())
+                    StudyGrid {
+                        Button(action: openSubjects) { FeatureCard(title: "分野別", symbol: "square.grid.2x2") }
+                            .accessibilityIdentifier("homeSubjects")
+                        Button(action: openLibrary) { FeatureCard(title: "年度別", symbol: "calendar") }
+                            .accessibilityIdentifier("homeYears")
+                        Button(action: openIncorrect) {
+                            FeatureCard(title: "苦手問題", symbol: "arrow.uturn.backward",
+                                        detail: "\(QuestionCollections.questions(for: .incorrect, catalog: catalog, data: store.data).count)問", color: Palette.review)
+                        }
+                        Button(action: openBookmarks) {
+                            FeatureCard(title: "ブックマーク", symbol: "bookmark", detail: "\(catalog.questions.filter { store.data.bookmarks.contains($0.id) }.count)問")
+                        }
+                        NavigationLink(value: StudyDestination.quiz) { FeatureCard(title: "小テスト", symbol: "bolt", detail: "Lv別にチャレンジ") }
+                        NavigationLink(value: StudyDestination.records) { FeatureCard(title: "学習記録", symbol: "chart.bar.xaxis") }.accessibilityIdentifier("homeRecords")
+                    }
+                    Button { showLearningGuide = true } label: {
+                        Label("記憶と復習のしくみ", systemImage: "info.circle").font(.subheadline).frame(minHeight: 44)
+                    }
                     if !purchase.unlocked && !purchase.purchasing { AdBannerPlacement(ads: ads) }
                     if let error = store.error {
                         Surface {
                             Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.red)
-                            Button("保存を再試行") { store.retrySave() }
-                                .frame(minHeight: 44)
+                            Button("保存を再試行") { store.retrySave() }.frame(minHeight: 44)
                         }
                     }
                 }
-                .padding(20).frame(maxWidth: 640).frame(maxWidth: .infinity)
+                .buttonStyle(StudyButtonStyle())
+                .padding(16).frame(maxWidth: 640).frame(maxWidth: .infinity)
             }
         }
         .background(Palette.background)
         .environment(\.mascotMotionEnabled, parentMotionEnabled && !showLearningGuide && !showExamDateEditor)
-        .navigationTitle("ホーム")
+        .navigationTitle(catalog.qualification.appDisplayName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button { showExamDateEditor = true } label: { Image(systemName: "calendar.badge.clock") }
+                    .accessibilityLabel(store.data.examDay == nil ? "試験日を設定" : "試験日を変更")
+                    .accessibilityValue(examCountdown(asOf: .now))
+            }
+            ToolbarItem(placement: .principal) {
+                Group {
+                    if let brand = catalog.qualification.brandName {
+                        Text("\(brand)\n\(catalog.qualification.name)")
+                            .font(.subheadline.weight(.semibold)).multilineTextAlignment(.center)
+                            .lineLimit(2).minimumScaleFactor(0.65).dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+                    } else {
+                        Text(catalog.qualification.name).font(.headline).lineLimit(2)
+                    }
+                }
+                    .accessibilityLabel(catalog.qualification.appDisplayName)
+                    .accessibilityAddTraits(.isHeader).accessibilityIdentifier("qualificationTitle")
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Button(action: settings) { Image(systemName: "gearshape") }
                     .accessibilityLabel("設定")
@@ -110,55 +114,36 @@ struct DashboardView: View {
         }
     }
 
-    private func header(asOf now: Date, goal: TankeiDailyGoal, dueCount: Int) -> some View {
-        let context = TankeiGreetingContext.current(data: store.data, dailyGoal: goal, dueCount: dueCount)
-        let titleLayout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) :
+    private func header(retention: RetentionSummary, dueCount: Int) -> some View {
+        let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) :
             AnyLayout(HStackLayout(alignment: .center, spacing: 12))
-        let heroLayout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 0)) :
-            AnyLayout(HStackLayout(alignment: .center, spacing: 0))
-        return VStack(alignment: .leading, spacing: 8) {
-            titleLayout {
-                Text(catalog.qualification.name).font(.title.bold())
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityAddTraits(.isHeader).accessibilityIdentifier("qualificationTitle")
-                Button { showExamDateEditor = true } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "calendar").accessibilityHidden(true)
-                        if let remaining = store.data.examDay?.daysRemaining(from: now) {
-                            Text(remaining > 0 ? "あと\(remaining)日" : remaining == 0 ? "試験当日" : "試験日が経過").monospacedDigit()
-                        } else { Text("試験日") }
-                    }
-                    .font(.caption).foregroundStyle(Palette.muted).frame(minHeight: 44)
-                }
-                .buttonStyle(StudyButtonStyle())
-                .accessibilityLabel(store.data.examDay == nil ? "試験日を設定" : "試験日を変更")
-                .accessibilityValue(examCountdown(asOf: now))
+        return layout {
+            NavigationLink(value: StudyDestination.records) {
+                TankeiView(state: dueCount > 0 ? .review : .ready, stage: growth.stage, size: 112,
+                           animated: true, idle: true, expressive: true, eventID: greetingReplay)
+                    .contentShape(Rectangle())
             }
-            heroLayout {
+            .accessibilityLabel("学習記録と相棒の成長を見る")
+            .accessibilityIdentifier("openCompanion")
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("定着率").font(.headline)
+                    Text("\(retention.percent)%").font(.title2.bold().monospacedDigit()).foregroundStyle(Palette.positive)
+                    Spacer(minLength: 0)
+                }
+                Text("学習済み \(retention.total - retention.new)問 · 要復習 \(dueCount)問")
+                    .font(.caption).foregroundStyle(Palette.muted).fixedSize(horizontal: false, vertical: true)
                 Button {
-                    greeting = context.choose(excluding: greeting)
                     greetingReplay += 1
+                    greeting = greetingReplay.isMultiple(of: 2) ? "好きな分野から、いっしょに。" : "一問ずつ、力にしていこう。"
                 } label: {
-                    Text(greeting).font(.headline)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(14).background(Palette.surface, in: RoundedRectangle(cornerRadius: 18))
-                        .foregroundStyle(Palette.ink)
+                    Text(greeting.replacingOccurrences(of: "\n", with: ""))
+                        .font(.caption).foregroundStyle(Palette.muted)
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                 }
-                .buttonStyle(StudyButtonStyle()).accessibilityHint("別のセリフを表示")
-                .accessibilityIdentifier("homeHeading")
-                Button(action: openCompanion) {
-                    TankeiView(state: context.pose, stage: growth.stage, size: dynamicTypeSize.isAccessibilitySize ? 128 : 176,
-                               animated: true, idle: true, expressive: true, eventID: greetingReplay)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(StudyButtonStyle())
-                .accessibilityLabel("相棒の成長を見る、\(growth.stage.title)")
-                .accessibilityIdentifier("openCompanion")
+                .accessibilityHint("別のセリフを表示").accessibilityIdentifier("homeHeading")
             }
         }
-        .task(id: context) { greeting = context.choose(excluding: greeting) }
     }
 
     private func examCountdown(asOf now: Date) -> String {
@@ -166,59 +151,68 @@ struct DashboardView: View {
         return remaining > 0 ? "あと\(remaining)日" : remaining == 0 ? "試験当日" : "試験日が経過"
     }
 
-    private func studyCard(goal: TankeiDailyGoal, questions: [Question], availableCount: Int) -> some View {
-        return Surface {
-            HStack {
-                Text("今日のノルマ").font(.title3.bold()).accessibilityIdentifier("dailyGoalCard")
-                Spacer(minLength: 8)
-                if !goal.answeredIDs.isEmpty {
-                    Text("\(goal.answeredIDs.count) / \(goal.target)問")
-                        .font(.caption.monospacedDigit()).foregroundStyle(Palette.muted)
+    private func examSchedule(asOf now: Date) -> some View {
+        let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6)) :
+            AnyLayout(HStackLayout(alignment: .center, spacing: 8))
+        return VStack(alignment: .leading, spacing: 4) {
+            scheduleDateLabel("今日", date: now).font(.caption).foregroundStyle(Palette.muted)
+                .accessibilityIdentifier("homeToday")
+            layout {
+                Label {
+                    if let date = store.data.examDay?.date() {
+                        scheduleDateLabel("試験日", date: date)
+                    } else {
+                        Text("試験日を設定")
+                    }
+                } icon: { Image(systemName: "calendar.badge.clock").accessibilityHidden(true) }
+                .labelStyle(ScheduleLabelStyle(hideIcon: dynamicTypeSize.isAccessibilitySize))
+                .font(.caption.weight(.semibold)).foregroundStyle(Palette.ink)
+                .fixedSize(horizontal: false, vertical: true).accessibilityIdentifier("homeExamDate")
+                if store.data.examDay != nil {
+                    if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 0) }
+                    Text(examCountdown(asOf: now)).font(.caption.bold().monospacedDigit())
+                        .foregroundStyle(Palette.positive).padding(.horizontal, 8).padding(.vertical, 4)
+                        .background(Palette.positive.opacity(0.1), in: Capsule())
+                        .accessibilityIdentifier("homeExamCountdown")
                 }
             }
-            LazyVGrid(columns: dynamicTypeSize.isAccessibilitySize ? [GridItem(.flexible())] :
-                        [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                amountOption("\(min(5, availableCount))問", short: true)
-                amountOption("\(min(12, availableCount))問", short: false)
-            }
-            .accessibilityLabel("学習する量")
-            .accessibilityIdentifier("studyAmount")
-            Button {
-                start(StudySession(title: "今日のノルマ", mode: .recommended, questions: questions, timed: false))
-            } label: {
-                HStack {
-                    Text(dynamicTypeSize.isAccessibilitySize ? "始める" : "この\(questions.count)問を始める")
-                    Spacer()
-                    Image(systemName: "arrow.right").accessibilityHidden(true)
-                }
-                .font(.headline).foregroundStyle(Palette.onAccent(catalog.qualification.accentHex))
-                .padding(16).frame(maxWidth: .infinity, minHeight: 52)
-                .background(accent, in: RoundedRectangle(cornerRadius: 14))
-            }
-            .disabled(questions.isEmpty)
-            .opacity(questions.isEmpty ? 0.5 : 1)
-            .buttonStyle(StudyButtonStyle())
-            .accessibilityLabel("\(questions.count)問の学習を始める")
-            .accessibilityIdentifier("startDailyStudy")
+        }
+        .padding(.trailing, 44)
+        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+        .overlay(alignment: .trailing) {
+            Button { showExamDateEditor = true } label: {
+                Image(systemName: "pencil").font(.subheadline).foregroundStyle(Palette.positive)
+                    .frame(width: 44, height: 44)
+            }.accessibilityLabel("受験予定を編集").accessibilityIdentifier("homeExamSchedule")
         }
     }
 
-    private func amountOption(_ title: String, short: Bool) -> some View {
-        let selected = shortSession == short
-        return Button { shortSession = short } label: {
-            HStack(spacing: 6) {
-                Image(systemName: selected ? "checkmark.circle.fill" : "circle").accessibilityHidden(true)
-                Text(title).fixedSize(horizontal: false, vertical: true)
-            }
-            .font(.subheadline.weight(.medium))
-            .foregroundStyle(selected ? Palette.linkAccent(catalog.qualification.accentHex) : Palette.muted)
-            .frame(maxWidth: .infinity, minHeight: 44)
-            .padding(.horizontal, 8).padding(.vertical, 4)
-            .background(selected ? accent.opacity(0.09) : Palette.background, in: RoundedRectangle(cornerRadius: 12))
-        }
-        .buttonStyle(StudyButtonStyle())
-        .accessibilityAddTraits(selected ? .isSelected : [])
-        .accessibilityIdentifier(short ? "shortStudy" : "regularStudy")
+    private func scheduleDate(_ date: Date) -> String {
+        var format = Date.FormatStyle.dateTime.year().month(.twoDigits).day(.twoDigits).weekday(.abbreviated)
+            .locale(Locale(identifier: "ja_JP"))
+        format.calendar = ExamDay.localCalendar
+        return date.formatted(format)
     }
 
+    @ViewBuilder private func scheduleDateLabel(_ title: String, date: Date) -> some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\(title) \(String(ExamDay.localCalendar.component(.year, from: date)))年")
+                Text(date.formatted(Date.FormatStyle.dateTime.month().day().locale(Locale(identifier: "ja_JP"))))
+            }
+            .accessibilityElement(children: .ignore).accessibilityLabel("\(title) \(scheduleDate(date))")
+        } else {
+            Text("\(title) \(scheduleDate(date))")
+        }
+    }
+
+}
+
+private struct ScheduleLabelStyle: LabelStyle {
+    let hideIcon: Bool
+    func makeBody(configuration: Configuration) -> some View {
+        if hideIcon { configuration.title } else {
+            HStack(spacing: 4) { configuration.icon; configuration.title }
+        }
+    }
 }

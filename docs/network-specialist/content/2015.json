@@ -1,5 +1,5 @@
 {
-  "version": 2, "isDraft": true, "mockSets": [],
+  "version": 2, "isDraft": false, "mockSets": [{"id": "nw-2015-autumn", "title": "2015年秋期 午前Ⅱ", "kind": "past", "questionIDs": ["nw-2015-autumn-q01", "nw-2015-autumn-q02", "nw-2015-autumn-q03", "nw-2015-autumn-q04", "nw-2015-autumn-q05", "nw-2015-autumn-q06", "nw-2015-autumn-q07", "nw-2015-autumn-q08", "nw-2015-autumn-q09", "nw-2015-autumn-q10", "nw-2015-autumn-q11", "nw-2015-autumn-q12", "nw-2015-autumn-q13", "nw-2015-autumn-q14", "nw-2015-autumn-q15", "nw-2015-autumn-q16", "nw-2015-autumn-q17", "nw-2015-autumn-q18", "nw-2015-autumn-q19", "nw-2015-autumn-q20", "nw-2015-autumn-q21", "nw-2015-autumn-q22", "nw-2015-autumn-q23", "nw-2015-autumn-q24", "nw-2015-autumn-q25"], "questionCount": 25, "minutes": 40}],
   "questions": [
     {
       "id": "nw-2015-autumn-q01", "year": 2015, "administration": "autumn", "kind": "past", "mockSetID": "nw-2015-autumn",
@@ -89,6 +89,48 @@
       "steps": ["ホストとルータのグループ参加状態の管理と確認する。", "経路制御やアドレス解決と分けてIGMPを選ぶ。"],
       "source": "ネットワークスペシャリスト試験 2015年秋期 午前Ⅱ 問8", "questionNumber": 8, "imageName": null,
       "difficulty": 2, "tags": ["IGMP", "グループ参加", "Query/Report"], "concepts": ["受信希望", "MLDとの区別"]
+    },
+    {
+      "id": "nw-2015-autumn-q09",
+      "year": 2015,
+      "administration": "autumn",
+      "kind": "past",
+      "mockSetID": "nw-2015-autumn",
+      "subject": "ネットワーク",
+      "category": "IPv6",
+      "stem": "IPv6においてIPv4から仕様変更された内容の説明として，適切なものはどれか。",
+      "choices": [
+        "IPヘッダのTOSフィールドを使用し，特定のクラスのパケットに対する資源予約ができるようになった。",
+        "IPヘッダのアドレス空間が，32ビットから64ビットに拡張されている。",
+        "IPヘッダのチェックサムフィールドを追加し，誤り検出機能を強化している。",
+        "IPレベルのセキュリティ機能（IPsec）である認証と改ざん検出機能のサポートが必須となり，パケットを暗号化したり送信元を認証したりすることができる。"
+      ],
+      "correctIndex": 3,
+      "explanation": "当時の公式正答で採点します。\n2015年秋期のIPA公式正答はエです。IPsecは認証・改ざん検出や暗号化を提供します。\n\n仕様上の注意：選択肢エの「サポートが必須」は旧RFC4294の要件に対応しますが、2011年のRFC6434ではIPv6ノードのIPsec対応がSHOULD（推奨）へ変更されています。この変更は出題年より前です。「出題当時は必須で、その後に推奨へ変わった」とは説明できません。公式正答に沿って採点し、現在の実装要件とは分けて学んでください。IPsecの実装サポートと、全ての通信の暗号化を強制することも別です。\n\nIPv6のアドレスは128ビットで、基本ヘッダにヘッダチェックサムはありません。",
+      "choiceExplanations": [
+        "IPv6ではTraffic ClassとFlow Labelを使います。IPv4のTOSフィールドをそのまま使う説明ではなく、フィールドだけで通信資源を予約するわけでもありません。",
+        "IPv6アドレスは128ビットです。64ビットではありません。",
+        "IPv6基本ヘッダにはヘッダチェックサムがありません。IPv4から追加したという説明は誤りです。",
+        "当時のIPA公式正答はエなので、本アプリでは正解として採点します。ただし、出題前のRFC6434でIPsec対応はSHOULDへ変更されており、「全IPv6ノードで必須」という一般則としては覚えないでください。"
+      ],
+      "steps": [
+        "IPv6のアドレス長128ビットと、基本ヘッダのチェックサム廃止を確認する。",
+        "IPsecの認証・改ざん検出・暗号化と、実装を必須にする規定を区別する。",
+        "この過去問では公式正答エを選び、出題前からの要件変更は解説の注意点として理解する。"
+      ],
+      "source": "ネットワークスペシャリスト試験 2015年秋期 午前Ⅱ 問9",
+      "questionNumber": 9,
+      "imageName": null,
+      "difficulty": 3,
+      "tags": [
+        "IPv6",
+        "IPsec",
+        "MUST/SHOULD"
+      ],
+      "concepts": [
+        "仕様更新",
+        "実装要件"
+      ]
     },
     {
       "id": "nw-2015-autumn-q10", "year": 2015, "administration": "autumn", "kind": "past", "mockSetID": "nw-2015-autumn",

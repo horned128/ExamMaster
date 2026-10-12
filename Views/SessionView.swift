@@ -9,7 +9,6 @@ struct SessionView: View {
     let ads: AdsService
     let growthQuestions: [Question]
     @State private var initialGrowthStage: TankeiStage
-    let resume: PendingStudy?
     let onFinish: (Int) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -26,15 +25,14 @@ struct SessionView: View {
     @State private var showGrowthCelebration = false
     @State private var startedAt = Date()
     @State private var answers: [Answer] = []
-    @State private var visibleSteps = 0
     @State private var confirmExit = false
+    @State private var largeText = false
     @State private var deadline: Date
     @State private var remaining: TimeInterval
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     init(session: StudySession, qualification: Qualification, store: StudyStore, purchase: PurchaseManager, ads: AdsService,
          growthQuestions: [Question],
-         resume: PendingStudy? = nil,
          onFinish: @escaping (Int) -> Void) {
         self.session = session
         self.qualification = qualification
@@ -43,13 +41,7 @@ struct SessionView: View {
         self.ads = ads
         self.growthQuestions = growthQuestions
         _initialGrowthStage = State(initialValue: TankeiGrowth(questions: growthQuestions, data: store.data, earnedOnly: true).stage)
-        self.resume = resume
         self.onFinish = onFinish
-        _index = State(initialValue: min(max(0, resume?.index ?? 0), max(0, session.questions.count - 1)))
-        _answers = State(initialValue: resume?.answers ?? [])
-        _selected = State(initialValue: resume?.selectedIndex)
-        _submitted = State(initialValue: resume?.submitted ?? false)
-        _revealed = State(initialValue: resume?.submitted ?? false)
         let seconds = TimeInterval(qualification.examMinutes * 60)
         _deadline = State(initialValue: .now.addingTimeInterval(seconds))
         _remaining = State(initialValue: seconds)
@@ -60,13 +52,15 @@ struct SessionView: View {
         store.data.recallFirst && [.recommended, .misconception, .contrast, .incorrect, .bookmarked].contains(session.mode)
     }
 
+    private var returnsToList: Bool { session.returnsToQuestionList || session.mode == .search }
+
     var body: some View {
         NavigationStack {
             Group {
                 if showGrowthCelebration {
                     TankeiGrowthCelebration(initialStage: initialGrowthStage, stage: growth.stage, accentHex: qualification.accentHex,
-                                            buttonTitle: session.mode == .search ? "一覧へ戻る" : "結果を見る") {
-                        if session.mode == .search { closeSession() }
+                                            buttonTitle: returnsToList ? "一覧へ戻る" : "結果を見る") {
+                        if returnsToList { closeSession() }
                         else { showGrowthCelebration = false }
                     }
                 } else if finished { summary }
@@ -91,12 +85,17 @@ struct SessionView: View {
                         }
                     } else {
                         ToolbarItem(placement: .topBarTrailing) {
+                            Button { largeText.toggle() } label: { Image(systemName: "textformat.size") }
+                                .accessibilityLabel(largeText ? "文字を標準サイズにする" : "文字を大きくする")
+                                .accessibilityIdentifier("questionTextSize")
+                        }
+                        ToolbarItem(placement: .topBarTrailing) {
                             Button {
                                 store.toggleBookmark(question.id)
                             } label: {
                                 Image(systemName: store.data.bookmarks.contains(question.id) ? "bookmark.fill" : "bookmark")
                             }
-                            .accessibilityLabel(store.data.bookmarks.contains(question.id) ? "お気に入りを解除" : "お気に入りに追加")
+                            .accessibilityLabel(store.data.bookmarks.contains(question.id) ? "ブックマークを解除" : "ブックマークに追加")
                         }
                     }
                 }
@@ -104,19 +103,13 @@ struct SessionView: View {
         }
         .interactiveDismissDisabled(!finished)
         .confirmationDialog("問題の途中ですが、中断しますか？", isPresented: $confirmExit, titleVisibility: .visible) {
-            Button(session.timed ? "模試を中断する" : (session.mode == .diagnostic ? "診断を中断する" :
-                   (session.mode == .search ? "問題を閉じる" : "中断して後で再開")), role: .destructive) { dismiss() }
+            Button("問題一覧へ戻る", role: .destructive) {
+                store.clearInterruptedStudy()
+                dismiss()
+            }
             Button("学習を続ける", role: .cancel) { }
         } message: {
-            if session.timed {
-                Text("\(session.questions.count)問中\(index + 1)問目。模試の途中位置・結果は保存されず、再開できません。回答済みの学習履歴は残ります。")
-            } else if session.mode == .diagnostic {
-                Text("回答済みの履歴は残ります。診断は次回、最初から受け直せます。")
-            } else if session.mode == .search {
-                Text("回答済みの場合は学習履歴に記録されています。元の問題リストに戻ります。")
-            } else {
-                Text("\(session.questions.count)問中\(index + 1)問目。回答済みの\(answers.count)問と出題順を保存し、ホームの「続きから」で再開できます。")
-            }
+            Text("途中の出題位置は削除します。回答済みの学習記録は残ります。")
         }
         .onReceive(timer) { _ in
             guard session.timed, !finished else { return }
@@ -145,7 +138,7 @@ struct SessionView: View {
                     }
                     .id("questionTop")
                     if let kind = question.kindTitle { Text(kind).font(.caption).foregroundStyle(Palette.muted) }
-                    QuestionBodyView(question: question)
+                    QuestionBodyView(question: question, largeText: largeText)
                     if recallMode && !revealed {
                         Surface {
                             Label("答えを思い浮かべる", systemImage: "bubble.left")
@@ -160,22 +153,7 @@ struct SessionView: View {
                                 if let blocks = question.choiceBlocks { RichContentView(blocks: blocks[choice]) }
                             }
                         }
-                        if !submitted && !session.timed {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("手応え · 任意").font(.caption).foregroundStyle(Palette.muted)
-                                LazyVGrid(columns: dynamicTypeSize.isAccessibilitySize ? [GridItem(.flexible())] :
-                                            Array(repeating: GridItem(.flexible()), count: 3), spacing: 8) {
-                                    ForEach(Confidence.allCases) { item in
-                                        Button { confidence = confidence == item ? nil : item } label: {
-                                            Text(item.title).font(.subheadline).frame(maxWidth: .infinity, minHeight: 44)
-                                        }
-                                            .buttonStyle(.bordered)
-                                            .tint(confidence == item ? Palette.linkAccent(qualification.accentHex) : Palette.muted)
-                                            .accessibilityAddTraits(confidence == item ? .isSelected : [])
-                                    }
-                                }
-                            }
-                        }
+                        if !submitted && !session.timed { confidencePicker }
                         if submitted && !session.timed { feedback.id("feedback") }
                     }
                 }
@@ -207,28 +185,40 @@ struct SessionView: View {
                 let action = Button {
                     if submitted { advance() } else { submit() }
                 } label: {
-                    Text(submitted ? (session.mode == .search ? "一覧へ戻る" : (index + 1 == session.questions.count ? "結果を見る" : "次の問題へ")) :
+                    Text(submitted ? (index + 1 == session.questions.count ? (returnsToList ? "問題一覧へ戻る" : "結果を見る") : "次の問題へ") :
                          (session.timed && index + 1 == session.questions.count ? "回答して採点する" : "回答を確定"))
                          .font(.headline).frame(maxWidth: .infinity, minHeight: 44)
                 }
-                Group {
-                    if unavailable {
-                        // The system prominent style fades disabled ink too far
-                        // on light surfaces. Keep a readable, non-interactive state.
-                        action.buttonStyle(StudyButtonStyle())
-                            .foregroundStyle(Palette.ink)
-                            .padding(.vertical, 8)
-                            .background(Palette.track, in: Capsule())
-                    } else {
-                        action.buttonStyle(.borderedProminent)
-                            .tint(Palette.accent(qualification.accentHex))
-                            .foregroundStyle(Palette.onAccent(qualification.accentHex))
+                let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) :
+                    AnyLayout(HStackLayout(alignment: .center, spacing: 16))
+                layout {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("\(index + 1) / \(session.questions.count)")
+                            .font(dynamicTypeSize.isAccessibilitySize ? .caption : .subheadline.weight(.semibold)).monospacedDigit()
+                        if !dynamicTypeSize.isAccessibilitySize {
+                            Text(submitted ? "解説を確認" : "回答を選択").font(.caption).foregroundStyle(Palette.muted)
+                        }
                     }
+                    .fixedSize(horizontal: false, vertical: true)
+                    Group {
+                        if unavailable {
+                            // Keep disabled text readable on light surfaces.
+                            action.buttonStyle(StudyButtonStyle())
+                                .foregroundStyle(Palette.ink)
+                                .padding(.vertical, 8)
+                                .background(Palette.track, in: Capsule())
+                        } else {
+                            action.buttonStyle(.borderedProminent)
+                                .tint(Palette.accent(qualification.accentHex))
+                                .foregroundStyle(Palette.onAccent(qualification.accentHex))
+                        }
+                    }
+                    .disabled(unavailable)
+                    .accessibilityIdentifier("submitOrAdvance")
                 }
-                .disabled(unavailable)
                 .padding(16).frame(maxWidth: 672).frame(maxWidth: .infinity)
                 .background(.bar)
-                .accessibilityIdentifier("submitOrAdvance")
+                .accessibilityElement(children: .contain).accessibilityIdentifier("studyControls")
             }
         }
     }
@@ -245,22 +235,61 @@ struct SessionView: View {
                     .frame(width: choiceMarkerSize, height: choiceMarkerSize)
                     .background(.tint.opacity(0.12), in: Circle())
                     .accessibilityHidden(true)
-                Text(question.choices[choice]).frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(question.choices[choice]).font(largeText ? .title3 : .body)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if isCorrect { Text("正解").font(.caption.bold()).foregroundStyle(Palette.positive) }
+                    if isWrong { Text("あなたの回答").font(.caption.bold()).foregroundStyle(Palette.review) }
+                }.frame(maxWidth: .infinity, alignment: .leading)
                 if isCorrect { Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.positive).accessibilityHidden(true) }
                 if isWrong { Image(systemName: "xmark.circle.fill").foregroundStyle(Palette.review).accessibilityHidden(true) }
             }
             .padding(15)
             .foregroundStyle(Palette.ink)
-            .background(selected == choice ? Palette.linkAccent(qualification.accentHex).opacity(0.13) : Palette.surface,
+            .background(isCorrect ? Palette.positive.opacity(0.10) : isWrong ? Palette.review.opacity(0.10) :
+                        selected == choice ? Palette.linkAccent(qualification.accentHex).opacity(0.10) : Palette.surface,
                         in: RoundedRectangle(cornerRadius: 14))
             .overlay(RoundedRectangle(cornerRadius: 14)
-                .stroke(selected == choice ? Palette.linkAccent(qualification.accentHex) : .clear, lineWidth: 1.5))
+                .stroke(isCorrect ? Palette.positive : isWrong ? Palette.review :
+                        selected == choice ? Palette.linkAccent(qualification.accentHex) : Palette.border, lineWidth: 1.5))
         }
         .buttonStyle(StudyButtonStyle())
         .disabled(submitted)
         .accessibilityLabel("選択肢 \(choice + 1)、\(question.choices[choice])\(isCorrect ? "、正答" : isWrong ? "、あなたの回答" : "")")
         .accessibilityAddTraits(selected == choice ? .isSelected : [])
+    }
+
+    private var confidencePicker: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(submitted ? "解いた後の手応え · 変更できます" : "手応え · 任意").font(.caption).foregroundStyle(Palette.muted)
+            LazyVGrid(columns: dynamicTypeSize.isAccessibilitySize ? [GridItem(.flexible())] :
+                        Array(repeating: GridItem(.flexible()), count: 3), spacing: 8) {
+                ForEach(Confidence.allCases) { item in
+                    let active = confidence == item
+                    Button {
+                        let next: Confidence? = active ? nil : item
+                        if submitted, var answer = answers.last {
+                            guard store.updateConfidence(next, answerID: answer.id, question: question) else { return }
+                            answer.confidence = next
+                            answers[answers.count - 1] = answer
+                        }
+                        confidence = next
+                    } label: {
+                        VStack(spacing: 4) {
+                            Image(systemName: active ? "checkmark.circle.fill" : "circle")
+                            Text(item.title).font(.subheadline.weight(active ? .bold : .medium))
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 54).padding(6)
+                        .foregroundStyle(active ? Palette.onAccent(qualification.accentHex) : Palette.ink)
+                        .background(active ? Palette.accent(qualification.accentHex) : Palette.background, in: RoundedRectangle(cornerRadius: 12))
+                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(active ? Palette.accent(qualification.accentHex) : Palette.track, lineWidth: 2))
+                    }
+                    .buttonStyle(StudyButtonStyle()).accessibilityLabel(item.title)
+                    .accessibilityIdentifier("confidence-\(item.rawValue)")
+                    .accessibilityAddTraits(active ? .isSelected : [])
+                }
+            }
+        }
     }
 
     private var feedback: some View {
@@ -283,29 +312,24 @@ struct SessionView: View {
                 .foregroundStyle(correct ? Palette.positive : Palette.review)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 TankeiView(state: correct ? .celebrate : .recover,
-                           stage: initialGrowthStage, size: 120, animated: true, idle: true, expressive: true, eventID: index)
+                           stage: initialGrowthStage, size: 72, animated: true, idle: true, expressive: true, eventID: index)
             }
+            confidencePicker
             if question.choiceExplanations != nil {
                 QuestionExplanationView(question: question, qualification: qualification)
             }
             if let steps = question.steps {
                 Text("解き方").font(.headline)
-                ForEach(0..<visibleSteps, id: \.self) { step in
+                ForEach(steps.indices, id: \.self) { step in
                     Text("\(step + 1). \(steps[step])").font(.subheadline)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                if visibleSteps < steps.count {
-                    Button("次のステップ") {
-                        visibleSteps += 1
-                    }
-                    .buttonStyle(.bordered)
-                    .frame(minHeight: 44)
-                }
+
             }
-            if question.choiceExplanations == nil && (question.steps == nil || visibleSteps == question.steps?.count) {
+            if question.choiceExplanations == nil {
                 Text(question.explanation).font(.body)
                 DisclosureGroup("出典") {
-                    Text(question.source).font(.caption).foregroundStyle(Palette.muted)
+                    Text(qualification.displaySource(question.source)).font(.caption).foregroundStyle(Palette.muted)
                 }
                 .font(.caption)
             }
@@ -326,19 +350,12 @@ struct SessionView: View {
                             duration: max(0, Date().timeIntervalSince(startedAt)),
                             confidence: session.timed ? nil : confidence, mode: session.mode)
         answers.append(answer)
-        var progress = store.data.pending
-        if progress?.id == session.id {
-            progress?.answers = answers
-            progress?.index = index
-            progress?.submitted = true
-            progress?.selectedIndex = selected
-        } else { progress = nil }
-        store.record(answer, question: question, pending: progress)
+        store.record(answer, question: question)
         if session.timed { advance() } else { submitted = true }
     }
 
     private func advance() {
-        if session.mode == .search {
+        if returnsToList && index + 1 == session.questions.count {
             finish()
             if !showGrowthCelebration { closeSession() }
             return
@@ -349,14 +366,8 @@ struct SessionView: View {
         confidence = nil
         submitted = false
         revealed = false
-        visibleSteps = 0
         startedAt = .now
-        if var progress = store.data.pending, progress.id == session.id {
-            progress.index = index
-            progress.submitted = false
-            progress.selectedIndex = nil
-            store.setPending(progress)
-        }
+
     }
 
     private func finish() {
@@ -416,7 +427,7 @@ struct SessionView: View {
                             DisclosureGroup {
                                 Text("正答: \(item.choices[item.correctIndex])").font(.subheadline.bold())
                                 Text(item.explanation).font(.subheadline)
-                                Text(item.source).font(.caption).foregroundStyle(.secondary)
+                                Text(qualification.displaySource(item.source)).font(.caption).foregroundStyle(.secondary)
                             } label: {
                                 let answer = answers.first { $0.questionID == item.id }
                                 Label(item.stem, systemImage: answer == nil ? "minus.circle" : (answer?.correct == true ? "checkmark.circle" : "xmark.circle"))

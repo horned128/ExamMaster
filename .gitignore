@@ -9,3 +9,8 @@ skills-lock.json
 docs/network-specialist/evidence/
 .venv-network/
 tools/network-specialist/__pycache__/
+tools/release/__pycache__/
+release-artifacts/
+*.p8
+*.p12
+*.mobileprovision

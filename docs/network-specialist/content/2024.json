@@ -1,6 +1,6 @@
 {
-  "version": 2, "isDraft": true,
-  "mockSets": [],
+  "version": 2, "isDraft": false,
+  "mockSets": [{"id": "nw-2024-spring", "title": "2024年春期 午前Ⅱ", "kind": "past", "questionIDs": ["nw-2024-spring-q01", "nw-2024-spring-q02", "nw-2024-spring-q03", "nw-2024-spring-q04", "nw-2024-spring-q05", "nw-2024-spring-q06", "nw-2024-spring-q07", "nw-2024-spring-q08", "nw-2024-spring-q09", "nw-2024-spring-q10", "nw-2024-spring-q11", "nw-2024-spring-q12", "nw-2024-spring-q13", "nw-2024-spring-q14", "nw-2024-spring-q15", "nw-2024-spring-q16", "nw-2024-spring-q17", "nw-2024-spring-q18", "nw-2024-spring-q19", "nw-2024-spring-q20", "nw-2024-spring-q21", "nw-2024-spring-q22", "nw-2024-spring-q23", "nw-2024-spring-q24", "nw-2024-spring-q25"], "questionCount": 25, "minutes": 40}],
   "questions": [
     {
       "id": "nw-2024-spring-q01", "year": 2024, "administration": "spring", "kind": "past", "mockSetID": "nw-2024-spring",
@@ -240,6 +240,49 @@
       "steps": ["ESPトンネルモードの内側と外側のIPヘッダーを区別する。", "IKEは鍵/SAの確立，ESP/AHはデータ保護と整理する。", "元のIPヘッダーを含めた暗号化が可能なアを選ぶ。"],
       "source": "ネットワークスペシャリスト試験 2024年春期 午前Ⅱ 問21", "questionNumber": 21, "imageName": null,
       "difficulty": 3, "tags": ["IPsec", "ESP", "IKE", "AH"], "concepts": ["VPN", "暗号化と認証"]
+    },
+    {
+      "id": "nw-2024-spring-q22",
+      "year": 2024,
+      "administration": "spring",
+      "kind": "past",
+      "mockSetID": "nw-2024-spring",
+      "subject": "コンピュータシステム",
+      "category": "PCI Express",
+      "stem": "PCI Express 3.0，PCI Express 4.0及びPCI Express 5.0を比較した記述のうち，適切なものはどれか。",
+      "choices": [
+        "1レーンの片方向最大転送レートは，PCI Express 4.0はPCI Express 3.0の2倍，PCI Express 5.0はPCI Express 4.0の2倍である。",
+        "PCI Express 3.0はそれ以前のPCI Express 1.1及びPCI Express 2.0と後方互換性があるが，PCI Express 4.0はそれ以前のものと後方互換性がない。",
+        "いずれも，規格上の最大レーン数は32レーンである。",
+        "いずれも，シリアル転送において8b/10b変換を採用している。"
+      ],
+      "correctIndex": 0,
+      "explanation": "当時の公式正答で採点します。\n2024年春期のIPA公式正答はアです。1レーンの転送レートは、PCI Express 3.0が8GT/s、4.0が16GT/s、5.0が32GT/sで、世代ごとに2倍になります。3.0・4.0・5.0は128b/130b符号化を使うため、同じ条件での1レーン片方向の転送能力も2倍ずつです。\n\n仕様上の注意：選択肢ウの32レーンについては、PCI-SIGの公開資料にも32レーン構成の記述があります。「規格上の最大レーン数は16」と断定してウを否定する説明はできません。一般的なカード／コネクタのx16と、規格上のリンク幅を混同しないでください。原問の選択肢の一意性には注意が残るため、本アプリでは当時の公式正答アに沿って採点します。",
+      "choiceExplanations": [
+        "8→16→32GT/sと、1レーンの転送レートが2倍ずつになる説明です。当時のIPA公式正答アに沿って正解として採点します。",
+        "PCI Express 4.0も、それ以前の世代との後方互換性を備えます。「後方互換性がない」という説明は誤りです。",
+        "PCI-SIGは32レーンのリンクも記載しています。そのため、x16のカード／コネクタを根拠に規格全体の最大レーン数を16と説明することはできません。この選択肢を技術的に誤りと断定せず、採点は当時の公式正答アに従います。",
+        "PCI Express 3.0・4.0・5.0は128b/130b符号化を採用します。8b/10bは1.x・2.xの方式です。"
+      ],
+      "steps": [
+        "1レーンの転送レートを3.0＝8、4.0＝16、5.0＝32GT/sと整理する。",
+        "3.0以降の128b/130b符号化と、世代間の後方互換性を確認する。",
+        "この過去問では公式正答アを選ぶ。レーン数は規格とカードの条件を区別し、解説の注意点を確認する。"
+      ],
+      "source": "ネットワークスペシャリスト試験 2024年春期 午前Ⅱ 問22",
+      "questionNumber": 22,
+      "imageName": null,
+      "difficulty": 3,
+      "tags": [
+        "PCI Express",
+        "レーン",
+        "転送レート",
+        "符号化"
+      ],
+      "concepts": [
+        "高速インタフェース",
+        "世代比較"
+      ]
     },
     {
       "id": "nw-2024-spring-q23", "year": 2024, "administration": "spring", "kind": "past", "mockSetID": "nw-2024-spring",

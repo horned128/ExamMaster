@@ -5,33 +5,32 @@ enum ReviewStatus: String, Hashable {
 }
 
 enum QuestionCollectionRoute: Hashable {
-    case all, year(Int), subject(String), category(String), status(ReviewStatus), incorrect, favorites, contrast
+    case all, year(Int), mockSet(String), subject(String), category(String), subjectCategory(String, String), subjectTopic(String, String), status(ReviewStatus), incorrect, favorites
 
     var title: String {
         switch self {
         case .all: "すべての問題"
         case .year(let year): "\(year)年の問題"
+        case .mockSet: "予想問題"
         case .subject(let subject): subject
-        case .category(let category): category
+        case .category(let category), .subjectCategory(_, let category), .subjectTopic(_, let category): category
         case .status(.stable): "定着した問題"
         case .status(.due): "今の復習"
         case .status(.risk): "思い出しておきたい問題"
         case .status(.new): "これからの問題"
         case .status(.misconception): "勘違いをほどく"
-        case .incorrect: "間違えた問題"
-        case .favorites: "お気に入り"
-        case .contrast: "似た問題を比べる"
+        case .incorrect: "苦手問題"
+        case .favorites: "ブックマーク"
         }
     }
 
     var studyMode: StudyMode {
         switch self {
-        case .year: .year
+        case .year, .mockSet: .year
         case .incorrect: .incorrect
         case .favorites: .bookmarked
-        case .contrast: .contrast
         case .status(.due), .status(.risk), .status(.misconception), .status(.stable): .recommended
-        case .all, .subject, .category, .status(.new): .subject
+        case .all, .subject, .category, .subjectCategory, .subjectTopic, .status(.new): .subject
         }
     }
 }
@@ -72,6 +71,10 @@ enum QuestionCollections {
         let indexed = Dictionary(uniqueKeysWithValues: questions.enumerated().map { ($0.element.id, $0.offset) })
         let sourceOrder: (Question, Question) -> Bool = { (indexed[$0.id] ?? 0) < (indexed[$1.id] ?? 0) }
         switch route {
+        case .mockSet(let id):
+            guard let set = catalog.mockSets.first(where: { $0.id == id }) else { return [] }
+            let byID = Dictionary(uniqueKeysWithValues: questions.map { ($0.id, $0) })
+            return set.questionIDs.compactMap { byID[$0] }
         case .year(let year):
             return questions.filter { $0.year == year }.sorted { a, b in
                 let aNumber = a.questionNumber ?? inferredNumber(a.source)
@@ -82,6 +85,10 @@ enum QuestionCollections {
             return newestFirst(questions.filter { $0.subject == subject }, sourceOrder: sourceOrder)
         case .category(let category):
             return newestFirst(questions.filter { $0.category == category }, sourceOrder: sourceOrder)
+        case .subjectCategory(let subject, let category):
+            return newestFirst(questions.filter { $0.subject == subject && $0.category == category }, sourceOrder: sourceOrder)
+        case .subjectTopic(let subject, let title):
+            return newestFirst(StudyTopic.grouped(subject: subject, questions: questions).first { $0.title == title }?.questions ?? [], sourceOrder: sourceOrder)
         case .all:
             return newestFirst(questions, sourceOrder: sourceOrder)
         case .incorrect:
@@ -89,10 +96,6 @@ enum QuestionCollections {
                 .sorted { (mastery[$0.id]?.lastAnswered ?? .distantFuture) < (mastery[$1.id]?.lastAnswered ?? .distantFuture) }
         case .favorites:
             return newestFirst(questions.filter { data.bookmarks.contains($0.id) }, sourceOrder: sourceOrder)
-        case .contrast:
-            let mistakes = questions.filter { mastery[$0.id]?.misconception == true || mastery[$0.id]?.lastCorrect == false }
-            let concepts = Set(mistakes.flatMap(\.concepts))
-            return newestFirst(questions.filter { mistakes.contains($0) || !concepts.isDisjoint(with: $0.concepts) }, sourceOrder: sourceOrder)
         case .status(let status):
             let selected = questions.filter { question in
                 guard let state = mastery[question.id] else { return status == .new }
@@ -127,13 +130,64 @@ enum QuestionCollections {
         return Int(source[range].dropFirst()) ?? Int.max
     }
 
-    static func resumedSession(_ pending: PendingStudy, catalog: Catalog, unlocked: Bool) -> StudySession? {
-        guard pending.mode != .diagnostic, pending.mode != .mock, pending.mode != .search,
-              !pending.questionIDs.isEmpty, pending.questionIDs.indices.contains(pending.index),
-              Set(pending.questionIDs).count == pending.questionIDs.count else { return nil }
-        let available = Dictionary(uniqueKeysWithValues: SessionPlanner.available(catalog, unlocked: unlocked).map { ($0.id, $0) })
-        let ordered = pending.questionIDs.compactMap { available[$0] }
-        guard ordered.count == pending.questionIDs.count else { return nil }
-        return StudySession(id: pending.id, title: pending.title, mode: pending.mode, questions: ordered, timed: false)
+
+}
+
+/// Broader learning themes keep sparse source categories useful without changing question metadata.
+struct StudyTopic: Identifiable {
+    let title: String
+    let questions: [Question]
+    var id: String { title }
+
+    static func grouped(subject: String, questions: [Question]) -> [Self] {
+        let items = questions.filter { $0.subject == subject }
+        let grouped = Dictionary(grouping: items, by: { theme(subject: subject, category: $0.category) })
+        return grouped.keys.sorted().map { Self(title: $0, questions: grouped[$0] ?? []) }
+    }
+
+    private static func theme(subject: String, category: String) -> String {
+        let rules: [(String, [String])]
+        switch subject {
+        case "ネットワーク": rules = [
+            ("IP・アドレス設計", ["ARP", "RARP", "IPアドレス", "IPv", "サブネット", "CIDR", "VLSM", "ホスト部", "ICMP", "DHCP"]),
+            ("経路制御・冗長化", ["BGP", "OSPF", "RIP", "経路", "ルーティング", "STP", "スパニング", "冗長", "MPLS", "SDN", "アグリゲーション"]),
+            ("アプリケーション通信", ["DNS", "ドメイン", "HTTP", "Web", "URL", "FTP", "SMTP", "メール", "MIME", "LDAP", "認証", "VPN", "IPsec"]),
+            ("無線・伝送媒体", ["無線", "IoT", "5G", "光通信", "PLC", "ケーブル", "配線", "物理接続"]),
+            ("性能・運用設計", ["QoS", "RSVP", "予約", "容量", "トラフィック", "呼量", "音声", "最大流", "管理", "送信間隔", "ビット誤り"])
+        ]
+        case "セキュリティ": rules = [
+            ("認証・暗号", ["802.1X", "RADIUS", "SAML", "TLS", "証明", "認証", "鍵", "暗号", "MAC", "IPsec", "WPA", "HSTS"]),
+            ("メール・DNS対策", ["メール", "OP25B", "DNS"]),
+            ("攻撃・脆弱性", ["攻撃", "注入", "脆弱", "Cookie", "妨害", "NTP", "偽装"]),
+            ("検知・対応", ["マルウェア", "検知", "CSIRT", "インシデント", "フォレンジック", "観測"])
+        ]
+        case "コンピュータシステム": rules = [
+            ("CPU・メモリ", ["CPU", "メモリ", "記憶", "割込み", "量子", "パイプライン"]),
+            ("性能・待ち行列", ["待ち行列", "時間", "アムダール", "並列", "タイムアウト"]),
+            ("信頼性・保守", ["信頼性", "保守", "冗長", "RAID"])
+        ]
+        case "システム開発技術": rules = [
+            ("設計・モデリング", ["SOA", "UML", "モデリング", "アーキテクチャ", "is-a", "Web"]),
+            ("テスト・品質", ["テスト", "信頼性", "安全性", "使用性", "エラー"]),
+            ("開発・保守", ["開発", "XP", "保守", "リファクタリング", "リバース"])
+        ]
+        default: return category
+        }
+        for (title, words) in rules where words.contains(where: { category.localizedCaseInsensitiveContains($0) }) { return title }
+        switch subject {
+        case "ネットワーク": return "通信の基礎・プロトコル"
+        case "セキュリティ": return "防御・可用性"
+        case "コンピュータシステム": return "システム構成・運用"
+        default: return "権利・管理"
+        }
+    }
+}
+
+enum QuizLevel {
+    static func questions(level: Int, catalog: Catalog, unlocked: Bool) -> [Question] {
+        SessionPlanner.available(catalog, unlocked: unlocked).filter { $0.difficulty == level }
+    }
+    static func title(_ level: Int) -> String {
+        switch level { case 1: "入門"; case 2: "基本"; case 3: "応用"; case 4: "発展"; default: "挑戦" }
     }
 }

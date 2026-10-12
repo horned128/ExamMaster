@@ -72,9 +72,9 @@ struct MockExamSessionView: View {
             Button("続ける", role: .cancel) { }
         } message: { Text("未回答 \(unanswered)問。未回答は得点上は不正解ですが、習熟度は変わりません。") }
         .confirmationDialog("模試を中断しますか？", isPresented: $confirmExit, titleVisibility: .visible) {
-            Button("模試を中断する") { dismiss() }
+            Button("問題一覧へ戻る", role: .destructive) { store.clearInterruptedStudy(); dismiss() }
             Button("続ける", role: .cancel) { }
-        } message: { Text("回答は保存されています。アプリを閉じても制限時間は進みます。") }
+        } message: { Text("途中の回答と出題位置を削除します。採点済みの学習記録は残ります。") }
         .onReceive(timer) { date in now = date; expireIfNeeded() }
         .onChange(of: scenePhase) { _, phase in if phase == .active { now = .now; expireIfNeeded() } }
         .onAppear { expireIfNeeded() }
@@ -96,7 +96,7 @@ struct MockExamSessionView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         Text("\(index + 1) / \(session.questions.count)問 · 未回答 \(unanswered)問").font(.subheadline.monospacedDigit()).id("top")
-                        Text(question.source).font(.caption).foregroundStyle(Palette.muted)
+                        Text(catalog.qualification.displaySource(question.source)).font(.caption).foregroundStyle(Palette.muted)
                         QuestionBodyView(question: question)
                         ForEach(question.choices.indices, id: \.self) { choice in
                             Button {
@@ -193,70 +193,22 @@ struct MockExamSessionView: View {
     }
 }
 
-struct MockExamLibraryView: View {
+struct MockResultHistoryView: View {
     let catalog: Catalog
     let store: StudyStore
     let purchase: PurchaseManager
-    let start: (StudySession) -> Void
-    let paywall: () -> Void
     var body: some View {
         List {
-            if let pending = store.data.pendingMock {
-                Section("受験中") {
-                    Button("\(pending.title) · 続きから") {
-                        if let session = MockExam.restore(pending, catalog: catalog, unlocked: purchase.unlocked) { start(session) }
-                        else { paywall() }
-                    }
-                    Text("アプリを閉じても制限時間は進みます").font(.caption).foregroundStyle(Palette.muted)
-                }
-            }
-            if catalog.mockSets.isEmpty {
-                ContentUnavailableView("固定模試は準備中です", systemImage: "doc.text", description: Text("検証済みの全問が揃ったセットから追加します。通常演習は利用できます。"))
-            }
-            ForEach([QuestionKind.past, .prediction], id: \.self) { kind in
-                let sets = catalog.mockSets.filter { $0.kind == kind }
-                if !sets.isEmpty {
-                    Section(kind == .past ? "年度別模試" : "オリジナル模試") {
-                        ForEach(sets) { set in
-                            Button {
-                                if let session = MockExam.session(set: set, catalog: catalog, unlocked: purchase.unlocked) { start(session) }
-                                else { paywall() }
-                            } label: {
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(set.title)
-                                        Text("\(set.questionCount)問 · \(set.minutes)分").font(.caption).foregroundStyle(Palette.muted)
-                                    }
-                                    Spacer()
-                                    if MockExam.session(set: set, catalog: catalog, unlocked: purchase.unlocked) == nil { Image(systemName: "lock") }
-                                }.frame(minHeight: 44)
-                            }
-                        }
+            ForEach(store.data.mocks.reversed()) { result in
+                NavigationLink { MockResultDetailView(result: result, catalog: catalog, purchase: purchase) } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(result.title ?? "模擬試験")
+                        Text("\(result.date.formatted(date: .abbreviated, time: .shortened)) · \(result.score) / \(result.total)")
+                            .font(.caption).foregroundStyle(Palette.muted)
                     }
                 }
             }
-            Section("成績履歴") {
-                ForEach(catalog.mockSets) { set in
-                    let results = store.data.mocks.filter { $0.setID == set.id }
-                    if let first = results.first, let last = results.last {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(set.title).font(.subheadline.bold())
-                            Text("初回 \(first.score) · 最高 \(results.map(\.score).max() ?? 0) · 直近 \(last.score) / \(last.total)")
-                                .font(.caption.monospacedDigit()).foregroundStyle(Palette.muted)
-                        }
-                    }
-                }
-                ForEach(store.data.mocks.reversed()) { result in
-                    NavigationLink { MockResultDetailView(result: result, catalog: catalog, purchase: purchase) } label: {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(result.title ?? "模擬試験")
-                            Text("\(result.date.formatted(date: .abbreviated, time: .shortened)) · \(result.score) / \(result.total)")
-                                .font(.caption).foregroundStyle(Palette.muted)
-                        }
-                    }
-                }
-            }
-        }.navigationTitle("固定模試と成績").navigationBarTitleDisplayMode(.inline)
+        }.navigationTitle("模試の成績履歴").navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -290,7 +242,7 @@ struct MockResultDetailView: View {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("\(item.outcome.title) · 回答 \(item.selectedIndex.map { catalog.qualification.choiceLabel($0) } ?? "なし")")
                                         .font(.subheadline.bold())
-                                    Text(question.source).font(.caption).foregroundStyle(Palette.muted)
+                                    Text(catalog.qualification.displaySource(question.source)).font(.caption).foregroundStyle(Palette.muted)
                                 }.padding(.vertical, 8)
                             }
                         }

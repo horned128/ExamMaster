@@ -1,22 +1,28 @@
-# 資格学習シリーズ / ExamMaster
+# ピヨトレ！資格学習シリーズ / ExamMaster
 
 **iPhone向け・無料＋広告／買い切り型のWhite Label試験対策アプリ基盤。** 1つのSwiftUIコードベースから、資格ごとに異なるBundle ID・表示名・テーマ・アイコン・問題集・無料範囲・StoreKit商品・広告ユニットを持つ独立アプリを作ります。アカウントやバックエンドは不要です。
 
 架空のベースサンプルと、制作中のネットワークスペシャリスト専用アプリを含みます。共通コードは複製せず、資格別ターゲット・設定・教材で独立アプリを作ります。
 
+公開シリーズ名は「ピヨトレ！」。アプリ名は「ピヨトレ！＋資格名」で統一します。現在のネットワーク版は**ピヨトレ！ネットワークスペシャリスト**。今後の名称は「ピヨトレ！応用情報技術者」「ピヨトレ！システムアーキテクト」などとし、資格ごとに独立した教材・商品・Bundle IDを設定します。将来の資格版のターゲットや教材はまだ追加していません。
+
 | Scheme | 資格 | Bundle ID | 問題 / 無料 |
 | --- | --- | --- | --- |
 | `ExamMaster` | 設備安全管理士（架空） | `jp.example.exammaster.demo` | 32 / 12 |
-| `NetworkSpecialist` | ネットワークスペシャリスト（制作中） | `jp.example.exammaster.networkspecialist` | 298 / 74 |
+| `NetworkSpecialist` | ネットワークスペシャリスト（制作中） | `jp.example.exammaster.networkspecialist` | 375 / 75 |
 
-**設備安全管理士は架空の教材です。NWは無料74問（2025年春期25問＋2024年春期24問＋2023年春期25問）と有料224問（2015年と2018年秋期各24問＋2013年・2014年・2016年・2017年・2019年秋期・2021年と2022年春期各25問＋2010年秋期問23）の未完成版です。** NWの最終予定475問（公式400＋予想75）のうち177問は未収録です。2013年・2014年・2016年・2017年・2019年・2021年・2022年・2023年・2025年の公式模試を提供しています。2024年問22，2018年問17，2015年問9は公式正答と仕様の整合確認のため保留し，同年度の公式模試は提供していません。2010年も部分年度なので公式模試は提供していません。最新状況は[制作状況](docs/network-specialist/STATUS.md)，原本・収録範囲は[収録表](docs/network-specialist/COVERAGE.md)，保留根拠は[保留台帳](docs/network-specialist/HELD.md)を参照。制作内AIレビューを独立専門家による校閲済みとは称しません。`jp.example`のBundle IDや商品IDを使ったままストアへ申請しないでください。
+**設備安全管理士は架空の教材です。NWは375問（無料75・有料300）の教材を収録し、公開準備中です。** 対象は2013〜2025年の過去問300問（2020年は対象公開なし）と、オリジナル2026年予想問題の第1〜3回・計75問。全12年度と予想3回は各25問・40分の固定模試です。2010年問23はアプリから外し、制作資料をarchiveへ保管しました。回答済みの履歴は保持します。
+
+2015問9・2018問17・2024問22は、利用者指定に従い当時のIPA公式正答で採点し、仕様上の注意を回答後の解説に常時表示します。原問の技術的一意性の解決やIPAの訂正を意味しません。[採点と解説の方針](docs/network-specialist/review-notes/historical-answer-policy.md)、[制作状況](docs/network-specialist/STATUS.md)、[収録表](docs/network-specialist/COVERAGE.md)、[旧調査履歴](docs/network-specialist/HELD.md)、予想のレビュー[第1回](docs/network-specialist/review-notes/2026-pred-01.md)・[第2回](docs/network-specialist/review-notes/2026-pred-02.md)・[第3回](docs/network-specialist/review-notes/2026-pred-03.md)を参照。教材の完成版検証は通過済み。制作内AIレビューを独立専門家校閲とは称しません。本番設定と審査提出は実施済み。初回ビルドのITMS-91064を修正し、2026-10-12 09:16 JSTに1.0（2）と480円商品を再提出、両方「審査待ち」を確認しました。[最新申請状態](docs/release/submission-status.json)を参照。ストア公開と実機・Sandbox等の一部検証は未完了です。
 
 ## 体験と技術選定
 
-- ホーム: 大きな資格名と相棒、ランダムなセリフ、**定着・学習中・これから**の3区分のバーと件数、「今日のノルマ」。準備度・定着率の％は「記録」に集約します。3区分は利用できる問題を重複なく分け、復習・誤解の件数は足し込みません。最大5問／12問を選択し、当日すでに解いた問題を差し引きます。達成後はノルマのカードを非表示、3区分は残します。初期値は少なめ、選択は端末に保存。中断中は「続きから」で再開。出題の優先順位と学習計算は保持しています。
-- 演習: 「問題を探す」で年度・科目・カテゴリ・苦手・お気に入りなどを選ぶと共通問題リストへ進みます。リスト内検索、単問、表示中の全問を順番に回答、未回答だけ／ごちゃまぜのランダム出題に対応。単問は解説後にリストへ戻り、連続演習は結果画面へ。模試は時間制限、全体と科目ごとの基準判定、終了後の問題別復習。
+- ホーム: 相棒と**定着率・学習済み件数・要復習件数**をコンパクトなカードにまとめます。3区分は利用できる問題だけを対象にし、母数を明示。今日の目標や途中再開の操作はありません。6カードから年度別・分野別・苦手問題・ブックマーク・Lv別小テスト・学習記録へ。ホームの相棒を112ptへ拡大し，相棒・詳しく見る・学習記録カードはいずれも通常のページ遷移で同じ記録画面を開きます。
+- 演習: 下部の5タブから学習にアクセス。年度は2列カードで無料／有料・問題数・進捗を表示し、無料問題のない年度は購入画面へのロック入口にします。混在年度では無料問題のみ表示。年度内は分野で分類し、一括出題は「模擬試験」だけ。完全な公式セットは従来の固定模試、部分年度は収録問題の時間制限付き演習です。分野別は関連テーマをつないだマップから一覧へ進みます。NWの細かなカテゴリは最大6テーマに集約し、教材の分類自体は保持。拡大・移動に対応し、最大文字設定ではテーマを縦に表示。小テストは問題の既存難易度をLvにし、最大5問を出題します。
+- 出題順: 苦手問題・ブックマーク・分野別の「問題を解く」から「順番に解く／ランダムに解く」を選びます。未回答のみのフィルターと問題検索は提供しません。どちらの順序でも最後は問題一覧へ戻ります。
+- 回答: 一覧で選んだ問題から次の問題へ進め、最後は「問題一覧へ戻る」。回答後も自信度を変更でき、同じ回答を更新して習熟度を再計算します。選択状態は塗りつぶし・チェック・太字で区別。解き方は答え合わせ後に全ステップを表示。中断・再起動時は途中の出題位置と模試の未採点選択を削除し、回答済みの学習記録は保持します。
 - Recall First: おすすめ/復習では選択肢を見る前に一度想起。年度別・模試・診断では無効。任意の自信度、同じ誤選択肢の繰り返し、自信ありの誤答から危険な思い込みを検知します。
-- 記録: **学習の状態**に準備度・定着率・3区分・折りたたみ式の科目別定着率を統合。準備度は従来の問題集全体の総合計算を保持し、全体／科目別の定着率は利用可能な問題のうち定着条件を満たす割合に統一します。相棒の成長は短い1つの入口から詳細へ。**学習履歴**に学習日数・回答回数・カレンダー・選択日の回答プレビュー・日別履歴をまとめ、全件回答は相棒ページに移植。模試の推移は独立して保持します。いずれも合格確率や実測の記憶確率ではありません。
+- 記録: 「学習記録」に学習状態・相棒の成長とリアクション・カレンダー・日別／全件回答履歴・模試成績を統合。準備度は従来の問題集全体の総合計算を保持し、定着率は利用可能な問題を対象にします。全件履歴の新しい順／古い順に対応。相棒専用の別ページは設けません。
 - 記憶と学習: ホーム・設定の「記憶と復習のしくみ」と、記録の「学習指標の見方」を同じ説明ページへ統一。想起練習・分散学習・答え合わせ・使い方・指標・研究の限界を解説します。手順図、切替可能な模式グラフ、練習日の配分図、3区分の例、準備度の配点図を使用。本文は読みやすいサイズと行間を確保し、目次から章へ移動できます。記録からは指標の章へ直接移動。出典5件と、研究結果／アプリ独自のルール／未検証の効果を区別します。
 - 収益化: 無料問題は何度でも利用可。無料ユーザーにはホーム・問題一覧・記録・セッションの**結果画面だけ**に広告を配置。全問題解放は資格アプリ固有の**非消耗型**IAPで、購入と同時に広告も永久に削除。サブスクリプションはありません。
 
@@ -40,11 +46,11 @@ Ads/AdMobProvider.swift        Google Mobile Ads/UMP/ATTの唯一のアダプタ
 Views/AdBannerPlacement.swift  無料ユーザー用のアダプティブバナー
 Views/QuestionCollectionView.swift 共通問題リストと出題メニュー
 Views/QuestionContentView.swift 複数図版・ピンチ拡大・構造化表・全選択肢の解説
-Views/MockExamView.swift       模試の自由移動・回答変更・保存再開・成績詳細
+Views/MockExamView.swift       模試の自由移動・回答変更・一括採点・成績詳細
 Views/PrivacyDetailsView.swift  保存・広告・購入説明と学習情報リセット
 Views/ExamDateEditor.swift     ホーム/設定共通の試験日設定・解除
 Views/LearningGuideView.swift  研究・メリット・図解・指標の読み方をまとめた共通説明
-Views/Mascot/                  原案のベクター描画・成長・相棒ページ
+Views/Mascot/                  原案のベクター描画・成長・記録内の相棒
 Core/TankeiIdentity.swift      成長判定・ノルマ・状態別セリフ
 Core/TankeiMotion.swift        待機モーションと20種類の自動アクション
 Core/AnswerHistory.swift       全回答の日付グループと新旧の並べ替え
@@ -70,7 +76,7 @@ UI、出題計画、習熟計算、端末保存、決済、広告は別ファイ
 
 ### アイコンと資格ごとの色
 
-`Qualifications/<id>/qualification.json` の `name` がホームとアイコンの資格名、`mascotBaseHex` がチキンのベースカラーです。未指定なら原案の `#FFF3DA`。アプリ内の若鶏／チキンの全画面と、アイコンの顔に共通で反映します。ひよこ・顔の細部・輪郭は原案色。背景は `accentHex` の淡い色。長い資格名は自動で2行に分け、必要なら任意の `iconTitle` に短縮名や `\n` で2行の名前を指定できます。
+`Qualifications/<id>/qualification.json` の `name` が資格名、任意の `brandName` がシリーズ名です。アプリ内の表示名は`brandName + name`で組み立て、ホームではブランドと資格名を2行にします。未指定なら従来の資格名のみ表示。`project.yml`の`displayName`とApp Storeの販売名も同じ全文にそろえてください。アイコンは資格名または`iconTitle`を使います。`mascotBaseHex` がチキンのベースカラーです。未指定なら原案の `#FFF3DA`。アプリ内の若鶏／チキンの全画面と、アイコンの顔に共通で反映します。ひよこ・顔の細部・輪郭は原案色。背景は `accentHex` の淡い色。長い資格名は自動で2行に分け、必要なら任意の `iconTitle` に短縮名や `\n` で2行の名前を指定できます。
 
 ```sh
 python3 tools/GenerateMascot.py
@@ -94,11 +100,15 @@ XcodeでSchemeを選びRunするとサンプル商品設定が自動的に読み
 
 両Schemeのビルド・テストは**順次実行**してください。同じDerivedDataのビルドDBで並行実行するとロック競合になることがあります。NWの開発商品は専用の非消耗型500円です。App Store Connectの税込500円設定・Sandbox/TestFlightは別途必要です。`-UITestResetStudy -UITestDisableAds -UITestSeedFixedMock`はDebug限定の10問途中模試を投入します。これは公式年度別25問セットではありません。
 
-NWの有料実教材（2010年秋期問23）は、単体とUIテストの`StoreKitTest`で検証します。UIテストにも専用商品設定をコピーし、購入権限を偽のDebugフラグではなくローカルの検証済み取引で取得します。未購入の開始制限、購入後の通常演習・3原図拡大、保存中断・取引消去後の再開制限、再購入後の正答と解説、最大文字を対象にしています。商品設定はテストバンドル内だけで、アプリには同梱しません。広告を無効にしたこのUI試験を、購入後の広告SDK停止やSandboxの確認済みとは扱いません。
+NWの購入権限は`StoreKitTest`のローカル検証済み取引で確認します。対象は有料年度のロック・購入後開始・取引消去後の再ロック・2026年予想固定模試です。過去に実施した2010年問23の図版確認は旧版の検証記録であり，同問は現在のアプリには収録しません。広告無効のUI試験を購入後の広告SDK停止やSandbox/TestFlightの確認済みとは扱いません。
 
-テストは純粋な学習計算、資格の整合性、既存履歴の読み込み、途中演習の保存・再開・リセット、問題リストの絞り込み/順序、5桁件数の履歴統計、相棒の成長保存・20アクション・日付別履歴、StoreKitTestでの**実購入・復元・取引消去**、広告権限と頻度制御（SDKを使わないFake Provider）、UIテストの診断・一覧からの単問/ランダム/連続演習・再開・プライバシー画面・模試・広告同意・学習ガイドの図と指標・最大文字と横向きを対象にしています。最新の確認範囲と画面は[検証記録](design-system/exammaster/mascot/VERIFICATION.md)を参照。UIテスト用`-UITestResetStudy`はDebug専用で学習データを初期化し、同時指定の`-UITestSeedCompanionHistory`で日付別履歴のテストデータを作成。`-UITestDisableAds`は同意画面を不要とする学習導線のテストに使用。広告を有効にしたDebugビルドでも**常にGoogle公式テスト広告ID**しかリクエストしません。
+テストは純粋な学習計算、資格の整合性、既存履歴の読み込み、途中位置の削除・学習記録の保持・リセット、問題リストの絞り込み/順序、5桁件数の履歴統計、相棒の成長保存・20アクション・日付別履歴、StoreKitTestでの**実購入・復元・取引消去**、広告権限と頻度制御（SDKを使わないFake Provider）、UIテストの診断・一覧からの単問/順番・ランダム演習・中断・プライバシー画面・模試・広告同意・学習ガイドの図と指標・最大文字と横向きを対象にしています。最新の確認範囲と画面は[検証記録](design-system/exammaster/mascot/VERIFICATION.md)を参照。UIテスト用`-UITestResetStudy`はDebug専用で学習データを初期化し、同時指定の`-UITestSeedCompanionHistory`で日付別履歴のテストデータを作成。`-UITestDisableAds`は同意画面を不要とする学習導線のテストに使用。広告を有効にしたDebugビルドでも**常にGoogle公式テスト広告ID**しかリクエストしません。
 
 ## 新しい資格アプリを追加する
+
+シリーズ版は資格設定に`"brandName": "ピヨトレ！"`を指定し、`name`に「応用情報技術者」「システムアーキテクト」など資格名のみを設定します。アプリ内の表示名は共通コードで組み立てます。`project.yml`の`displayName`とApp Store Connectの名前は、同じ「ピヨトレ！＋資格名」に設定します。
+
+正式なポリシー本文は各資格の`PrivacyPolicy.txt`に保存し、`project.yml`の`privacyPolicyPath`で同梱する文書を指定します。ネットワーク版は資格フォルダの正式本文、架空資格デモはルートのサンプル本文を使用。資格JSONの`privacyPolicyURL`には、そのアプリ専用の公開ページURLを指定します。
 
 1. `Qualifications/<新しいid>/`を追加し、既存の`qualification.json`・`questions.json`・`products.storekit`を複製して**すべて資格専用に編集**。`id`とフォルダ名を一致させ、`productID`とStoreKit設定/後述のApp Store Connectの商品IDを一致させます。
 2. `Assets.xcassets/AppIcon.appiconset/Contents.json`を`Assets.xcassets/<新しいIcon名>.appiconset/Contents.json`へ複製し、`swift tools/GenerateIcon.swift Qualifications/<新しいid>/qualification.json Assets.xcassets/<新しいIcon名>.appiconset/AppIcon.png`で生成。資格名とチキンの色はJSONだけで指定できます。公開前にキャラクターの権利も確認してください。
@@ -109,10 +119,11 @@ NWの有料実教材（2010年秋期問23）は、単体とUIテストの`StoreK
      templates: [QualificationApp]
      templateAttributes:
        qualificationID: my-new-exam
-       displayName: 新資格学習
-        bundleID: jp.yourcompany.mynewexam
-        iconName: MyNewIcon
-        adMobAppID: ca-app-pub-3940256099942544~1458002511 # 開発用サンプル。公開時は自分のアプリIDへ変更
+       privacyPolicyPath: Qualifications/my-new-exam/PrivacyPolicy.txt
+       displayName: ピヨトレ！新資格名
+       bundleID: jp.yourcompany.mynewexam
+       iconName: MyNewIcon
+       adMobAppID: ca-app-pub-3940256099942544~1458002511 # 開発用サンプル。公開時は自分のアプリIDへ変更
      scheme:
        storeKitConfiguration: Qualifications/my-new-exam/products.storekit
    ```
@@ -178,12 +189,12 @@ Google Mobile Ads 13.11.0（AdMob）とGoogle User Messaging Platform（UMP）3.
 }
 ```
 
-選択肢は2〜6件、`correctIndex`は**0始まり**、難易度は1〜5。旧形式の画像はアセットカタログの名前を`imageName`に指定、不要なら`null`。`steps`は順次表示する解説で、不要なら`null`。`questionNumber`は年度別リストの本来の問番号（任意、既存サンプルは`source`の「問1」等から補完）。`concepts`は混同学習で関連問題を紐づけます。`tags`と`category`は検索・演習用です。問題IDは更新後も維持し、削除・再利用すると既存履歴との関連が失われるため、履歴移行を伴う変更として扱います。
+選択肢は2〜6件、`correctIndex`は**0始まり**、難易度は1〜5。旧形式の画像はアセットカタログの名前を`imageName`に指定、不要なら`null`。`steps`は答え合わせ後に全手順を表示する解説で、不要なら`null`。`questionNumber`は年度別リストの本来の問番号（任意、既存サンプルは`source`の「問1」等から補完）。`concepts`は問題の概念を表します。`tags`と`category`は分類・演習用です。問題IDは更新後も維持し、削除・再利用すると既存履歴との関連が失われるため、履歴移行を伴う変更として扱います。
 
 ### version 2の構造化表示と固定模試
 
-- `bodyBlocks`は本文の表示元。指定時も`stem`は検索・一覧用の全文を保持します。
-- `choiceBlocks`は`choices`と同じ件数・順序のブロック配列。`choices`も検索・読み上げ用に保持します。
+- `bodyBlocks`は本文の表示元。指定時も`stem`は一覧用の全文を保持します。
+- `choiceBlocks`は`choices`と同じ件数・順序のブロック配列。`choices`も一覧・読み上げ用に保持します。
 - `explanationBlocks`は解説補足、`choiceExplanations`は全選択肢それぞれの理由です。
 - ブロックの`type`は`text`、`image`、`table`、`monospace`、`formula`。画像は`assetName`（`Figures/`内のPNG名）と`altText`、表は`headers`と列数が一致する`rows`、文字系は`text`が必須です。画像は白地のまま拡大表示できます。
 - 問題の`kind`は`past`/`prediction`、`administration`は`spring`/`autumn`/`prediction`、`mockSetID`は安定したセットIDです。
@@ -191,7 +202,7 @@ Google Mobile Ads 13.11.0（AdMob）とGoogle User Messaging Platform（UMP）3.
 - 資格設定の`choiceLabels`はNWなら`["ア","イ","ウ","エ"]`。未指定の旧教材はA/B/Cを維持します。`usesFixedMocks: true`で固定模試入口を使い、`mockPassTitle`で基準点到達の表示を設定、`contentCredit`で権利・独自解説・表示調整を明記します。
 - `isDraft: true`は開発途中を示し、問題数の不足を許容します。模試の構成検証やリリースの完了条件を緩めるものではありません。
 
-実例とNW専用JSON Schemaは`Qualifications/network-specialist/questions.json`と`tools/network-specialist/questions.schema.json`にあります。NW教材の編集元は`docs/network-specialist/content/<年>.json`です。原本との校合・技術レビュー後のみ`freeze_reviews.py --accept-reviewed-content`で本文・図版内容のハッシュを固定し、`assemble_bank.py --write`で同梱JSONと無料IDを再生成します。未承認・保留・ハッシュ不一致・不完全模試は生成時に拒否します。ハッシュ固定はレビューの代替ではありません。検証は`.venv-network/bin/python tools/network-specialist/validate.py`、完成版ゲートは同コマンドに`--release`を追加します。現在の教材は完成版ゲートを通りません。制作ツールの回帰は`.venv-network/bin/python -m unittest discover -s tools/network-specialist -p 'test_*.py' -v`で実行します。
+実例とNW専用JSON Schemaは`Qualifications/network-specialist/questions.json`と`tools/network-specialist/questions.schema.json`にあります。NW教材の編集元は`docs/network-specialist/content/<年>.json`です。原本との校合・技術レビュー後のみ`freeze_reviews.py --accept-reviewed-content`で本文・図版内容のハッシュを固定し、`assemble_bank.py --write`で同梱JSONと無料IDを再生成します。未承認・保留・ハッシュ不一致・不完全模試は生成時に拒否します。ハッシュ固定はレビューの代替ではありません。検証は`.venv-network/bin/python tools/network-specialist/validate.py`、完成版ゲートは同コマンドに`--release`を追加します。現在の375問教材は完成版ゲートを通過しています。制作ツールの回帰は`.venv-network/bin/python -m unittest discover -s tools/network-specialist -p 'test_*.py' -v`で実行します。
 
 形式探索の記録は[原本形式調査](docs/network-specialist/FORMAT_SURVEY.md)に保存しています。`docs/network-specialist/candidates/`は未承認の草稿・図版の作業領域で、組立て対象でもアプリの同梱リソースでもありません。スキーマ検査や計算検算が成功しても収録済み件数には数えません。正式レビュー後にのみ`content/`と資格別図版へ移してください。
 
@@ -211,13 +222,15 @@ Google Mobile Ads 13.11.0（AdMob）とGoogle User Messaging Platform（UMP）3.
 
 ## 永続化・課金と公開準備
 
-`Application Support/study-<資格id>.json`に`StudyData(schemaVersion: 1)`を原子的に保存。回答履歴・Mastery・模試・お気に入り・診断済み/設定に加え、**資格あたり1件の通常演習の出題順・現在位置・回答済み状態**、別枠の**途中模試1件（`pendingMock`）**と任意の試験日を保持します。試験日は時刻ではなく暦の年月日として保存し、夏時間や端末のタイムゾーン変更で設定日がずれないようにしています。ホームの残日数は当日0日、経過時は「試験日が経過」と表示します。別の連続演習を始めるときは再開/切り替えを確認。単問は途中演習を消しません。模試は問題を自由移動・スキップ・回答変更/取消でき、絶対期限を保存して中断・再起動後も時間が進みます。固定模試の一覧から再開し、期限到達で一括採点します。採点のUUIDで重複確定を防ぎ、結果・実回答のMastery更新・途中模試消去を一度の原子的書込みで確定。保存失敗時は途中模試と旧履歴を保持します。未回答は失点と結果だけに残し、回答履歴・習熟度・誤答回数を変更しません。有料問題は開始/再開/解説閲覧で購入権限を確認します。旧バージョンの保存データは新項目を補って読み込みます。読み込みに失敗した場合は元のファイルを**上書きしない読み取り専用状態**にし、保存失敗は画面で再試行できます。問題集はアプリ同梱でオフライン使用可。現状は端末間同期・バックアップの保証はなく、アプリ削除で履歴は消えます。将来のiCloud同期では`StudyStore`を差し替え、履歴と安定IDを移行してください。
+`Application Support/study-<資格id>.json`に`StudyData(schemaVersion: 1)`を原子的に保存。回答履歴・Mastery・模試成績・ブックマーク・診断済み/設定・試験日を保持します。通常演習は途中位置を保存しません。模試は受験中のみ絶対期限・現在位置・未採点の選択を保存し、中断・アプリ再起動で削除。採点済みの結果と回答は残ります。採点のUUIDで重複確定を防ぎ、結果・実回答のMastery更新・途中模試消去を一度の原子的書込みで確定します。未回答は失点と結果だけに残し、回答履歴・習熟度を変更しません。有料問題は一覧に本文を出さず、開始と解説閲覧でも購入権限を確認します。試験日は暦の年月日として保存。旧バージョンの保存データは新項目を補って読み込みます。読み込みに失敗した場合は元のファイルを**上書きしない読み取り専用状態**にし、保存失敗は画面で再試行できます。問題集はアプリ同梱でオフライン使用可。現状は端末間同期・バックアップの保証はなく、アプリ削除で履歴は消えます。将来のiCloud同期では`StudyStore`を差し替え、履歴と安定IDを移行してください。
 
-試験日の追加・変更・解除はホーム最上部または設定の「受験予定」から行います。設定はホーム・問題を探す・記録の右上歯車から開きます。「データとプライバシー」には端末保存・広告・購入の説明と正式なポリシーへのリンクを設置。サンプルには`PrivacyPolicy.txt`を同梱します。学習情報リセットは回答・Mastery・模試・お気に入り・診断・途中演習・試験日を削除し、初回診断を再案内します。Recall Firstとランダム設定・学習量の選択・StoreKit購入権限・UMP同意・広告の頻度履歴は維持します。公開時は資格ごとの`privacyPolicyURL`を実際の公開URLへ設定してください。
+試験日の追加・変更・解除はホーム最上部または設定の「受験予定」から行います。設定はホーム・年度別・分野別・学習記録の右上歯車から開きます。「データとプライバシー」には端末保存・広告・購入の説明と正式なポリシーへのリンクを設置。サンプルには`PrivacyPolicy.txt`を同梱します。学習情報リセットは回答・Mastery・模試・お気に入り・診断・途中演習・試験日を削除し、初回診断を再案内します。Recall First・StoreKit購入権限・UMP同意・広告の頻度履歴は維持します。旧ランダム設定の保存フィールドは読み込み互換のため残し，UIでは使いません。公開時は資格ごとの`privacyPolicyURL`を実際の公開URLへ設定してください。
 
 購入権限は端末内の任意のフラグではなく、StoreKit 2の**検証済み・取消なし・商品ID一致・非消耗型**の`Transaction.currentEntitlements`から取得。購入時に取引を完了し、`Transaction.updates`で変更を反映。復元ボタンは`AppStore.sync()`後に権限を再確認します。購入済み端末ではStoreKitのローカル権限によりオフラインで使用でき、広告も非表示。未購入/商品読み込み失敗/承認待ち/復元なしを区別して表示し、無料問題は使い続けられます。ローカルの`.storekit`は**開発時のみ**の設定で、公開商品の価格・IDはApp Store Connectに登録します。
 
 公開する資格ごとに行う作業:
+
+NWの最新の申請手順・必要情報・375問完成を条件にした公開方針と、自動検査/Archive/アップロード/撮影コマンドは[公開申請の準備](docs/release/README.md)を参照してください。
 
 1. 正式な問題・解説・画像/出典・法令更新と権利確認、専門家校閲。架空資格の名称/説明を実資格へ変更し、設定した試験時間・合格基準が正しいことを確認。
 2. Apple DeveloperのTeam、独立Bundle ID、署名、アプリ名/1024pxアイコン、バージョン/ビルド番号を設定。`jp.example`の識別子を置換。

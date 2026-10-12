@@ -57,12 +57,24 @@ class ValidationTests(unittest.TestCase):
                 code = error.code
         return code, validate.load(self.docs / "validation-report.json")
 
-    def test_current_partial_bank_passes_but_release_is_rejected(self):
+    def test_complete_bank_passes_release(self):
         code, report = self.run_validation()
         self.assertEqual(code, 0)
         self.assertEqual(report["errors"], [])
+        self.assertTrue(report["releaseReady"])
+        self.assertEqual(report["included"], 375)
+        self.assertEqual((report["free"], report["paid"]), (75, 300))
+        self.assertEqual(self.run_validation(release=True)[0], 0)
+
+    def test_missing_historical_question_and_mock_still_block_release(self):
+        self.bank["questions"] = [q for q in self.bank["questions"] if q["id"] != "nw-2015-autumn-q09"]
+        self.bank["mockSets"] = [s for s in self.bank["mockSets"] if s["id"] != "nw-2015-autumn"]
+        self.write(self.app / "questions.json", self.bank)
+        code, report = self.run_validation(release=True)
+        self.assertEqual(code, 1)
+        self.assertEqual(report["errors"], [])
         self.assertFalse(report["releaseReady"])
-        self.assertEqual(self.run_validation(release=True)[0], 1)
+        self.assertTrue(any("2015" in error for error in report["incomplete"]))
 
     def test_changed_text_requires_review(self):
         self.bank["questions"][0]["stem"] += "内容変更"
@@ -91,7 +103,7 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(any("原本欠落" in error for error in report["errors"]))
 
     def test_wrong_official_answer_and_paid_free_mismatch_are_rejected(self):
-        self.bank["questions"][0]["correctIndex"] = 0
+        next(q for q in self.bank["questions"] if q["id"] == "nw-2025-spring-q01")["correctIndex"] = 0
         self.write(self.app / "questions.json", self.bank)
         config = validate.load(self.app / "qualification.json")
         config["freeQuestionIDs"] = config["freeQuestionIDs"][1:]
@@ -109,7 +121,7 @@ class ValidationTests(unittest.TestCase):
         self.assertIn("2025:正答テキストと原本PDFが不一致", report["errors"])
 
     def test_unpublished_official_question_is_rejected(self):
-        question = copy.deepcopy(self.bank["questions"][0])
+        question = copy.deepcopy(next(q for q in self.bank["questions"] if q["kind"] == "past"))
         question.update(id="nw-2020-spring-q01", year=2020, mockSetID="nw-2020-spring",
                         source="ネットワークスペシャリスト試験 2020年春期 午前Ⅱ 問1")
         self.bank["questions"].append(question)
@@ -119,8 +131,9 @@ class ValidationTests(unittest.TestCase):
         self.assertIn("公式原本にない年度/期/問番号", report["errors"])
 
     def test_reordered_or_mislabeled_mock_is_rejected(self):
-        self.bank["mockSets"][0]["questionIDs"].reverse()
-        self.bank["mockSets"][0]["kind"] = "prediction"
+        mock = next(s for s in self.bank["mockSets"] if s["kind"] == "past")
+        mock["questionIDs"].reverse()
+        mock["kind"] = "prediction"
         self.write(self.app / "questions.json", self.bank)
         code, report = self.run_validation()
         self.assertEqual(code, 1)

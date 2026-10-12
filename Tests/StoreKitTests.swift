@@ -31,7 +31,12 @@ final class StoreKitTests: XCTestCase {
         await restored.restore()
         XCTAssertTrue(restored.unlocked, restored.error ?? "購入を復元できませんでした")
         session.clearTransactions()
-        await restored.refreshEntitlement()
+        // StoreKit's local service may deliver transaction removal after clearTransactions returns.
+        for _ in 0..<20 {
+            await restored.refreshEntitlement()
+            if !restored.unlocked { break }
+            try await Task.sleep(for: .milliseconds(100))
+        }
         XCTAssertFalse(restored.unlocked)
     }
 }

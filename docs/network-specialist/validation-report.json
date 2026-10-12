@@ -41,9 +41,9 @@
       "year": 2010,
       "period": "autumn",
       "official": 25,
-      "included": 1,
-      "verified": 1,
-      "held": 24,
+      "included": 0,
+      "verified": 0,
+      "held": 25,
       "missingQuestionIDs": [
         "nw-2010-autumn-q01",
         "nw-2010-autumn-q02",
@@ -67,6 +67,7 @@
         "nw-2010-autumn-q20",
         "nw-2010-autumn-q21",
         "nw-2010-autumn-q22",
+        "nw-2010-autumn-q23",
         "nw-2010-autumn-q24",
         "nw-2010-autumn-q25"
       ],
@@ -173,16 +174,12 @@
       "year": 2015,
       "period": "autumn",
       "official": 25,
-      "included": 24,
-      "verified": 24,
-      "held": 1,
-      "missingQuestionIDs": [
-        "nw-2015-autumn-q09"
-      ],
-      "heldReviewNotes": {
-        "nw-2015-autumn-q09": "原文全肢/公式正答エを校合。IPsec『サポートが必須』は旧4294のMUSTに対応するが，出題前2011年6434 §11/11.1は全IPv6nodeの対応をSHOULDへ変更。8504 §13/13.1もSHOULDを維持。原文に旧要件の限定はなく，出題時点も一律必須とは説明できない。最新IPA年度page/再取得PDFでもNW問9訂正は見つからず，既保存SHA256と一致。candidates/2015-q09.jsonへ隔離，未承認・未収録・2015固定模試なし。詳細HELD.md。"
-      },
-      "reason": "未転記・未解説・未レビュー，個別保留はheldReviewNotes参照"
+      "included": 25,
+      "verified": 25,
+      "held": 0,
+      "missingQuestionIDs": [],
+      "heldReviewNotes": {},
+      "reason": null
     },
     {
       "year": 2016,
@@ -210,16 +207,12 @@
       "year": 2018,
       "period": "autumn",
       "official": 25,
-      "included": 24,
-      "verified": 24,
-      "held": 1,
-      "missingQuestionIDs": [
-        "nw-2018-autumn-q17"
-      ],
-      "heldReviewNotes": {
-        "nw-2018-autumn-q17": "公式正答ウは確認済み。原文は単にクライアント証明書を用いる方式で，必須/基本/代表的の限定なし。RFC5281 §7/§7.6はEAP-TTLSの任意client証明書認証とphase2を省く構成を許すため，エを誤りとする根拠が未解決。代表的という限定を推測で追加せず未収録・candidates/2018-q17.json隔離，2018固定模試未登録。詳細HELD.md。"
-      },
-      "reason": "未転記・未解説・未レビュー，個別保留はheldReviewNotes参照"
+      "included": 25,
+      "verified": 25,
+      "held": 0,
+      "missingQuestionIDs": [],
+      "heldReviewNotes": {},
+      "reason": null
     },
     {
       "year": 2019,
@@ -278,16 +271,12 @@
       "year": 2024,
       "period": "spring",
       "official": 25,
-      "included": 24,
-      "verified": 24,
-      "held": 1,
-      "missingQuestionIDs": [
-        "nw-2024-spring-q22"
-      ],
-      "heldReviewNotes": {
-        "nw-2024-spring-q22": "公式正答ア。2026-10-09に原本を再確認。PCI-SIG公式5.0 FAQは32レーンのリンクを明記し，ウを単純に最大16として否定できない。公式正答と仕様上の一意性の整合確認待ち。未収録・未承認。詳細はHELD.md。"
-      },
-      "reason": "未転記・未解説・未レビュー，個別保留はheldReviewNotes参照"
+      "included": 25,
+      "verified": 25,
+      "held": 0,
+      "missingQuestionIDs": [],
+      "heldReviewNotes": {},
+      "reason": null
     },
     {
       "year": 2025,
@@ -301,40 +290,29 @@
       "reason": null
     }
   ],
-  "included": 298,
-  "free": 74,
-  "paid": 224,
-  "figures": 42,
-  "predictions": 0,
+  "included": 375,
+  "free": 75,
+  "paid": 300,
+  "figures": 39,
+  "predictions": 75,
   "predictionDifficulty": {
-    "nw-2026-pred-01": {},
-    "nw-2026-pred-02": {},
-    "nw-2026-pred-03": {}
+    "nw-2026-pred-01": {
+      "2": 5,
+      "3": 15,
+      "4": 5
+    },
+    "nw-2026-pred-02": {
+      "2": 5,
+      "3": 15,
+      "4": 5
+    },
+    "nw-2026-pred-03": {
+      "2": 5,
+      "3": 15,
+      "4": 5
+    }
   },
   "errors": [],
-  "incomplete": [
-    "2009:収録0/25",
-    "2010:収録1/25",
-    "2011:収録0/25",
-    "2012:収録0/25",
-    "2015:収録24/25",
-    "2018:収録24/25",
-    "2024:収録24/25",
-    "2009:固定模試未完成",
-    "2010:固定模試未完成",
-    "2011:固定模試未完成",
-    "2012:固定模試未完成",
-    "2015:固定模試未完成",
-    "2018:固定模試未完成",
-    "2024:固定模試未完成",
-    "予想問題0/75",
-    "nw-2026-pred-01:25問未完成",
-    "nw-2026-pred-01:固定模試未完成",
-    "nw-2026-pred-02:25問未完成",
-    "nw-2026-pred-02:固定模試未完成",
-    "nw-2026-pred-03:25問未完成",
-    "nw-2026-pred-03:固定模試未完成",
-    "問題集は試作版"
-  ],
-  "releaseReady": false
+  "incomplete": [],
+  "releaseReady": true
 }

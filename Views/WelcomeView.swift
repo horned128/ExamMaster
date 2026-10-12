@@ -10,7 +10,7 @@ struct WelcomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(catalog.qualification.name)
+                        Text(catalog.qualification.appDisplayName)
                             .font(.subheadline.weight(.medium)).foregroundStyle(Palette.muted)
                         Text("思い出すたび、\n自分のものに。")
                             .font(.largeTitle.bold()).fixedSize(horizontal: false, vertical: true)

@@ -1,4 +1,4 @@
-"""Verify the reviewed 2015 subset, and reject the unresolved IPv6 item."""
+"""Verify the complete 2015 bank, official keys, and historical-answer caveats."""
 from decimal import Decimal, localcontext
 from fractions import Fraction
 import hashlib
@@ -6,7 +6,6 @@ import hmac
 import ipaddress
 import re
 import unittest
-from assemble_bank import assemble
 from validate import APP, DOCS, load, official_answers
 
 
@@ -16,23 +15,22 @@ class Calculations2015Tests(unittest.TestCase):
         cls.part = load(DOCS / "content/2015.json")
         cls.questions = {q["questionNumber"]: q for q in cls.part["questions"]}
 
-    def test_official_answers_and_held_item_excluded_from_assembly_and_mock(self):
+    def test_official_answers_complete_mock_and_historical_caveat(self):
         answers = official_answers(DOCS / "evidence/2015h27a_nw_am2_ans.pdf")
-        self.assertEqual(set(answers), set(range(1, 26)))
-        self.assertEqual(set(self.questions), set(range(1, 26)) - {9})
+        self.assertEqual(set(self.questions), set(range(1, 26)))
         self.assertTrue(all(q["correctIndex"] == answers[n] for n, q in self.questions.items()))
-        self.assertEqual(self.part["mockSets"], [])
-        candidate = load(DOCS / "candidates/2015-q09.json")
-        question, = candidate["questions"]
-        self.assertEqual(question["correctIndex"], answers[9])
-        self.assertIn("サポートが必須", question["choices"][3])
-        reviews = load(DOCS / "reviews.json")["questionReviews"]
-        self.assertEqual(reviews[question["id"]]["stage2"], "held")
-        with self.assertRaisesRegex(ValueError, "Unreviewed or held question"):
-            assemble([candidate], reviews, load(DOCS / "review-snapshots.json"))
+        question = self.questions[9]
+        self.assertIn("当時の公式正答で採点", question["explanation"])
+        self.assertIn("2011年", question["explanation"])
+        self.assertIn("出題年より前", question["explanation"])
+        self.assertIn("SHOULD", question["choiceExplanations"][3])
+        mock, = self.part["mockSets"]
+        self.assertEqual(mock["questionIDs"], [self.questions[n]["id"] for n in range(1, 26)])
+        self.assertEqual((mock["questionCount"], mock["minutes"]), (25, 40))
         bank = load(APP / "questions.json")
-        self.assertNotIn(question["id"], {q["id"] for q in bank["questions"]})
-        self.assertNotIn("nw-2015-autumn", {s["id"] for s in bank["mockSets"]})
+        self.assertIn(question, bank["questions"])
+        self.assertIn(mock, bank["mockSets"])
+        self.assertFalse(self.part["isDraft"])
 
     def test_ber_approximation_and_independent_bit_exact_expectation(self):
         q = self.questions[5]

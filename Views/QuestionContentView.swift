@@ -3,11 +3,12 @@ import UIKit
 
 struct QuestionBodyView: View {
     let question: Question
+    var largeText = false
     var body: some View {
         if let blocks = question.bodyBlocks {
-            RichContentView(blocks: blocks)
+            RichContentView(blocks: blocks).font(largeText ? .title3 : .body)
         } else {
-            Text(question.stem).font(.title3.weight(.semibold))
+            Text(question.stem).font(largeText ? .title2.weight(.semibold) : .title3.weight(.semibold))
                 .fixedSize(horizontal: false, vertical: true)
             if let image = question.imageName {
                 QuestionFigureView(image: UIImage(named: image), altText: "問題図版", caption: nil)
@@ -213,7 +214,7 @@ struct QuestionExplanationView: View {
                 }
             }
             if let blocks = question.explanationBlocks { RichContentView(blocks: blocks) }
-            DisclosureGroup("出典") { Text(question.source).font(.caption).foregroundStyle(Palette.muted) }
+            DisclosureGroup("出典") { Text(qualification.displaySource(question.source)).font(.caption).foregroundStyle(Palette.muted) }
         }
     }
 }

@@ -1,5 +1,5 @@
 {
-  "version": 2, "isDraft": true,
+  "version": 2, "isDraft": false,
   "mockSets": [{
     "id": "nw-2019-autumn", "title": "2019年秋期 午前Ⅱ", "kind": "past",
     "questionIDs": ["nw-2019-autumn-q01", "nw-2019-autumn-q02", "nw-2019-autumn-q03", "nw-2019-autumn-q04", "nw-2019-autumn-q05", "nw-2019-autumn-q06", "nw-2019-autumn-q07", "nw-2019-autumn-q08", "nw-2019-autumn-q09", "nw-2019-autumn-q10", "nw-2019-autumn-q11", "nw-2019-autumn-q12", "nw-2019-autumn-q13", "nw-2019-autumn-q14", "nw-2019-autumn-q15", "nw-2019-autumn-q16", "nw-2019-autumn-q17", "nw-2019-autumn-q18", "nw-2019-autumn-q19", "nw-2019-autumn-q20", "nw-2019-autumn-q21", "nw-2019-autumn-q22", "nw-2019-autumn-q23", "nw-2019-autumn-q24", "nw-2019-autumn-q25"],

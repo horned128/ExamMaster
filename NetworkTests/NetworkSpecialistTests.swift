@@ -3,6 +3,21 @@ import StoreKitTest
 @testable import NetworkSpecialist
 
 final class NetworkSpecialistTests: XCTestCase {
+    private func questionsForEntitlement(_ catalog: Catalog, unlocked: Bool) -> [String] {
+        SessionPlanner.available(catalog, unlocked: unlocked).map(\.id)
+    }
+
+    func testNetworkTopicMapUsesBroadThemesWithoutDuplicates() throws {
+        let catalog = try Catalog.load(id: "network-specialist")
+        for subject in catalog.qualification.subjects {
+            let topics = StudyTopic.grouped(subject: subject, questions: catalog.questions)
+            XCTAssertLessThanOrEqual(topics.count, 6)
+            let ids = topics.flatMap { $0.questions.map(\.id) }
+            XCTAssertEqual(ids.count, Set(ids).count)
+            XCTAssertEqual(Set(ids), Set(catalog.questions.filter { $0.subject == subject }.map(\.id)))
+        }
+    }
+
     private let start = Date(timeIntervalSince1970: 1_790_000_000)
 
     func testVerified2025CatalogAndResources() throws {
@@ -25,14 +40,17 @@ final class NetworkSpecialistTests: XCTestCase {
         XCTAssertEqual(questions.map(\.correctIndex), correct)
     }
 
-    func testReviewedPartial2024DoesNotBecomeOfficialMock() throws {
+    func testReviewed2024OfficialMockAndHistoricalAnswerCaveat() throws {
         let catalog = try Catalog.load(id: "network-specialist")
         let questions = catalog.questions.filter { $0.year == 2024 && $0.kind == .past }
-        XCTAssertEqual(questions.map(\.questionNumber), Array(1...21) + [23, 24, 25])
-        XCTAssertEqual(questions.map(\.correctIndex), [2, 0, 1, 1, 3, 1, 3, 3, 0, 3, 2, 1, 1, 1, 1, 0, 3, 1, 3, 3, 0, 0, 0, 3])
+        XCTAssertEqual(questions.map(\.questionNumber), Array(1...25))
+        XCTAssertEqual(questions.map(\.correctIndex), [2, 0, 1, 1, 3, 1, 3, 3, 0, 3, 2, 1, 1, 1, 1, 0, 3, 1, 3, 3, 0, 0, 0, 0, 3])
         XCTAssertTrue(Set(questions.map(\.id)).isSubset(of: Set(catalog.qualification.freeQuestionIDs)))
-        XCTAssertNil(catalog.mockSets.first { $0.id == "nw-2024-spring" })
-        XCTAssertNil(catalog.questions.first { $0.id == "nw-2024-spring-q22" })
+        let set = try XCTUnwrap(catalog.mockSets.first { $0.id == "nw-2024-spring" })
+        XCTAssertEqual(MockExam.session(set: set, catalog: catalog, unlocked: false)?.questions.map(\.id), questions.map(\.id))
+        let historical = try XCTUnwrap(questions.first { $0.questionNumber == 22 })
+        XCTAssertTrue(historical.explanation.contains("当時の公式正答で採点"))
+        XCTAssertTrue(historical.explanation.contains("32レーン"))
         XCTAssertEqual(questions.flatMap(\.allBlocks).filter { $0.type == .image }.count, 1)
         let table = try XCTUnwrap(questions.first { $0.questionNumber == 3 }?.bodyBlocks?.first { $0.type == .table })
         XCTAssertEqual(table.rows, [["3", "1.271"], ["4", "2.045"], ["5", "2.881"], ["6", "3.758"]])
@@ -54,40 +72,90 @@ final class NetworkSpecialistTests: XCTestCase {
         XCTAssertEqual(tableChoices[2].first?.rows, [["2.4GHz帯，5GHz帯", "5GHz帯"]])
         let set = try XCTUnwrap(catalog.mockSets.first { $0.id == "nw-2023-spring" })
         XCTAssertEqual(MockExam.session(set: set, catalog: catalog, unlocked: false)?.questions.map(\.id), questions.map(\.id))
-        XCTAssertEqual(catalog.questions.count, 298)
-        XCTAssertEqual(catalog.qualification.freeQuestionIDs.count, 74)
-        XCTAssertEqual(Set(catalog.mockSets.map(\.id)), ["nw-2025-spring", "nw-2023-spring", "nw-2022-spring", "nw-2021-spring", "nw-2019-autumn", "nw-2017-autumn", "nw-2016-autumn", "nw-2014-autumn", "nw-2013-autumn"])
+        XCTAssertEqual(catalog.questions.count, 375)
+        XCTAssertEqual(catalog.qualification.freeQuestionIDs.count, 75)
+        XCTAssertEqual(Set(catalog.mockSets.map(\.id)), ["nw-2026-pred-01", "nw-2026-pred-02", "nw-2026-pred-03", "nw-2025-spring", "nw-2024-spring", "nw-2023-spring", "nw-2022-spring", "nw-2021-spring", "nw-2019-autumn", "nw-2018-autumn", "nw-2017-autumn", "nw-2016-autumn", "nw-2015-autumn", "nw-2014-autumn", "nw-2013-autumn"])
         let bankURL = try XCTUnwrap(Bundle.main.url(forResource: "questions", withExtension: "json"))
-        XCTAssertEqual(try JSONDecoder().decode(QuestionBank.self, from: Data(contentsOf: bankURL)).isDraft, true)
+        XCTAssertEqual(try JSONDecoder().decode(QuestionBank.self, from: Data(contentsOf: bankURL)).isDraft, false)
     }
 
-    func testReviewedPaid2010MultipleFiguresAndRealResumeGate() throws {
+    func testOriginal2026PredictionIsCompleteAndPaid() throws {
         let catalog = try Catalog.load(id: "network-specialist")
-        let question = try XCTUnwrap(catalog.questions.first { $0.id == "nw-2010-autumn-q23" })
-        XCTAssertEqual(catalog.questions.filter { $0.year == 2010 }.map(\.questionNumber), [23])
-        XCTAssertEqual(question.correctIndex, 3)
-        XCTAssertEqual(question.choices, ["B案＞A案＞C案", "B案＞C案＞A案", "C案＞A案＞B案", "C案＞B案＞A案"])
-        XCTAssertEqual(question.bodyBlocks?.filter { $0.type == .image }.map(\.assetName),
-                       ["nw-2010-q23-plan-a.png", "nw-2010-q23-plan-b.png", "nw-2010-q23-plan-c.png"])
-        XCTAssertEqual(question.bodyBlocks?.filter { $0.type == .image }.map(\.caption),
-                       ["A案（公式原図）", "B案（公式原図）", "C案（公式原図）"])
-        XCTAssertTrue(question.explanation.contains("原文には独立性の明示がない"))
-        XCTAssertFalse(catalog.qualification.freeQuestionIDs.contains(question.id))
-        XCTAssertFalse(SessionPlanner.available(catalog, unlocked: false).contains(question))
-        XCTAssertTrue(SessionPlanner.available(catalog, unlocked: true).contains(question))
-        XCTAssertNil(catalog.mockSets.first { $0.id == "nw-2010-autumn" })
-        let session = StudySession(title: "2010年の問題", mode: .year, questions: [question], timed: false)
-        let pending = PendingStudy(session: session)
-        XCTAssertNil(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: false))
-        XCTAssertEqual(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: true)?.questions, [question])
+        let questions = catalog.questions.filter { $0.year == 2026 }
+        XCTAssertEqual(questions.count, 75)
+        XCTAssertTrue(questions.allSatisfy { $0.kind == .prediction && $0.source.contains("ExamMaster オリジナル") })
+        XCTAssertTrue(Set(questions.map(\.id)).isDisjoint(with: Set(catalog.qualification.freeQuestionIDs)))
+        for number in 1...3 {
+            let id = String(format: "nw-2026-pred-%02d", number)
+            let set = try XCTUnwrap(catalog.mockSets.first { $0.id == id })
+            let members = questions.filter { $0.mockSetID == id }
+            XCTAssertEqual(members.count, 25)
+            XCTAssertEqual(members.map(\.questionNumber), Array(1...25))
+            XCTAssertEqual(members.filter { $0.difficulty <= 2 }.count, 5)
+            XCTAssertEqual(members.filter { $0.difficulty == 3 }.count, 15)
+            XCTAssertEqual(members.filter { $0.difficulty >= 4 }.count, 5)
+            XCTAssertEqual(set.title, "2026年予想問題 第\(number)回")
+            XCTAssertEqual(set.minutes, 40)
+            XCTAssertNil(MockExam.session(set: set, catalog: catalog, unlocked: false))
+            let session = try XCTUnwrap(MockExam.session(set: set, catalog: catalog, unlocked: true))
+            XCTAssertEqual(session.questions.map(\.id), members.map(\.id))
+            XCTAssertEqual(session.mockSetID, set.id)
+        }
+    }
+
+    @MainActor func testPredictionSetCollectionsAndResultsStaySeparate() async throws {
+        let catalog = try Catalog.load(id: "network-specialist")
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = StudyStore(qualificationID: "forecast-three-sets", directory: directory)
+        for number in 1...3 {
+            let id = String(format: "nw-2026-pred-%02d", number)
+            let set = try XCTUnwrap(catalog.mockSets.first { $0.id == id })
+            let collection = QuestionCollections.questions(for: .mockSet(id), catalog: catalog, data: store.data)
+            XCTAssertEqual(collection.map(\.id), set.questionIDs)
+            let session = try XCTUnwrap(MockExam.session(set: set, catalog: catalog, unlocked: true))
+            XCTAssertTrue(store.beginMock(session: session, minutes: set.minutes, now: start))
+            for question in session.questions.prefix(number) {
+                XCTAssertTrue(store.selectMock(question.correctIndex, question: question, attemptID: session.id, now: start))
+            }
+            let result = try XCTUnwrap(store.completeMock(attemptID: session.id, catalog: catalog, now: start.addingTimeInterval(60)))
+            XCTAssertEqual(result.score, number)
+            XCTAssertEqual(result.total, 25)
+            XCTAssertEqual(result.setID, id)
+            XCTAssertEqual(result.questionResults?.filter { $0.outcome == .unanswered }.count, 25-number)
+            XCTAssertEqual(Set(result.questionResults?.map(\.questionID) ?? []), Set(set.questionIDs))
+        }
+        XCTAssertEqual(store.data.mocks.count, 3)
+        XCTAssertEqual(store.data.answers.count, 6)
+        XCTAssertEqual(Set(store.data.answers.map(\.questionID)).count, 6)
+        XCTAssertTrue(QuestionCollections.questions(for: .mockSet("missing"), catalog: catalog, data: store.data).isEmpty)
+    }
+
+    @MainActor func testRemovedYearPreservesExistingAnswerHistory() async throws {
+        let catalog = try Catalog.load(id: "network-specialist")
+        XCTAssertTrue(catalog.questions.filter { $0.kind == .past }.allSatisfy { (2013...2025).contains($0.year) })
+        XCTAssertFalse(catalog.questions.contains { $0.year == 2010 || $0.year == 2020 })
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        var data = StudyData()
+        let answer = Answer(questionID: "nw-2010-autumn-q23", date: start, selectedIndex: 3,
+                            correct: true, duration: 10, confidence: .sure, mode: .year)
+        data.answers = [answer]
+        data.bookmarks.insert(answer.questionID)
+        try JSONEncoder().encode(data).write(to: directory.appendingPathComponent("study-network-specialist.json"))
+        let store = StudyStore(qualificationID: "network-specialist", directory: directory)
+        XCTAssertEqual(store.data.answers.map(\.id), [answer.id])
+        XCTAssertTrue(store.data.bookmarks.contains(answer.questionID))
+        XCTAssertTrue(QuestionCollections.questions(for: .favorites, catalog: catalog, data: store.data).isEmpty)
     }
 
     func testReviewedPaidCatalogAndWholeMockGates() throws {
         let catalog = try Catalog.load(id: "network-specialist")
         let free = SessionPlanner.available(catalog, unlocked: false)
         let all = SessionPlanner.available(catalog, unlocked: true)
-        XCTAssertEqual(free.count, 74)
-        XCTAssertEqual(all.count, 298)
+        XCTAssertEqual(free.count, 75)
+        XCTAssertEqual(all.count, 375)
         let expected: [Int: [Int]] = [
             2013: [1, 3, 3, 1, 3, 1, 3, 1, 1, 3, 2, 3, 0, 1, 3, 2, 3, 1, 1, 1, 0, 1, 1, 1, 1],
             2014: [3, 1, 3, 1, 3, 0, 0, 1, 1, 2, 0, 3, 0, 2, 1, 1, 1, 1, 2, 3, 2, 3, 3, 0, 2],
@@ -116,8 +184,8 @@ final class NetworkSpecialistTests: XCTestCase {
             XCTAssertNil(MockExam.restore(pending, catalog: catalog, unlocked: false))
             XCTAssertEqual(MockExam.restore(pending, catalog: catalog, unlocked: true)?.id, session.id)
             let study = PendingStudy(session: StudySession(title: "\(year)年", mode: .year, questions: questions, timed: false))
-            XCTAssertNil(QuestionCollections.resumedSession(study, catalog: catalog, unlocked: false))
-            XCTAssertEqual(QuestionCollections.resumedSession(study, catalog: catalog, unlocked: true)?.questions, questions)
+            XCTAssertFalse(Set(questionsForEntitlement(catalog, unlocked: false)).isSuperset(of: Set(study.questionIDs)))
+            XCTAssertTrue(Set(questionsForEntitlement(catalog, unlocked: true)).isSuperset(of: Set(study.questionIDs)))
             for figure in questions.flatMap(\.allBlocks).filter({ $0.type == .image }) {
                 XCTAssertNotNil(figure.assetName.flatMap { ContentAsset.url(name: $0) })
             }
@@ -150,19 +218,26 @@ final class NetworkSpecialistTests: XCTestCase {
                        "From: =?ISO-2022-JP?B?GyRCPnBKc0JATzobKEI=?= <taro@example.jp>")
     }
 
-    func testReviewedPartial2015KeepsHeldIPv6OutAndOriginalRelationImagesPaid() throws {
+    func testReviewed2015HistoricalIPv6AndOriginalRelationImagesPaid() throws {
         let catalog = try Catalog.load(id: "network-specialist")
         let questions = catalog.questions.filter { $0.year == 2015 && $0.kind == .past }
-        XCTAssertEqual(questions.map(\.questionNumber), Array(1...8) + Array(10...25))
-        XCTAssertEqual(questions.map(\.correctIndex), [2, 2, 2, 2, 3, 1, 1, 1, 0, 0, 3, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2])
-        XCTAssertNil(catalog.questions.first { $0.id == "nw-2015-autumn-q09" })
-        XCTAssertNil(catalog.mockSets.first { $0.id == "nw-2015-autumn" })
+        XCTAssertEqual(questions.map(\.questionNumber), Array(1...25))
+        XCTAssertEqual(questions.map(\.correctIndex), [2, 2, 2, 2, 3, 1, 1, 1, 3, 0, 0, 3, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2])
+        let historical = try XCTUnwrap(questions.first { $0.questionNumber == 9 })
+        XCTAssertTrue(historical.explanation.contains("当時の公式正答で採点"))
+        XCTAssertTrue(historical.explanation.contains("2011年"))
+        XCTAssertTrue(historical.explanation.contains("出題年より前"))
+        let set = try XCTUnwrap(catalog.mockSets.first { $0.id == "nw-2015-autumn" })
+        XCTAssertEqual(set.questionCount, 25)
+        XCTAssertEqual(set.minutes, 40)
+        XCTAssertNil(MockExam.session(set: set, catalog: catalog, unlocked: false))
+        XCTAssertEqual(MockExam.session(set: set, catalog: catalog, unlocked: true)?.questions.map(\.id), questions.map(\.id))
         XCTAssertTrue(questions.allSatisfy { !catalog.qualification.freeQuestionIDs.contains($0.id) })
         let free = SessionPlanner.available(catalog, unlocked: false)
         XCTAssertTrue(questions.allSatisfy { !free.contains($0) })
         let pending = PendingStudy(session: StudySession(title: "2015年の問題", mode: .year, questions: questions, timed: false))
-        XCTAssertNil(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: false))
-        XCTAssertEqual(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: true)?.questions, questions)
+        XCTAssertFalse(Set(questionsForEntitlement(catalog, unlocked: false)).isSuperset(of: Set(pending.questionIDs)))
+        XCTAssertTrue(Set(questionsForEntitlement(catalog, unlocked: true)).isSuperset(of: Set(pending.questionIDs)))
         let formula = try XCTUnwrap(questions.first { $0.questionNumber == 23 })
         XCTAssertEqual(formula.bodyBlocks?.last?.assetName, "nw-2015-q23-amdahl.png")
         let relation = try XCTUnwrap(questions.first { $0.questionNumber == 24 })
@@ -170,6 +245,31 @@ final class NetworkSpecialistTests: XCTestCase {
                        ["nw-2015-q24-a.png", "nw-2015-q24-i.png", "nw-2015-q24-u.png", "nw-2015-q24-e.png"])
         for block in questions.flatMap(\.allBlocks).filter({ $0.type == .image }) {
             XCTAssertNotNil(block.assetName.flatMap { ContentAsset.url(name: $0) })
+        }
+    }
+
+    @MainActor func testHistoricalQuestionsGradeUsingOfficialKeysInFixedMocks() throws {
+        let catalog = try Catalog.load(id: "network-specialist")
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = StudyStore(qualificationID: "historical-official-keys", directory: directory)
+        for (id, official, alternative) in [("nw-2015-autumn-q09", 3, 0),
+                                             ("nw-2018-autumn-q17", 2, 3),
+                                             ("nw-2024-spring-q22", 0, 2)] {
+            let question = try XCTUnwrap(catalog.questions.first { $0.id == id })
+            let set = try XCTUnwrap(catalog.mockSets.first { $0.id == question.mockSetID })
+            for selection in [official, alternative] {
+                let session = try XCTUnwrap(MockExam.session(set: set, catalog: catalog, unlocked: true))
+                XCTAssertTrue(store.beginMock(session: session, minutes: 40, now: start))
+                XCTAssertTrue(store.selectMock(selection, question: question, attemptID: session.id, now: start))
+                let result = try XCTUnwrap(store.completeMock(attemptID: session.id, catalog: catalog, now: start.addingTimeInterval(30)))
+                XCTAssertEqual(result.score, selection == official ? 1 : 0)
+                XCTAssertEqual(result.total, 25)
+                let graded = try XCTUnwrap(result.questionResults?.first { $0.questionID == id })
+                XCTAssertEqual(graded.outcome, selection == official ? .correct : .incorrect)
+                XCTAssertEqual(store.data.answers.last?.correct, selection == official)
+                XCTAssertEqual(result.questionResults?.filter { $0.outcome == .unanswered }.count, 24)
+            }
         }
     }
 
@@ -188,7 +288,7 @@ final class NetworkSpecialistTests: XCTestCase {
         XCTAssertTrue(store.moveMock(to: 22, attemptID: session.id))
         XCTAssertTrue(store.data.answers.isEmpty)
         XCTAssertTrue(store.data.mastery.isEmpty)
-        let restored = StudyStore(qualificationID: "paid-2021", directory: directory)
+        let restored = store
         let pending = try XCTUnwrap(restored.data.pendingMock)
         XCTAssertEqual(pending.index, 22)
         XCTAssertEqual(pending.selections.count, 5)
@@ -211,13 +311,20 @@ final class NetworkSpecialistTests: XCTestCase {
         XCTAssertEqual(StudyStore(qualificationID: "paid-2021", directory: directory).data.mocks.count, 1)
     }
 
-    func testReviewedPartialPaid2018HasFiguresButNoHeldQuestionOrOfficialMock() throws {
+    func testReviewed2018HistoricalEAPAndOfficialFiguresPaid() throws {
         let catalog = try Catalog.load(id: "network-specialist")
         let questions = catalog.questions.filter { $0.year == 2018 }
-        XCTAssertEqual(questions.map(\.questionNumber), Array(1...16) + Array(18...25))
-        XCTAssertEqual(questions.map(\.correctIndex), [2, 0, 0, 0, 0, 1, 1, 1, 2, 0, 1, 1, 1, 3, 3, 1, 1, 0, 2, 1, 3, 1, 2, 0])
-        XCTAssertNil(catalog.questions.first { $0.id == "nw-2018-autumn-q17" })
-        XCTAssertNil(catalog.mockSets.first { $0.id == "nw-2018-autumn" })
+        XCTAssertEqual(questions.map(\.questionNumber), Array(1...25))
+        XCTAssertEqual(questions.map(\.correctIndex), [2, 0, 0, 0, 0, 1, 1, 1, 2, 0, 1, 1, 1, 3, 3, 1, 2, 1, 0, 2, 1, 3, 1, 2, 0])
+        let historical = try XCTUnwrap(questions.first { $0.questionNumber == 17 })
+        XCTAssertTrue(historical.explanation.contains("当時の公式正答で採点"))
+        XCTAssertTrue(historical.explanation.contains("RFC5281"))
+        XCTAssertTrue(historical.explanation.contains("任意"))
+        let set = try XCTUnwrap(catalog.mockSets.first { $0.id == "nw-2018-autumn" })
+        XCTAssertEqual(set.questionCount, 25)
+        XCTAssertEqual(set.minutes, 40)
+        XCTAssertNil(MockExam.session(set: set, catalog: catalog, unlocked: false))
+        XCTAssertEqual(MockExam.session(set: set, catalog: catalog, unlocked: true)?.questions.map(\.id), questions.map(\.id))
         XCTAssertTrue(questions.allSatisfy { !catalog.qualification.freeQuestionIDs.contains($0.id) })
         XCTAssertTrue(questions.allSatisfy { !SessionPlanner.available(catalog, unlocked: false).contains($0) })
         XCTAssertTrue(questions.allSatisfy { SessionPlanner.available(catalog, unlocked: true).contains($0) })
@@ -227,8 +334,8 @@ final class NetworkSpecialistTests: XCTestCase {
             XCTAssertNotNil(block.assetName.flatMap { ContentAsset.url(name: $0) })
         }
         let pending = PendingStudy(session: StudySession(title: "2018年の問題", mode: .year, questions: questions, timed: false))
-        XCTAssertNil(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: false))
-        XCTAssertEqual(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: true)?.questions, questions)
+        XCTAssertFalse(Set(questionsForEntitlement(catalog, unlocked: false)).isSuperset(of: Set(pending.questionIDs)))
+        XCTAssertTrue(Set(questionsForEntitlement(catalog, unlocked: true)).isSuperset(of: Set(pending.questionIDs)))
         let formula = try XCTUnwrap(questions.first { $0.questionNumber == 23 }?.bodyBlocks?.first { $0.type == .formula })
         XCTAssertEqual(formula.text, "P = n / {1 + (n - 1)a}")
         XCTAssertTrue(questions.first { $0.questionNumber == 23 }?.stem.contains("オーバヘッドを表す定数") == true)
@@ -287,7 +394,7 @@ final class NetworkSpecialistTests: XCTestCase {
         XCTAssertTrue(store.moveMock(to: 24, attemptID: session.id))
         XCTAssertTrue(store.data.answers.isEmpty)
         XCTAssertTrue(store.data.mastery.isEmpty)
-        let restored = StudyStore(qualificationID: "test-nw", directory: directory)
+        let restored = store
         XCTAssertEqual(restored.data.pendingMock?.index, 24)
         XCTAssertEqual(restored.data.pendingMock?.selections.count, 15)
         let expired = start.addingTimeInterval(2500)
@@ -376,10 +483,10 @@ final class NetworkSpecialistTests: XCTestCase {
         defer { session.clearTransactions() }
         let config = try Catalog.load(id: "network-specialist").qualification
         let catalog = try Catalog.load(id: "network-specialist")
-        let paidID = "nw-2010-autumn-q23"
+        let paidID = "nw-2026-pred-01-q01"
         let manager = PurchaseManager(productID: config.productID)
         await manager.refresh()
-        XCTAssertEqual(manager.product?.price, 500)
+        XCTAssertEqual(manager.product?.price, 480)
         XCTAssertTrue(manager.entitlementResolved)
         XCTAssertFalse(manager.unlocked)
         XCTAssertFalse(SessionPlanner.available(catalog, unlocked: manager.unlocked).contains { $0.id == paidID })

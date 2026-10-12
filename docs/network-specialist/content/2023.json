@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "isDraft": true,
+  "isDraft": false,
   "mockSets": [
     {
       "id": "nw-2023-spring", "title": "2023年春期 午前Ⅱ", "kind": "past",

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct QuestionCollectionView: View {
     @Environment(\.mascotMotionEnabled) private var parentMotionEnabled
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let route: QuestionCollectionRoute
     let catalog: Catalog
     let store: StudyStore
@@ -10,36 +11,40 @@ struct QuestionCollectionView: View {
     let start: (StudySession) -> Void
     let paywall: () -> Void
 
-    @State private var query = ""
-    @State private var showRandomOptions = false
-    @State private var pendingRandomSession: StudySession?
-    @State private var randomScope: RandomScope
-
-    init(route: QuestionCollectionRoute, catalog: Catalog, store: StudyStore, purchase: PurchaseManager,
-         ads: AdsService, start: @escaping (StudySession) -> Void, paywall: @escaping () -> Void) {
-        self.route = route
-        self.catalog = catalog
-        self.store = store
-        self.purchase = purchase
-        self.ads = ads
-        self.start = start
-        self.paywall = paywall
-        _randomScope = State(initialValue: store.data.randomScope)
-    }
+    @State private var showPracticeOptions = false
+    @State private var pendingPracticeSession: StudySession?
 
     private var candidates: [Question] {
         QuestionCollections.questions(for: route, catalog: catalog, data: store.data)
     }
-    private var visible: [Question] {
-        candidates.filter { query.isEmpty || $0.searchText.localizedStandardContains(query) }
-    }
     private var accessible: [Question] {
-        visible.filter { purchase.unlocked || catalog.qualification.freeQuestionIDs.contains($0.id) }
-    }
-    private var unanswered: [Question] {
-        accessible.filter { store.data.mastery[$0.id] == nil }
+        candidates.filter { purchase.unlocked || catalog.qualification.freeQuestionIDs.contains($0.id) }
     }
     private var growth: TankeiGrowth { TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked) }
+    private var title: String {
+        if case .mockSet(let id) = route, let set = catalog.mockSets.first(where: { $0.id == id }) {
+            return set.title
+        }
+        if case .year(let year) = route, candidates.contains(where: { $0.kind == .prediction }) {
+            return "\(year.formatted(.number.grouping(.never)))年予想問題"
+        }
+        return route.title
+    }
+
+    private var isYear: Bool {
+        switch route { case .year, .mockSet: return true; default: return false }
+    }
+    private var groups: [(title: String, questions: [Question])] {
+        if isYear {
+            return catalog.qualification.subjects.compactMap { subject in
+                let items = accessible.filter { $0.subject == subject }
+                return items.isEmpty ? nil : (subject, items)
+            }
+        }
+        return [("問題リスト", accessible)]
+    }
+    private var orderedQuestions: [Question] { groups.flatMap(\.questions) }
+    private var lockedCount: Int { candidates.filter { !purchase.unlocked && !catalog.qualification.freeQuestionIDs.contains($0.id) }.count }
 
     var body: some View {
         List {
@@ -47,64 +52,68 @@ struct QuestionCollectionView: View {
                 HStack {
                     StudyBadge(title: "\(accessible.count)問を利用可能", symbol: "doc.text", color: Palette.positive)
                     Spacer(minLength: 8)
-                    if accessible.count < visible.count {
-                        StudyBadge(title: "\(visible.count - accessible.count)問", symbol: "lock")
+                    if lockedCount > 0 {
+                        StudyBadge(title: "\(lockedCount)問はロック中", symbol: "lock")
                     }
                 }
-                Button {
-                    launch(StudySession(title: route.title, mode: route.studyMode, questions: accessible, timed: false))
-                } label: {
-                    Label("順番に回答 · \(accessible.count)問", systemImage: "list.number")
+                if isYear {
+                    Button {
+                        let pool = candidates.filter { purchase.unlocked || catalog.qualification.freeQuestionIDs.contains($0.id) }
+                        let ids = Set(pool.map(\.id))
+                        if let set = catalog.mockSets.first(where: { Set($0.questionIDs) == ids }),
+                           let session = MockExam.session(set: set, catalog: catalog, unlocked: purchase.unlocked) {
+                            launch(session)
+                        } else {
+                            launch(StudySession(title: "\(title) · 模擬試験", mode: .mock, questions: pool, timed: true))
+                        }
+                    } label: { Label("模擬試験", systemImage: "timer") }
+                    .disabled(accessible.isEmpty)
+                    Text("問題を選んで練習、または時間を測って模擬試験。")
+                        .font(.caption).foregroundStyle(Palette.muted)
+                } else {
+                    Button { showPracticeOptions = true } label: { Label("問題を解く", systemImage: "play.fill") }
+                        .accessibilityIdentifier("solveQuestions")
+                        .disabled(accessible.isEmpty)
                 }
-                .disabled(accessible.isEmpty)
-                Button { showRandomOptions = true } label: {
-                    Label("ランダム出題", systemImage: "shuffle")
-                }
-                .disabled(accessible.isEmpty)
-                if accessible.isEmpty && !visible.isEmpty && !purchase.unlocked {
-                    Button("全問題を解放する", action: paywall)
-                }
+                if lockedCount > 0 { Button("有料問題を解放する", action: paywall) }
+
             }
             if showAds {
                 Section { AdBannerPlacement(ads: ads) }
                     .listRowBackground(Color.clear)
             }
-            Section {
-                ForEach(visible) { question in
-                    Button {
-                        if purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) {
-                            launch(StudySession(title: "問題を確認", mode: .search, questions: [question], timed: false))
-                        } else { paywall() }
-                    } label: {
-                        HStack(alignment: .top, spacing: 12) {
-                            Image(systemName: purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? statusSymbol(for: question) : "lock")
-                                .foregroundStyle(statusColor(for: question))
-                                .frame(width: 22)
-                                .accessibilityHidden(true)
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(question.stem).font(.body).foregroundStyle(Palette.ink)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                Text(metadata(for: question))
-                                    .font(.caption).foregroundStyle(Palette.muted)
-                                if let status = status(for: question) {
-                                    Text(status).font(.caption.weight(.medium)).foregroundStyle(statusColor(for: question))
+            ForEach(groups, id: \.title) { group in
+                Section {
+                    ForEach(group.questions) { question in
+                        Button {
+                            guard let index = orderedQuestions.firstIndex(where: { $0.id == question.id }) else { return }
+                            launch(StudySession(title: title, mode: .search, questions: Array(orderedQuestions[index...]), timed: false))
+                        } label: {
+                            HStack(alignment: .top, spacing: 12) {
+                                Image(systemName: statusSymbol(for: question)).foregroundStyle(statusColor(for: question))
+                                    .frame(width: 22).accessibilityHidden(true)
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(question.stem).font(.body).foregroundStyle(Palette.ink).lineLimit(3)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                    Text(metadata(for: question)).font(.caption).foregroundStyle(Palette.muted)
+                                    if let status = status(for: question) {
+                                        Text(status).font(.caption.weight(.medium)).foregroundStyle(statusColor(for: question))
+                                    }
                                 }
-                            }
+                            }.padding(.vertical, 5)
                         }
-                        .padding(.vertical, 5)
+                        .accessibilityIdentifier("question-\(question.id)")
+                        .accessibilityLabel("\(question.stem)、\(status(for: question) ?? "学習中")、利用可能")
                     }
-                    .accessibilityLabel("\(question.stem)、\(status(for: question) ?? "学習中")、\(purchase.unlocked || catalog.qualification.freeQuestionIDs.contains(question.id) ? "利用可能" : "全問題解放が必要")")
-                }
-                if visible.isEmpty {
+                } header: { Text("\(group.title) · \(group.questions.count)問") }
+            }
+            if accessible.isEmpty {
+                Section {
                     ContentUnavailableView {
                         TankeiView(state: .review, stage: growth.stage, size: 96, animated: true, idle: true)
-                        Text("条件に合う問題がありません")
-                    } description: {
-                        Text("検索語を変えるか、別の一覧を選んでください。")
-                    }
+                        Text(lockedCount > 0 ? "有料問題はロック中です" : "条件に合う問題がありません")
+                    } description: { Text(lockedCount > 0 ? "購入すると、この一覧の問題を利用できます。" : "別の一覧を選んでください。") }
                 }
-            } header: {
-                Text("問題リスト · \(visible.count)問")
             }
             if showAds {
                 Section { AdBannerPlacement(ads: ads) }
@@ -114,60 +123,42 @@ struct QuestionCollectionView: View {
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .background(Palette.background)
-        .environment(\.mascotMotionEnabled, parentMotionEnabled && !showRandomOptions)
-        .navigationTitle(route.title)
-        .searchable(text: $query, prompt: "このリスト内を検索")
-        .sheet(isPresented: $showRandomOptions, onDismiss: {
-            if let pendingRandomSession {
-                start(pendingRandomSession)
-                self.pendingRandomSession = nil
+        .environment(\.mascotMotionEnabled, parentMotionEnabled && !showPracticeOptions)
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $showPracticeOptions, onDismiss: {
+            if let pendingPracticeSession {
+                self.pendingPracticeSession = nil
+                start(pendingPracticeSession)
             }
         }) {
             NavigationStack {
-                Form {
+                List {
                     Section {
-                        ForEach(RandomScope.allCases) { option in
-                            Button {
-                                randomScope = option
-                            } label: {
-                                HStack {
-                                    Text(option.title).foregroundStyle(.primary)
-                                    Spacer()
-                                    if randomScope == option { Image(systemName: "checkmark").foregroundStyle(.tint) }
-                                }
-                            }
-                            .accessibilityLabel(option.title)
-                            .accessibilityAddTraits(randomScope == option ? .isSelected : [])
-                        }
-                    } header: {
-                        Text("ランダム演習の設定")
-                    } footer: {
-                        Text("表示中の問題を、1問ずつ。")
-                    }
-                    Section {
-                        let count = randomScope == .unanswered ? unanswered.count : accessible.count
-                        if count == 0 {
-                            ContentUnavailableView("未回答の問題がありません", systemImage: "checkmark.circle",
-                                                   description: Text("「ごちゃまぜ」に切り替えると復習できます。"))
-                        } else {
-                            Button("\(count)問の演習を始める") {
-                                store.setRandomScope(randomScope)
-                                let pool = randomScope == .unanswered ? unanswered : accessible
-                                pendingRandomSession = StudySession(title: "\(route.title) · ランダム", mode: .random,
-                                                                    questions: pool.shuffled(), timed: false)
-                                showRandomOptions = false
-                            }
-                            .frame(maxWidth: .infinity)
-                        }
-                    }
+                        practiceOption("順番に解く", symbol: "list.number", random: false)
+                        practiceOption("ランダムに解く", symbol: "shuffle", random: true)
+                    } header: { Text("\(accessible.count)問の解き方を選ぶ") }
                 }
-                .navigationTitle("ランダム出題")
+                .scrollContentBackground(.hidden).background(Palette.background)
+                .navigationTitle("問題を解く")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) { Button("閉じる") { showRandomOptions = false } }
+                    ToolbarItem(placement: .topBarTrailing) { Button("閉じる") { showPracticeOptions = false } }
                 }
             }
-            .presentationDetents([.medium, .large])
+            .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
+        }
+    }
+
+    private func practiceOption(_ optionTitle: String, symbol: String, random: Bool) -> some View {
+        Button {
+            pendingPracticeSession = StudySession(title: title + (random ? " · ランダム" : ""),
+                                                 mode: random ? .random : route.studyMode,
+                                                 questions: random ? orderedQuestions.shuffled() : orderedQuestions, timed: false,
+                                                 returnsToQuestionList: true)
+            showPracticeOptions = false
+        } label: {
+            Label(optionTitle, systemImage: symbol).frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
         }
     }
 
@@ -175,7 +166,7 @@ struct QuestionCollectionView: View {
 
     private func metadata(for question: Question) -> String {
         if question.kind != nil { return "\(question.kindTitle ?? "") · \(question.source)" }
-        if case .year = route { return question.subject }
+        if case .year = route { return "\(question.category) · Lv\(question.difficulty)" }
         return "\(question.year.formatted(.number.grouping(.never))) · \(question.subject)"
     }
 

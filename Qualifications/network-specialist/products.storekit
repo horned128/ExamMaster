@@ -1,15 +1,42 @@
 {
-  "appPolicies": {"eula": "", "policies": [{"locale": "ja_JP", "policyText": "", "policyURL": ""}]},
+  "appPolicies": {
+    "eula": "",
+    "policies": [
+      {
+        "locale": "ja_JP",
+        "policyText": "",
+        "policyURL": ""
+      }
+    ]
+  },
   "identifier": "NW2026A2",
   "nonRenewingSubscriptions": [],
-  "products": [{
-    "displayPrice": "500", "familyShareable": false, "internalID": "NWUNLOCK",
-    "localizations": [{"description": "収録済みの全教材を期限なく利用でき，広告を非表示にします。", "displayName": "ネットワークスペシャリスト 全問題解放", "locale": "ja_JP"}],
-    "productID": "jp.example.exammaster.networkspecialist.unlock",
-    "referenceName": "ネットワークスペシャリスト 全問題解放",
-    "type": "NonConsumable"
-  }],
-  "settings": {"_failTransactionsEnabled": false, "_locale": "ja_JP", "_storefront": "JPN", "_storeKitErrors": []},
+  "products": [
+    {
+      "displayPrice": "480",
+      "familyShareable": false,
+      "internalID": "NWUNLOCK",
+      "localizations": [
+        {
+          "description": "収録済みの全教材を期限なく利用でき，広告を非表示にします。",
+          "displayName": "ネットワークスペシャリスト 全問題解放",
+          "locale": "ja_JP"
+        }
+      ],
+      "productID": "jp.hino.piyotre.networkspecialist.unlock",
+      "referenceName": "ネットワークスペシャリスト 全問題解放",
+      "type": "NonConsumable"
+    }
+  ],
+  "settings": {
+    "_failTransactionsEnabled": false,
+    "_locale": "ja_JP",
+    "_storefront": "JPN",
+    "_storeKitErrors": []
+  },
   "subscriptionGroups": [],
-  "version": {"major": 4, "minor": 0}
+  "version": {
+    "major": 4,
+    "minor": 0
+  }
 }

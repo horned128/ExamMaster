@@ -28,7 +28,7 @@ struct ContentView: View {
 }
 
 struct StudyAppView: View {
-    private enum MainTab: Hashable { case home, finder, insights }
+    private enum MainTab: Hashable { case home, years, subjects, incorrect, bookmarks }
     let catalog: Catalog
     @State private var store: StudyStore
     @State private var purchase: PurchaseManager
@@ -37,17 +37,10 @@ struct StudyAppView: View {
     @State private var completedForAds: (mode: StudyMode, answered: Int)?
     @State private var showPaywall = false
     @State private var showSettings = false
-    @State private var showCompanion = false
-    @State private var queuedCompanion = false
-    @State private var companionSession: StudySession?
-    @State private var returnToCompanion = false
-    @State private var companionHistoryOrder: AnswerHistoryOrder = .newest
+    @State private var homePath = NavigationPath()
+    @State private var queuedRecords = false
     @State private var queuedPaywall = false
     @State private var selectedTab: MainTab = .home
-    @State private var replacement: StudySession?
-    @State private var confirmReplacement = false
-    @State private var resumeUnavailable = false
-    @Environment(\.scenePhase) private var scenePhase
 
     init(catalog: Catalog) {
         self.catalog = catalog
@@ -61,7 +54,7 @@ struct StudyAppView: View {
     private var adAccess: AdAccess {
         AdAccess(entitlementResolved: purchase.entitlementResolved, unlocked: purchase.unlocked,
                  purchasing: purchase.purchasing,
-                 safeScreen: store.data.onboardingCompleted && !store.readOnly && session == nil && !showPaywall && !showSettings && !showCompanion)
+                 safeScreen: store.data.onboardingCompleted && !store.readOnly && session == nil && !showPaywall && !showSettings)
     }
 
     var body: some View {
@@ -74,37 +67,47 @@ struct StudyAppView: View {
                             skip: { store.completeOnboarding(diagnostic: false) })
             } else {
                 TabView(selection: $selectedTab) {
-                    NavigationStack {
+                    NavigationStack(path: $homePath) {
                         DashboardView(catalog: catalog, store: store, purchase: purchase, ads: ads, start: start,
-                                      resume: resumePending, openLibrary: { selectedTab = .finder }, settings: { showSettings = true },
-                                      openCompanion: openCompanion)
+                                      openLibrary: { selectedTab = .years },
+                                      openSubjects: { selectedTab = .subjects }, openIncorrect: { selectedTab = .incorrect },
+                                      openBookmarks: { selectedTab = .bookmarks }, paywall: openPaywall,
+                                      settings: { showSettings = true })
                             .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
+                            .navigationDestination(for: StudyDestination.self) { destination in destinationView(destination) }
                     }
                     .tabItem { Label("ホーム", systemImage: "house") }.tag(MainTab.home)
                     NavigationStack {
-                        LibraryView(catalog: catalog, store: store, purchase: purchase, ads: ads, start: start,
-                                    settings: { showSettings = true }, paywall: openPaywall)
+                        destinationView(.years)
                             .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
                     }
-                    .tabItem { Label("問題を探す", systemImage: "square.grid.2x2") }.tag(MainTab.finder)
+                    .tabItem { Label("年度別", systemImage: "calendar") }.tag(MainTab.years)
                     NavigationStack {
-                        InsightsView(catalog: catalog, store: store, purchase: purchase, ads: ads,
-                                     start: start, paywall: openPaywall,
-                                     settings: { showSettings = true }, openCompanion: openCompanion)
+                        destinationView(.subjects)
+                            .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
+                            .navigationDestination(for: StudyDestination.self) { destination in destinationView(destination) }
                     }
-                    .tabItem { Label("記録", systemImage: "chart.bar.xaxis") }.tag(MainTab.insights)
+                    .tabItem { Label("分野別", systemImage: "square.grid.2x2") }.tag(MainTab.subjects)
+                    NavigationStack {
+                        collection(.incorrect)
+                            .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
+                    }
+                    .tabItem { Label("苦手問題", systemImage: "arrow.uturn.backward") }.tag(MainTab.incorrect)
+                    NavigationStack {
+                        collection(.favorites)
+                            .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
+                    }
+                    .tabItem { Label("ブックマーク", systemImage: "bookmark") }.tag(MainTab.bookmarks)
                 }
             }
         }
-        .environment(\.mascotMotionEnabled, session == nil && !showPaywall && !showSettings && !showCompanion)
+        .environment(\.mascotMotionEnabled, session == nil && !showPaywall && !showSettings)
         .task(id: adAccess) {
             ads.updateAccess(adAccess)
             if purchase.entitlementResolved {
                 store.migrateMascotGrowthIfNeeded(questions: SessionPlanner.available(catalog, unlocked: purchase.unlocked))
             }
         }
-        .onAppear { gradeExpiredMock() }
-        .onChange(of: scenePhase) { _, phase in if phase == .active { gradeExpiredMock() } }
         .onChange(of: purchase.unlocked) { wasUnlocked, unlocked in
             if wasUnlocked && !unlocked, let active = session,
                active.questions.contains(where: { !catalog.qualification.freeQuestionIDs.contains($0.id) }) {
@@ -112,7 +115,7 @@ struct StudyAppView: View {
             }
         }
         .sheet(item: $session, onDismiss: {
-            if returnToCompanion { returnToCompanion = false; showCompanion = true }
+            store.clearInterruptedStudy()
             ads.updateAccess(adAccess)
             if let completedForAds {
                 ads.completedSession(mode: completedForAds.mode, answered: completedForAds.answered)
@@ -126,8 +129,7 @@ struct StudyAppView: View {
                 }
             } else {
               SessionView(session: active, qualification: catalog.qualification, store: store, purchase: purchase,
-                        ads: ads, growthQuestions: SessionPlanner.available(catalog, unlocked: purchase.unlocked),
-                        resume: store.data.pending?.id == active.id ? store.data.pending : nil) { answered in
+                        ads: ads, growthQuestions: SessionPlanner.available(catalog, unlocked: purchase.unlocked)) { answered in
                 if active.mode == .diagnostic { store.completeOnboarding(diagnostic: true) }
                 completedForAds = (active.mode, answered)
                 session = nil
@@ -136,51 +138,18 @@ struct StudyAppView: View {
             }
         }
         .sheet(isPresented: $showPaywall) { PaywallView(catalog: catalog, purchase: purchase) }
-        .sheet(isPresented: $showCompanion, onDismiss: {
-            if let next = companionSession {
-                companionSession = nil
-                start(next)
-            } else if queuedPaywall {
-                queuedPaywall = false
-                showPaywall = true
-            }
-        }) {
-            TankeiCompanionView(catalog: catalog, store: store, purchase: purchase, order: $companionHistoryOrder, start: { next in
-                returnToCompanion = true
-                companionSession = next
-                showCompanion = false
-            }, paywall: openPaywall)
-        }
         .sheet(isPresented: $showSettings, onDismiss: {
             if queuedPaywall { queuedPaywall = false; showPaywall = true }
-            else if queuedCompanion { queuedCompanion = false; showCompanion = true }
+            else if queuedRecords { queuedRecords = false; openRecords() }
         }) {
             NavigationStack {
                 PreferencesView(catalog: catalog, store: store, purchase: purchase, ads: ads,
-                                paywall: openPaywall, onReset: { showSettings = false }, openCompanion: openCompanion)
+                                paywall: openPaywall, onReset: { showSettings = false }, openCompanion: openRecords)
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) { Button("閉じる") { showSettings = false } }
                     }
             }
             .tint(Palette.linkAccent(catalog.qualification.accentHex))
-        }
-        .confirmationDialog("保存中の演習があります", isPresented: $confirmReplacement, titleVisibility: .visible) {
-            Button("続きから再開") { replacement = nil; resumePending() }
-            Button("新しい演習に切り替える", role: .destructive) {
-                if let replacement {
-                    store.clearPending()
-                    startImmediately(replacement)
-                }
-                replacement = nil
-            }
-            Button("キャンセル", role: .cancel) { replacement = nil }
-        } message: {
-            Text("新しい演習に切り替えると、途中の出題順と現在位置は消えます。回答済みの学習履歴は残ります。")
-        }
-        .alert("前回の演習を開けません", isPresented: $resumeUnavailable) {
-            Button("確認") { }
-        } message: {
-            Text("問題データが更新されたため、途中位置を復元できませんでした。回答済みの学習履歴は残っています。")
         }
         .tint(Palette.linkAccent(catalog.qualification.accentHex))
         .environment(\.mascotBaseColor, Palette.accent(catalog.qualification.mascotColorHex))
@@ -191,17 +160,6 @@ struct StudyAppView: View {
         guard newSession.questions.allSatisfy({ purchase.unlocked || catalog.qualification.freeQuestionIDs.contains($0.id) }) else {
             openPaywall(); return
         }
-        if newSession.timed, let pending = store.data.pendingMock, pending.id != newSession.id {
-            if let restored = MockExam.restore(pending, catalog: catalog, unlocked: purchase.unlocked) { startImmediately(restored) }
-            else { openPaywall() }
-            return
-        }
-        if newSession.mode != .search && newSession.mode != .diagnostic && newSession.mode != .mock,
-           let pending = store.data.pending, pending.id != newSession.id {
-            replacement = newSession
-            confirmReplacement = true
-            return
-        }
         startImmediately(newSession)
     }
 
@@ -210,59 +168,50 @@ struct StudyAppView: View {
             let minutes = catalog.mockSets.first { $0.id == newSession.mockSetID }?.minutes ?? catalog.qualification.examMinutes
             guard store.beginMock(session: newSession, minutes: minutes) else { return }
         }
-        if newSession.mode != .search && newSession.mode != .diagnostic && newSession.mode != .mock,
-           store.data.pending?.id != newSession.id {
-            store.setPending(PendingStudy(session: newSession))
-            if store.error != nil { return }
-        }
         ads.updateAccess(AdAccess(entitlementResolved: purchase.entitlementResolved, unlocked: purchase.unlocked,
                                   purchasing: purchase.purchasing, safeScreen: false))
         session = newSession
     }
 
-    private func gradeExpiredMock() {
-        guard session == nil, let pending = store.data.pendingMock, pending.remaining() == 0 else { return }
-        if store.completeMock(attemptID: pending.id, catalog: catalog) != nil {
-            store.updateMascotGrowth(questions: SessionPlanner.available(catalog, unlocked: purchase.unlocked))
+    @ViewBuilder
+    private func destinationView(_ destination: StudyDestination) -> some View {
+        switch destination {
+        case .years, .subjects:
+            LibraryView(section: destination == .years ? .years : .subjects, catalog: catalog, store: store,
+                        purchase: purchase, ads: ads, start: start, settings: { showSettings = true }, paywall: openPaywall)
+        case .records:
+            InsightsView(catalog: catalog, store: store, purchase: purchase, ads: ads, start: start,
+                         paywall: openPaywall, settings: { showSettings = true })
+        case .subjectCategories(let subject):
+            SubjectLibraryView(subject: subject, catalog: catalog, store: store, purchase: purchase)
+        case .quiz:
+            QuickQuizView(catalog: catalog, store: store, purchase: purchase, start: start)
         }
     }
 
-    private func resumePending() {
-        guard let pending = store.data.pending else { return }
-        let allIDs = Set(catalog.questions.map(\.id))
-        guard Set(pending.questionIDs).isSubset(of: allIDs) else {
-            store.clearPending()
-            resumeUnavailable = true
-            return
+    @ViewBuilder private func collection(_ route: QuestionCollectionRoute) -> some View {
+        if case .year(let year) = route,
+           catalog.mockSets.filter({ set in set.kind == .prediction && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id } }).count > 1 {
+            PredictionLibraryView(year: year, catalog: catalog, store: store, purchase: purchase, paywall: openPaywall)
+        } else {
+            QuestionCollectionView(route: route, catalog: catalog, store: store, purchase: purchase,
+                                   ads: ads, start: start, paywall: openPaywall)
         }
-        if !purchase.unlocked && pending.questionIDs.contains(where: { !catalog.qualification.freeQuestionIDs.contains($0) }) {
-            openPaywall()
-            return
-        }
-        guard let restored = QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: purchase.unlocked) else {
-            store.clearPending()
-            resumeUnavailable = true
-            return
-        }
-        startImmediately(restored)
-    }
-
-    private func collection(_ route: QuestionCollectionRoute) -> some View {
-        QuestionCollectionView(route: route, catalog: catalog, store: store, purchase: purchase,
-                               ads: ads, start: start, paywall: openPaywall)
     }
 
     private func openPaywall() {
         ads.updateAccess(AdAccess(entitlementResolved: purchase.entitlementResolved, unlocked: purchase.unlocked,
                                   purchasing: purchase.purchasing, safeScreen: false))
         if showSettings { queuedPaywall = true; showSettings = false }
-        else if showCompanion { queuedPaywall = true; showCompanion = false }
         else { showPaywall = true }
     }
 
-    private func openCompanion() {
-        companionHistoryOrder = .newest
-        if showSettings { queuedCompanion = true; showSettings = false }
-        else { showCompanion = true }
+    private func openRecords() {
+        if showSettings { queuedRecords = true; showSettings = false }
+        else {
+            selectedTab = .home
+            homePath = NavigationPath()
+            homePath.append(StudyDestination.records)
+        }
     }
 }

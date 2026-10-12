@@ -40,15 +40,15 @@ struct PreferencesView: View {
             } header: {
                 Text("記憶定着")
             } footer: {
-                Text("今日の学習と復習で、まず答えを思い出す。")
+                Text("苦手問題や復習で、まず答えを思い出す。")
             }
             Section {
                 Button(action: openCompanion) {
                     HStack(spacing: 12) {
                         TankeiView(stage: TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked).stage, size: 48, idle: true)
-                        Text("相棒の成長を見る")
+                        Text("学習記録")
                     }
-                }
+                }.accessibilityIdentifier("settingsRecords")
                 Button { showLearningGuide = true } label: {
                     Label("記憶と復習のしくみ", systemImage: "info.circle")
                 }
@@ -110,7 +110,7 @@ struct PaywallView: View {
                         .font(.largeTitle.bold())
                     Text("全\(catalog.questions.count)問を、永久に解放。")
                         .font(.title3.bold())
-                    Text("\(catalog.qualification.name) · 買い切り")
+                    Text("\(catalog.qualification.appDisplayName) · 買い切り")
                         .font(.subheadline).foregroundStyle(Palette.muted)
                     Surface {
                         Label("無料の\(catalog.qualification.freeQuestionIDs.count)問は購入不要", systemImage: "checkmark.circle")

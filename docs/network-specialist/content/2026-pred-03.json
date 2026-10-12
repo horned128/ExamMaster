@@ -1,0 +1,979 @@
+{
+  "version": 2,
+  "isDraft": false,
+  "mockSets": [
+    {
+      "id": "nw-2026-pred-03",
+      "title": "2026年予想問題 第3回",
+      "kind": "prediction",
+      "questionIDs": [
+        "nw-2026-pred-03-q01",
+        "nw-2026-pred-03-q02",
+        "nw-2026-pred-03-q03",
+        "nw-2026-pred-03-q04",
+        "nw-2026-pred-03-q05",
+        "nw-2026-pred-03-q06",
+        "nw-2026-pred-03-q07",
+        "nw-2026-pred-03-q08",
+        "nw-2026-pred-03-q09",
+        "nw-2026-pred-03-q10",
+        "nw-2026-pred-03-q11",
+        "nw-2026-pred-03-q12",
+        "nw-2026-pred-03-q13",
+        "nw-2026-pred-03-q14",
+        "nw-2026-pred-03-q15",
+        "nw-2026-pred-03-q16",
+        "nw-2026-pred-03-q17",
+        "nw-2026-pred-03-q18",
+        "nw-2026-pred-03-q19",
+        "nw-2026-pred-03-q20",
+        "nw-2026-pred-03-q21",
+        "nw-2026-pred-03-q22",
+        "nw-2026-pred-03-q23",
+        "nw-2026-pred-03-q24",
+        "nw-2026-pred-03-q25"
+      ],
+      "questionCount": 25,
+      "minutes": 40
+    }
+  ],
+  "questions": [
+    {
+      "id": "nw-2026-pred-03-q01",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "ARP",
+      "stem": "IPv4端末が，自分と異なるサブネットのサーバへEthernetで送る。経路表では同じLAN上のデフォルトゲートウェイが次ホップで，Proxy ARPは使わない。ARPキャッシュが空のとき，最初にARPで解決するIPv4アドレスはどれか。",
+      "choices": [
+        "遠隔サーバのIPv4アドレス",
+        "DNSサーバのIPv4アドレス",
+        "デフォルトゲートウェイのIPv4アドレス",
+        "自分自身のIPv4アドレス"
+      ],
+      "correctIndex": 2,
+      "explanation": "最終宛先のIPv4アドレスと，同じリンクで渡す次ホップを分けます。Ethernetフレームは同じLANのゲートウェイへ渡すため，ARPでそのMACアドレスを求めます。IPパケットの宛先は遠隔サーバのままです。",
+      "choiceExplanations": [
+        "遠隔サーバは同じLANにおらず，本問ではARPで直接そのMACアドレスを求めません。",
+        "DNSを次ホップとして使う条件ではありません。",
+        "同じLAN上の次ホップのMACアドレスを求めます。",
+        "自分のMACアドレスの解決が転送先の決定ではありません。"
+      ],
+      "steps": [
+        "経路表で次ホップを決める。",
+        "IPの最終宛先とEthernetの次ホップを区別する。",
+        "ゲートウェイのIPv4アドレスをARPの対象とする。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問1",
+      "questionNumber": 1,
+      "difficulty": 2,
+      "tags": [
+        "ARP"
+      ],
+      "concepts": [
+        "ARP"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q02",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "SMTP",
+      "stem": "SMTPで，エンベロープの送信者アドレス（reverse-path）を指定するコマンドはどれか。メール本文のFromヘッダを指定することとは区別する。",
+      "choices": [
+        "MAIL FROM",
+        "RCPT TO",
+        "DATA",
+        "EHLO"
+      ],
+      "correctIndex": 0,
+      "explanation": "MAIL FROMはメール転送のエンベロープ送信者を指定します。配送時のエラー通知先に使われる情報で，本文内のFromヘッダとは別です。RCPT TOはエンベロープ受信者を指定します。",
+      "choiceExplanations": [
+        "MAIL FROMの引数がreverse-pathです。",
+        "RCPT TOは受信者のforward-pathを指定します。",
+        "DATAはヘッダを含むメールデータを送る段階です。",
+        "EHLOはSMTPセッション開始時の識別や拡張機能の確認に使います。"
+      ],
+      "steps": [
+        "エンベロープと本文ヘッダを分ける。",
+        "送信者をMAIL FROM，受信者をRCPT TOに対応付ける。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問2",
+      "questionNumber": 2,
+      "difficulty": 2,
+      "tags": [
+        "SMTP"
+      ],
+      "concepts": [
+        "SMTP"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q03",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "DNS",
+      "stem": "IPv6アドレスのDNS逆引きに使うドメインはどれか。",
+      "choices": [
+        "in-addr.arpa",
+        "ip6.arpa",
+        "ipv6.com",
+        "reverse.local"
+      ],
+      "correctIndex": 1,
+      "explanation": "IPv6の逆引きではip6.arpaを使い，アドレスの16進数の各桁を逆順に並べた名前でPTRを問い合わせます。in-addr.arpaはIPv4の逆引き用です。",
+      "choiceExplanations": [
+        "in-addr.arpaはIPv4の逆引き用です。",
+        "ip6.arpaはIPv6の逆引き用です。",
+        "IPv6逆引き用に定義されたドメインではありません。",
+        "IPv6逆引き用に定義されたドメインではありません。"
+      ],
+      "steps": [
+        "逆引きするアドレスがIPv6であると確認する。",
+        "IPv4のin-addr.arpaとIPv6のip6.arpaを区別する。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問3",
+      "questionNumber": 3,
+      "difficulty": 2,
+      "tags": [
+        "DNS"
+      ],
+      "concepts": [
+        "DNS"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q04",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "ICMP",
+      "stem": "IPv4のpingで，一般に到達性確認の要求として送るICMPメッセージはどれか。",
+      "choices": [
+        "Redirect",
+        "Destination Unreachable",
+        "Time Exceeded",
+        "Echo Request"
+      ],
+      "correctIndex": 3,
+      "explanation": "pingは通常ICMP Echo Requestを送り，応答のEcho Replyなどを確認します。応答がないだけで必ず故障と断定はできず，フィルタや応答制限も考慮します。",
+      "choiceExplanations": [
+        "Redirectは経路の変更を通知するメッセージです。",
+        "Destination Unreachableは配送できないことを通知するメッセージです。",
+        "Time ExceededはTTL超過などを通知するメッセージです。",
+        "Echo Requestは対応するEcho Replyを求める到達性確認に使います。"
+      ],
+      "steps": [
+        "問いがエラー通知ではなく，確認の要求であると読む。",
+        "Echo RequestとEcho Replyを対にして捉える。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問4",
+      "questionNumber": 4,
+      "difficulty": 2,
+      "tags": [
+        "ICMP"
+      ],
+      "concepts": [
+        "ICMP"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q05",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "TCP",
+      "stem": "TCPアプリケーションで送信側がsendを2回呼び出した。TCPのサービスの性質として，受信側の実装で考慮すべきことはどれか。",
+      "choices": [
+        "受信側のreadは必ず2回で，同じ区切りを保つ",
+        "1回のsendが必ず一つのIPパケットになる",
+        "TCPはバイトストリームなので，必要なメッセージ区切りはアプリケーションで定義する",
+        "TCPを使えばアプリケーションの文字コード変換は不要になる"
+      ],
+      "correctIndex": 2,
+      "explanation": "TCPは順序のある信頼性を備えたバイトストリームを提供し，sendやreadの呼出し境界をメッセージの境界として保証しません。長さフィールドや区切り記号などをプロトコル側で定義し，分割・結合された受信にも対応します。",
+      "choiceExplanations": [
+        "sendの回数とreadの回数が一致する保証はありません。",
+        "TCPの分割やまとめ方はsendの境界と一致するとは限りません。",
+        "必要なメッセージ境界をアプリケーションの通信規約で扱います。",
+        "文字コードはTCPが自動で統一する情報ではありません。"
+      ],
+      "steps": [
+        "TCPが運ぶ単位をバイトストリームとして確認する。",
+        "API呼出しの境界とアプリケーションのメッセージ境界を分ける。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問5",
+      "questionNumber": 5,
+      "difficulty": 2,
+      "tags": [
+        "TCP"
+      ],
+      "concepts": [
+        "TCP"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q06",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "IPv6",
+      "stem": "IPv6の重複アドレス検出（DAD）で，まだ使用できないtentativeアドレスを調べるNeighbor Solicitationを送る。IPv6送信元アドレスとして使うものはどれか。通常のDADを行い，最適化拡張は使わない。",
+      "choices": [
+        "未指定アドレス ::",
+        "検査中のtentativeアドレス",
+        "デフォルトルータのアドレス",
+        "宛先のsolicited-nodeマルチキャストアドレス"
+      ],
+      "correctIndex": 0,
+      "explanation": "DADでは未指定アドレス::を送信元にし，調べるアドレスをTarget Addressに入れます。宛先は対象に対応するsolicited-nodeマルチキャストです。まだ使えないアドレスを通常の送信元として使う動作と区別します。",
+      "choiceExplanations": [
+        "DADのNSでは送信元に未指定アドレスを使います。",
+        "検査対象はTarget Addressに入り，通常の送信元としては使いません。",
+        "他のノードであるルータのアドレスを送信元にしません。",
+        "これは送信元ではなく宛先側のアドレスです。"
+      ],
+      "steps": [
+        "送信元・宛先・Target Addressの三つの位置を分ける。",
+        "DADの送信元に未指定アドレスを当てはめる。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問6",
+      "questionNumber": 6,
+      "difficulty": 3,
+      "tags": [
+        "IPv6"
+      ],
+      "concepts": [
+        "IPv6"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q07",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "UDP",
+      "stem": "UDPチェックサムを有効にするとき，UDPヘッダとデータに加えて，IPアドレスなどを含む擬似ヘッダも計算対象になる。擬似ヘッダを含める主な意味はどれか。",
+      "choices": [
+        "本文を暗号化して第三者に読めなくする",
+        "IPアドレスを含めて誤った配送などの誤り検出を補う",
+        "共有鍵がない攻撃者の改ざんを暗号学的に必ず防ぐ",
+        "宛先のMACアドレスをDNSから取得する"
+      ],
+      "correctIndex": 1,
+      "explanation": "擬似ヘッダは送信元・宛先IPアドレスなどを計算に含め，UDPだけでは確認しない配送情報の誤り検出を補います。通常のチェックサムは暗号学的な認証ではなく，悪意ある改ざんや盗聴への対策とは区別します。",
+      "choiceExplanations": [
+        "チェックサムは本文を暗号化しません。",
+        "配送に関するIP情報も検査対象に含めます。",
+        "秘密鍵に基づく認証ではなく，攻撃者への完全な改ざん防止を保証しません。",
+        "UDPチェックサムはMACアドレスの名前解決をする仕組みではありません。"
+      ],
+      "steps": [
+        "計算対象に含まれるIPアドレスの役割を読む。",
+        "誤り検出と暗号化・認証の違いを確認する。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問7",
+      "questionNumber": 7,
+      "difficulty": 3,
+      "tags": [
+        "UDP"
+      ],
+      "concepts": [
+        "UDP"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q08",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "IPv4",
+      "stem": "IPv4ルータがTTL＝1の通常のユニキャストデータパケットを受信した。宛先はルータ自身ではなく，別リンクへ転送する必要がある。ICMPエラー抑止やレート制限などの例外はないとき，適切な処理はどれか。",
+      "choices": [
+        "TTLを1のまま転送する",
+        "TTLを255に戻して転送する",
+        "TTLが尽きたパケットを破棄し，送信元へICMP Time Exceededを通知する",
+        "TCPの接続を新しく作り直して同じパケットを送る"
+      ],
+      "correctIndex": 2,
+      "explanation": "ルータは転送時にTTLを少なくとも1減らします。1から0になったパケットは転送できず，本問の条件では送信元へICMP Time Exceededを通知します。宛先がルータ自身の受信とは区別します。",
+      "choiceExplanations": [
+        "TTLを減らさずに転送するとループ抑止の規則を満たしません。",
+        "ルータが任意にTTLを255へ戻す処理ではありません。",
+        "TTL超過による破棄と通知の処理です。",
+        "IPルータがTCP接続を作り直して解決する問題ではありません。"
+      ],
+      "steps": [
+        "ルータ自身宛てではなく転送であることを確認する。",
+        "TTLを減らすと0になると判断する。",
+        "破棄とTime Exceededの通知を対応付ける。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問8",
+      "questionNumber": 8,
+      "difficulty": 3,
+      "tags": [
+        "IPv4"
+      ],
+      "concepts": [
+        "IPv4"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q09",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "HTTP",
+      "stem": "クライアントはETag付きの表現をキャッシュしており，If-None-Matchで条件付きGETを送った。サーバでは同じETagの表現を返す状態で，ほかの条件はない。サーバの応答とクライアントの扱いとして適切なものはどれか。",
+      "choices": [
+        "必ず200で本文を全量返し，キャッシュを禁止する",
+        "301を返し，TCP接続を再確立する",
+        "404を返し，キャッシュを消す",
+        "304 Not Modifiedを返し，クライアントは保存済みの表現を再利用する"
+      ],
+      "correctIndex": 3,
+      "explanation": "GETのIf-None-Match条件が一致するので，サーバは表現の本文を送り直さず304を返します。クライアントは必要なキャッシュ情報を更新したうえで保存済みの表現を再利用します。304を新しい本文の到着と解釈しません。",
+      "choiceExplanations": [
+        "条件付きGETの一致時に全量の200応答を必須とする説明ではありません。",
+        "リソース移転の301ではありません。",
+        "表現は存在しており，404で消す条件ではありません。",
+        "304と保存済み表現の再利用を正しく表しています。"
+      ],
+      "steps": [
+        "If-None-Matchの値が現在のETagと一致すると確認する。",
+        "条件付きGETの一致時の304を選ぶ。",
+        "受信する新しい本文ではなく，保存済み表現を使うと判断する。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問9",
+      "questionNumber": 9,
+      "difficulty": 3,
+      "tags": [
+        "HTTP"
+      ],
+      "concepts": [
+        "HTTP"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q10",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "DNS",
+      "stem": "DNSの権威サーバがNXDOMAIN応答にSOAを付ける。SOAレコードのTTLは900秒，SOAのMINIMUMフィールドは300秒である。RFC2308の規則でこの応答のSOAに設定する負のキャッシュ用TTLは何秒か。",
+      "choices": [
+        "300",
+        "600",
+        "900",
+        "1200"
+      ],
+      "correctIndex": 0,
+      "explanation": "負の応答に付けるSOAのTTLは，SOA自身のTTLとMINIMUMの小さい方です。min（900，300）＝300秒になります。正のレコードすべてのTTLをMINIMUMで上書きする規則ではありません。",
+      "choiceExplanations": [
+        "900と300の小さい方である300秒です。",
+        "二つの値の差を使う規則ではありません。",
+        "大きい900をそのまま採用する規則ではありません。",
+        "TTLとMINIMUMを合計する規則ではありません。"
+      ],
+      "steps": [
+        "対象がNXDOMAINの負のキャッシュであると確認する。",
+        "SOAのTTLとMINIMUMの最小値を取る。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問10",
+      "questionNumber": 10,
+      "difficulty": 3,
+      "tags": [
+        "DNS"
+      ],
+      "concepts": [
+        "DNS"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q11",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "BGP",
+      "stem": "コンフェデレーションを構成しない一つのASで，BGP経路にNO_EXPORTコミュニティが付いている。ほかのポリシーは許可しており，各ルータはこのコミュニティを正しく扱う。許される広告範囲はどれか。",
+      "choices": [
+        "AS外へのeBGPだけに広告できる",
+        "AS内のiBGPには広告できるが，AS外へは広告しない",
+        "AS内にもAS外にも必ず広告できない",
+        "すべての隣接ASへ無条件で広告できる"
+      ],
+      "correctIndex": 1,
+      "explanation": "NO_EXPORTはこの条件ではASの外へ広告しない指定です。AS内のiBGPで共有することまで禁止するNO_ADVERTISEとは区別します。コンフェデレーションの境界の例外を問題文で除いています。",
+      "choiceExplanations": [
+        "AS外への広告を禁止する意味と逆です。",
+        "AS内の共有は可能で，AS外への広告を抑止します。",
+        "AS内も含めた全広告を禁止するのはNO_ADVERTISEです。",
+        "NO_EXPORTが付いた経路をAS外へ無条件に広告しません。"
+      ],
+      "steps": [
+        "AS外へ出さないNO_EXPORTと，全広告を止めるNO_ADVERTISEを区別する。",
+        "本問のAS内iBGPとAS外eBGPに対応付ける。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問11",
+      "questionNumber": 11,
+      "difficulty": 3,
+      "tags": [
+        "BGP"
+      ],
+      "concepts": [
+        "BGP"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q12",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "リンクアグリゲーション",
+      "stem": "1Gビット／秒のリンク2本を束ね，フローの識別情報をハッシュして，各フローをどちらか1本へ固定して送る。パケット単位の振り分けはしない。一つのTCPフローの最大送信速度に関する説明はどれか。損失や別の上限は無視する。",
+      "choices": [
+        "必ず2Gビット／秒になる",
+        "リンク本数に関係なく必ず0.5Gビット／秒になる",
+        "1本に固定されるので，この構成では1Gビット／秒が上限である",
+        "TCPフローを一つも運べない"
+      ],
+      "correctIndex": 2,
+      "explanation": "フローごとに1本を選ぶ方式では，一つのフローは1Gビット／秒の1本にしか載りません。複数のフローが別々のリンクを使えば合計は増やせますが，一つのフローが常に合計帯域を使えるとは限りません。",
+      "choiceExplanations": [
+        "2本の合計帯域と，一つのフローの上限を混同しています。",
+        "半分に制限する条件はありません。",
+        "一つのフローが使う1本の速度が上限です。",
+        "TCPを禁止する条件はありません。"
+      ],
+      "steps": [
+        "振り分け単位がパケットではなくフローであると確認する。",
+        "一つのフローが固定される1本の帯域を上限とする。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問12",
+      "questionNumber": 12,
+      "difficulty": 3,
+      "tags": [
+        "リンクアグリゲーション"
+      ],
+      "concepts": [
+        "リンクアグリゲーション"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q13",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "QoS",
+      "stem": "1Gビット／秒の出力で，厳格優先制御を行う。高優先キューは常に空にならず，その要求量だけで1Gビット／秒以上ある。高優先の流量制限や，低優先への予約はない。低優先キューについて起こり得ることはどれか。",
+      "choices": [
+        "必ず0.5Gビット／秒を確保できる",
+        "必ず1ミリ秒以内に送信できる",
+        "優先度と無関係に交互に送信する",
+        "送信機会を得られず，待ち続ける可能性がある"
+      ],
+      "correctIndex": 3,
+      "explanation": "厳格優先では高優先が残っている間，高優先を先に送ります。高優先だけで出力を埋め続け，低優先の予約もない条件では，低優先が送信機会を失う飢餓が起こり得ます。優先クラスの上限制御や他クラスへの帯域保証を別途設計します。",
+      "choiceExplanations": [
+        "均等配分や0.5Gの予約は与えられていません。",
+        "遅延上限を保証する条件がありません。",
+        "交互に扱うラウンドロビンではありません。",
+        "高優先が出力を占有し続ける条件で起こり得ます。"
+      ],
+      "steps": [
+        "高優先だけで出力が埋まることを確認する。",
+        "低優先への予約や高優先の上限がないと読む。",
+        "低優先に送信機会が来ない可能性を判断する。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問13",
+      "questionNumber": 13,
+      "difficulty": 3,
+      "tags": [
+        "QoS"
+      ],
+      "concepts": [
+        "QoS"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q14",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "TCP輻輳制御",
+      "stem": "TCPのスロースタートで，開始時のcwndは2MSSである。1MSSを確認するACKごとにcwndを1MSS増やし，各ラウンドではその時点のcwnd分を送り，すべてのACKを受信してから次のラウンドへ進む。損失や遅延ACKはなく，ssthreshは十分大きい。3ラウンド終了直後のcwndは何MSSか。",
+      "choices": [
+        "8",
+        "16",
+        "32",
+        "6"
+      ],
+      "correctIndex": 1,
+      "explanation": "最初に2MSSを送り2個のACKを受けると4MSS，次は8MSS，3回目の終了で16MSSになります。各ラウンドのACK数もその時点の送信量に合わせて増えるので，毎回一定量だけ足す計算ではありません。",
+      "choiceExplanations": [
+        "2ラウンド終了時の値です。",
+        "2→4→8→16となり，3ラウンド後は16MSSです。",
+        "4ラウンド終了時の値です。",
+        "ラウンドごとのACK数の増加を反映していません。"
+      ],
+      "steps": [
+        "初期値2MSSを書き出す。",
+        "ラウンドごとに，送ったセグメント数分のACKによる増加を加える。",
+        "3回更新して16MSSとする。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問14",
+      "questionNumber": 14,
+      "difficulty": 3,
+      "tags": [
+        "TCP輻輳制御"
+      ],
+      "concepts": [
+        "TCP輻輳制御"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q15",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "セキュリティ",
+      "category": "パスワード認証",
+      "stem": "利用者のパスワード検証値を保存する設計で，同じパスワードの利用者間で事前計算を共用しにくくし，オフライン推測の計算・メモリ負担も増やしたい。適切な方法はどれか。",
+      "choices": [
+        "利用者ごとにランダムなsaltを生成し，負荷を調整したArgon2idで検証値を作る",
+        "全利用者で同じsaltを使い，高速な単純ハッシュを1回だけ計算する",
+        "パスワードをBase64にして保存する",
+        "saltだけを保存し，パスワード由来の検証値は保存しない"
+      ],
+      "correctIndex": 0,
+      "explanation": "利用者ごとのsaltは，同じパスワードでも異なる検証値にし，事前計算の使い回しを抑えます。Argon2idのようなパスワード用の方式は，運用可能な計算時間とメモリ量を設定して推測コストを増やします。saltは秘密鍵ではなく，これだけで弱いパスワードの推測が不可能にはなりません。",
+      "choiceExplanations": [
+        "個別saltと，パスワード用の計算・メモリ負荷を組み合わせています。",
+        "同じsaltでは利用者間の計算を共用しやすく，高速な1回だけでは推測コストも小さくなります。",
+        "Base64は復号可能な符号化で，パスワード検証用の一方向処理ではありません。",
+        "saltだけでは入力されたパスワードが正しいか検証できません。"
+      ],
+      "steps": [
+        "個別saltで事前計算の共用を抑える。",
+        "パスワード用方式の負荷を運用条件に合わせて設定する。",
+        "saltと秘密鍵，符号化とハッシュを区別する。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問15",
+      "questionNumber": 15,
+      "difficulty": 3,
+      "tags": [
+        "パスワード認証"
+      ],
+      "concepts": [
+        "パスワード認証"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q16",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "セキュリティ",
+      "category": "TLS",
+      "stem": "相互TLSで接続相手のクライアント証明書を検証した後，APIの利用可否を決める。信頼するCAの証明書であることだけを確認して，全APIを許可する設計を見直す方針として適切なものはどれか。",
+      "choices": [
+        "TLS暗号化をやめてIPアドレスだけで利用者を区別する",
+        "証明書が一つでもあれば検証せず全権限を与える",
+        "証明書を適切に検証し，得た相手の識別情報を利用者と対応付け，APIごとの認可も評価する",
+        "CAが信頼できればAPIごとの権限確認は常に不要である"
+      ],
+      "correctIndex": 2,
+      "explanation": "TLSでの相手認証と，アプリケーションの操作権限は別の判断です。証明書のチェーン・有効性などを適切に検証し，その識別情報を登録された利用者へ結び付けたうえで，操作ごとの権限を確かめます。信頼するCAの証明書というだけで全権限を与えません。",
+      "choiceExplanations": [
+        "TLSをやめることは必要な認証・保護の代わりになりません。",
+        "未検証の証明書を持つだけで認証や認可は成立しません。",
+        "検証・識別情報の対応付け・操作権限の評価を分けて実施します。",
+        "認証された相手でも，すべての操作が許可されるとは限りません。"
+      ],
+      "steps": [
+        "証明書の検証と利用者への対応付けを確認する。",
+        "認証された利用者に対してAPIごとの認可を評価する。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問16",
+      "questionNumber": 16,
+      "difficulty": 3,
+      "tags": [
+        "TLS"
+      ],
+      "concepts": [
+        "TLS"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q17",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "セキュリティ",
+      "category": "メールセキュリティ",
+      "stem": "受信メールのDKIM署名が正しく検証できたとき，DKIMの役割に合う説明はどれか。署名対象外の部分はあるものとする。",
+      "choices": [
+        "メールの本文は第三者に読めないよう暗号化されている",
+        "署名ドメインの鍵による署名と，対象部分の完全性を検証できる",
+        "表示上の送信者個人が安全であることを無条件に保証する",
+        "添付ファイルにマルウェアがないことを保証する"
+      ],
+      "correctIndex": 1,
+      "explanation": "DKIMはドメインがメールに付けた署名を検証し，署名対象のヘッダや本文の完全性を確認する仕組みです。本文の暗号化でも，表示上の個人の身元保証でも，内容が無害であることの判定でもありません。",
+      "choiceExplanations": [
+        "DKIM自体はメール本文を暗号化しません。",
+        "署名ドメインと署名対象の完全性を確認する役割です。",
+        "署名ドメインと表示上の個人の身元や安全性を同一視できません。",
+        "署名が有効でも悪意ある内容が含まれる場合があります。"
+      ],
+      "steps": [
+        "署名の検証対象をドメインと署名対象部分として捉える。",
+        "暗号化・個人認証・内容検査とは別であると確認する。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問17",
+      "questionNumber": 17,
+      "difficulty": 3,
+      "tags": [
+        "メールセキュリティ"
+      ],
+      "concepts": [
+        "メールセキュリティ"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q18",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "コンピュータシステム",
+      "category": "記憶装置",
+      "stem": "同じ容量2TBのディスク5台をRAID 5にする。1台分相当をパリティに使い，予備ディスク・管理領域の消費を無視すると，データを格納できる容量は何TBか。",
+      "choices": [
+        "2",
+        "5",
+        "8",
+        "10"
+      ],
+      "correctIndex": 2,
+      "explanation": "RAID 5ではこの条件で1台分の容量をパリティに使うので，（5−1）×2＝8TBです。冗長化はバックアップとは別であり，誤削除などからデータを戻せる保証ではありません。",
+      "choiceExplanations": [
+        "1台だけの容量であり，4台分のデータ領域を含めていません。",
+        "台数をTBとして数えた値で，1台2TBを反映していません。",
+        "4台分×2TB＝8TBです。",
+        "パリティに使う1台分を引かない総物理容量です。"
+      ],
+      "steps": [
+        "データに使える台数を5−1とする。",
+        "4台分に2TBを掛ける。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問18",
+      "questionNumber": 18,
+      "difficulty": 3,
+      "tags": [
+        "記憶装置"
+      ],
+      "concepts": [
+        "記憶装置"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q19",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "システム開発技術",
+      "category": "テスト工程",
+      "stem": "テスト準備作業Aは4日，Bは6日かかり，同時に開始できる。作業CはA完了後に3日，統合テストDはBとCの両方の完了後に5日かかる。必要な担当者は確保され，休日と引継ぎ時間は無視する。開始からD完了までの最短日数は幾つか。",
+      "choices": [
+        "9",
+        "11",
+        "12",
+        "18"
+      ],
+      "correctIndex": 2,
+      "explanation": "Aは4日目に終わり，Cはその3日後の7日目に終わります。Bは6日目に終わるので，Dは両方がそろう7日目に開始し，5日後の12日目に終わります。並行できる作業を単純に全て足しません。",
+      "choiceExplanations": [
+        "BとCの完了を待つ条件を満たす最終完了時刻ではありません。",
+        "Bの6日だけを待ってDを始めており，Cの7日目の完了を待っていません。",
+        "max（6，4＋3）＋5＝12日です。",
+        "全作業を直列に足した値で，同時開始できるAとBを反映していません。"
+      ],
+      "steps": [
+        "A→Cの完了時刻を4＋3＝7日とする。",
+        "D開始はBとCの遅い方である7日とする。",
+        "Dの5日を足す。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問19",
+      "questionNumber": 19,
+      "difficulty": 3,
+      "tags": [
+        "テスト工程"
+      ],
+      "concepts": [
+        "テスト工程"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q20",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "システム開発技術",
+      "category": "テスト・品質",
+      "stem": "整数入力が1〜60なら受け付け，0以下と61以上なら拒否する。三つの同値クラスから一つずつ代表値を選ぶとき，適切な組はどれか。境界値を全て試す条件ではない。",
+      "choices": [
+        "1，30，60",
+        "0，30，61",
+        "−1，0，61",
+        "1，60，61"
+      ],
+      "correctIndex": 1,
+      "explanation": "クラスは「0以下」「1〜60」「61以上」の三つです。0，30，61は各クラスの代表を一つずつ含みます。同値分割と，境界の直前・直後を詳しく試す境界値分析を区別します。",
+      "choiceExplanations": [
+        "三つとも受け付ける同じクラスに入り，拒否クラスが抜けています。",
+        "拒否・受入・拒否の三クラスを一つずつ含みます。",
+        "受け付ける1〜60のクラスが抜けています。",
+        "0以下のクラスが抜け，受入クラスを二つ含みます。"
+      ],
+      "steps": [
+        "入力範囲を三つのクラスへ分ける。",
+        "各選択肢の値がどのクラスか分類する。",
+        "三つを一つずつ含む組を選ぶ。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問20",
+      "questionNumber": 20,
+      "difficulty": 3,
+      "tags": [
+        "テスト・品質"
+      ],
+      "concepts": [
+        "テスト・品質"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q21",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "IPv6",
+      "stem": "IPv6 TCP通信で，小さいパケットは届くが，大きいデータ転送が止まる。経路上のMTUは1,280バイト，送信元は1,500バイトを送り，従来のICMPv6を使うPath MTU Discoveryだけを実装している。中継ルータのPacket Too Big通知がフィルタで捨てられている。優先して見直す設定はどれか。",
+      "choices": [
+        "IPv6ルータに途中での断片化を必須にする",
+        "TTLを255へ書き換える",
+        "TCPの受信確認をすべて禁止する",
+        "妥当なICMPv6 Packet Too Bigを送信元へ届け，送信サイズを経路MTUに合わせられるようにする"
+      ],
+      "correctIndex": 3,
+      "explanation": "IPv6のルータは転送中の断片化を行いません。MTUを超えるパケットを捨て，Packet Too Bigで通知します。本問の送信元が経路MTUを学べるよう必要な通知を通し，サイズを調整できるようにします。全ICMPを無条件に通すという意味ではありません。",
+      "choiceExplanations": [
+        "IPv6ルータはIPv4のように転送中の断片化を行いません。",
+        "TTLではなくIPv6のHop Limitであり，MTU超過の解決にもなりません。",
+        "確認応答を禁止するとTCP通信をさらに妨げます。",
+        "明示されたPath MTU Discoveryの通知遮断を解消する設定です。"
+      ],
+      "steps": [
+        "到達性全体ではなくサイズ依存の障害であると読む。",
+        "1,500＞1,280と，Packet Too Bigの遮断を結び付ける。",
+        "送信元が妥当な通知に基づきサイズを減らせるようにする。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問21",
+      "questionNumber": 21,
+      "difficulty": 4,
+      "tags": [
+        "IPv6"
+      ],
+      "concepts": [
+        "IPv6"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q22",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "ネットワーク",
+      "category": "TCP性能",
+      "stem": "TCP送信側で，現在の受信ウィンドウrwndは64,000バイト，輻輳ウィンドウcwndは24,000バイト，送信済み未確認データは8,000バイトである。既にウィンドウスケールを反映した値であり，ほかの制約や再送はない。新しいデータを追加送信できる上限は何バイトか。",
+      "choices": [
+        "16000",
+        "24000",
+        "56000",
+        "64000"
+      ],
+      "correctIndex": 0,
+      "explanation": "未確認データ全体の上限は受信窓と輻輳窓の小さい方で，24,000バイトです。既に8,000バイトを使っているため，新しく送れるのは24,000−8,000＝16,000バイトです。",
+      "choiceExplanations": [
+        "min（64,000，24,000）−8,000＝16,000です。",
+        "輻輳窓の全体量で，未確認の8,000を引いていません。",
+        "受信窓だけを使い，より小さい輻輳窓を無視しています。",
+        "受信窓の全体量で，輻輳窓も未確認データも考慮していません。"
+      ],
+      "steps": [
+        "rwndとcwndの小さい方を使う。",
+        "現在の未確認データを差し引く。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問22",
+      "questionNumber": 22,
+      "difficulty": 4,
+      "tags": [
+        "TCP性能"
+      ],
+      "concepts": [
+        "TCP性能"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q23",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "セキュリティ",
+      "category": "可用性",
+      "stem": "二つの装置を並列に置き，どちらか1台が動けばサービスを提供できるが，共通の電源1台が停止すると両装置とも使えない。電源が動いているときの各装置自身の稼働率は0.95，共通電源の稼働率は0.99である。装置自身の故障と電源の故障は互いに独立とする。他の故障はないとき，サービス稼働率は幾つか。",
+      "choices": [
+        "0.9405",
+        "0.987525",
+        "0.99",
+        "0.9975"
+      ],
+      "correctIndex": 1,
+      "explanation": "装置側は少なくとも1台が動く確率1−0.05^2＝0.9975です。さらに共通電源も必要なので0.9975×0.99＝0.987525となります。共通部品を無視すると冗長化の効果を過大評価します。",
+      "choiceExplanations": [
+        "装置を1台だけ使う場合の0.95×0.99で，並列の効果を含めていません。",
+        "並列装置の0.9975と，共通電源の0.99の積です。",
+        "共通電源だけの値で，装置が両方止まる場合を含めていません。",
+        "装置側だけの稼働率で，共通電源の停止を無視しています。"
+      ],
+      "steps": [
+        "装置2台が同時停止する確率を求める。",
+        "少なくとも1台が動く確率を求める。",
+        "必須の共通電源の稼働率を掛ける。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問23",
+      "questionNumber": 23,
+      "difficulty": 4,
+      "tags": [
+        "可用性"
+      ],
+      "concepts": [
+        "可用性"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q24",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "セキュリティ",
+      "category": "認証・認可",
+      "stem": "申請システムで，起案者と承認者を同一人物にしてはいけない。ただし利用者は案件により起案役も承認役も担当し，両方のロールを持つことがある。この要件を満たす承認時の判定はどれか。",
+      "choices": [
+        "承認ロールがあれば起案者本人でも必ず許可する",
+        "両ロールを持つ全利用者の起案と承認を常に禁止する",
+        "承認権限を確認し，その申請の起案者IDと承認者IDが異なることも確認する",
+        "申請の作成日時が異なれば同じ利用者でも許可する"
+      ],
+      "correctIndex": 2,
+      "explanation": "この要件は操作権限に加え，同じ申請での起案と承認を別人にする制約です。両ロールを持つ利用者を一律に禁止せず，承認対象の起案者IDと現在の承認者IDを比較して本人の申請の承認を拒否します。",
+      "choiceExplanations": [
+        "ロールだけでは同じ申請での自己承認を防げません。",
+        "他人の申請を承認できるという運用まで不要に禁止します。",
+        "ロールの権限と，申請ごとの別人条件を両方確かめます。",
+        "時刻が異なっても，同一人物の自己承認は禁止という要件を満たしません。"
+      ],
+      "steps": [
+        "操作できるロールを確認する。",
+        "対象申請の起案者と承認操作の利用者を比較する。",
+        "同一IDなら拒否する。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問24",
+      "questionNumber": 24,
+      "difficulty": 4,
+      "tags": [
+        "認証・認可"
+      ],
+      "concepts": [
+        "認証・認可"
+      ]
+    },
+    {
+      "id": "nw-2026-pred-03-q25",
+      "year": 2026,
+      "administration": "prediction",
+      "kind": "prediction",
+      "mockSetID": "nw-2026-pred-03",
+      "subject": "コンピュータシステム",
+      "category": "CPUスケジューリング",
+      "stem": "一つのCPUで先着順・非プリエンプティブに処理する。仕事A，B，Cの到着時刻はそれぞれ0，1，2秒で，CPU処理時間は4，3，1秒である。切替時間は0で，ほかの仕事はない。CPU処理を始めるまでの平均待ち時間は何秒か。",
+      "choices": [
+        "2/3",
+        "8/3",
+        "4",
+        "16/3"
+      ],
+      "correctIndex": 1,
+      "explanation": "Aは0秒に始め4秒で終わり，Bは4秒に始め7秒で終わり，Cは7秒に始めます。待ち時間は開始−到着なので0，3，5秒です。平均は（0＋3＋5）÷3＝8/3秒で，処理時間を含む応答時間とは違います。",
+      "choiceExplanations": [
+        "待ち時間の合計8秒を反映していません。",
+        "3仕事の待ち時間0・3・5を平均した8/3秒です。",
+        "最初の仕事の処理時間で，平均待ち時間ではありません。",
+        "完了−到着の4・6・6を平均した応答時間です。"
+      ],
+      "steps": [
+        "到着順にA，B，Cの開始時刻を求める。",
+        "各仕事の開始時刻から到着時刻を引く。",
+        "0・3・5秒の平均を求める。"
+      ],
+      "source": "ExamMaster オリジナル 2026年予想問題 第3回 問25",
+      "questionNumber": 25,
+      "difficulty": 4,
+      "tags": [
+        "CPUスケジューリング"
+      ],
+      "concepts": [
+        "CPUスケジューリング"
+      ]
+    }
+  ]
+}

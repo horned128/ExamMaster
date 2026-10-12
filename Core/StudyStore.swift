@@ -23,6 +23,7 @@ import Observation
             readOnly = true
             self.error = "学習履歴を読み込めませんでした。元のファイルは保持しています。\n\(error.localizedDescription)"
         }
+        clearInterruptedStudy()
         #if DEBUG
         if !readOnly && ProcessInfo.processInfo.arguments.contains("-UITestResetStudy") &&
             ProcessInfo.processInfo.arguments.contains("-UITestSeedFixedMock"),
@@ -60,6 +61,30 @@ import Observation
         data.mastery[question.id] = MasteryEngine.update(data.mastery[question.id] ?? Mastery(), answer: answer, difficulty: question.difficulty)
         if let pending { data.pending = pending }
         save()
+    }
+
+    /// Amend the existing attempt; confidence changes must not create duplicate answers.
+    @discardableResult func updateConfidence(_ confidence: Confidence?, answerID: UUID, question: Question) -> Bool {
+        guard !readOnly, let index = data.answers.firstIndex(where: { $0.id == answerID && $0.questionID == question.id }) else { return false }
+        var replacement = data
+        replacement.answers[index].confidence = confidence
+        var state = Mastery()
+        let attempts = replacement.answers.enumerated().filter { $0.element.questionID == question.id }
+            .sorted { $0.element.date == $1.element.date ? $0.offset < $1.offset : $0.element.date < $1.element.date }
+        for attempt in attempts {
+            state = MasteryEngine.update(state, answer: attempt.element, difficulty: question.difficulty)
+        }
+        replacement.mastery[question.id] = state
+        return commit(replacement)
+    }
+
+    /// Only transient positions/selections are discarded. Recorded attempts and results remain.
+    func clearInterruptedStudy() {
+        guard !readOnly, data.pending != nil || data.pendingMock != nil else { return }
+        var replacement = data
+        replacement.pending = nil
+        replacement.pendingMock = nil
+        _ = commit(replacement)
     }
 
     /// Commit earned growth at session completion (or once when migrating legacy history).

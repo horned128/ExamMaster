@@ -68,7 +68,6 @@ final class EngineTests: XCTestCase {
         for pair in zip(session.questions, session.questions.dropFirst()) {
             XCTAssertNotEqual(pair.0.subject, pair.1.subject)
         }
-        XCTAssertTrue(SessionPlanner.contrast(catalog, data: data, unlocked: true).questions.contains { $0.id == "r01" })
     }
 
     func testMockRequiresTotalAndEachSubject() throws {
@@ -272,7 +271,7 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(restored.data.mastery["p01"]?.attempts, 1)
     }
 
-    @MainActor func testPendingSessionSurvivesRelaunchAndResetKeepsPreferences() throws {
+    @MainActor func testPendingSessionIsDiscardedOnRelaunchAndResetKeepsPreferences() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
         let catalog = try Catalog.load(id: "demo-safety")
@@ -290,9 +289,8 @@ final class EngineTests: XCTestCase {
         store.setRandomScope(.unanswered)
         store.setExamDay(ExamDay(date: start))
         let restored = StudyStore(qualificationID: "demo-safety", directory: directory)
-        XCTAssertEqual(restored.data.pending?.questionIDs, session.questions.map(\.id))
-        XCTAssertEqual(restored.data.pending?.answers.count, 1)
-        XCTAssertEqual(restored.data.pending?.selectedIndex, 0)
+        XCTAssertNil(restored.data.pending)
+        XCTAssertEqual(restored.data.answers.count, 1)
         XCTAssertNotNil(restored.data.examDay)
         XCTAssertTrue(restored.resetLearning())
         XCTAssertTrue(restored.data.answers.isEmpty)
@@ -357,14 +355,89 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(QuestionCollections.questions(for: .category("日常点検"), catalog: catalog, data: data, now: now).map(\.year), [2025, 2024, 2023, 2022])
     }
 
-    func testResumptionRejectsPaidItemsWhenPurchaseMissingAndKeepsOrder() throws {
+    func testCategoryNavigationStaysInsideSelectedSubject() throws {
+        let source = try Catalog.load(id: "demo-safety")
+        let original = source.questions[0]
+        var duplicate = source.questions[8]
+        // Decode a question with the same category in another subject.
+        let encoded = try JSONEncoder().encode(duplicate)
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: encoded) as? [String: Any])
+        object["category"] = original.category
+        duplicate = try JSONDecoder().decode(Question.self, from: JSONSerialization.data(withJSONObject: object))
+        let catalog = try Catalog(qualification: source.qualification,
+                                  bank: QuestionBank(version: 1, questions: source.questions.map { $0.id == duplicate.id ? duplicate : $0 }))
+        let result = QuestionCollections.questions(for: .subjectCategory(original.subject, original.category), catalog: catalog, data: StudyData())
+        XCTAssertFalse(result.isEmpty)
+        XCTAssertTrue(result.allSatisfy { $0.subject == original.subject && $0.category == original.category })
+        XCTAssertFalse(result.contains { $0.id == duplicate.id })
+    }
+
+    @MainActor func testInterruptedStudyClearsPositionsButPreservesRecordedAnswers() throws {
         let catalog = try Catalog.load(id: "demo-safety")
-        let items = [catalog.questions[0], catalog.questions[12], catalog.questions[1]]
-        let original = StudySession(title: "ランダム", mode: .random, questions: items, timed: false)
-        var pending = PendingStudy(session: original)
-        pending.index = 1
-        XCTAssertEqual(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: true)?.questions.map(\.id), items.map(\.id))
-        XCTAssertNil(QuestionCollections.resumedSession(pending, catalog: catalog, unlocked: false))
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = StudyStore(qualificationID: catalog.qualification.id, directory: directory)
+        let question = catalog.questions[0]
+        let attempt = answer(question.id, at: start, correct: true)
+        store.record(attempt, question: question)
+        let session = StudySession(title: "演習", mode: .subject, questions: [question], timed: false)
+        store.setPending(PendingStudy(session: session))
+        let mock = StudySession(title: "模擬試験", mode: .mock, questions: [question], timed: true)
+        XCTAssertTrue(store.beginMock(session: mock, minutes: 40))
+        store.clearInterruptedStudy()
+        XCTAssertNil(store.data.pending)
+        XCTAssertNil(store.data.pendingMock)
+        XCTAssertEqual(store.data.answers.count, 1)
+        XCTAssertEqual(store.data.mastery[question.id]?.attempts, 1)
+        // Legacy interrupted positions are discarded on launch as well.
+        store.setPending(PendingStudy(session: session))
+        let reopened = StudyStore(qualificationID: catalog.qualification.id, directory: directory)
+        XCTAssertNil(reopened.data.pending)
+        XCTAssertEqual(reopened.data.answers.first?.id, attempt.id)
+    }
+
+    @MainActor func testConfidenceCanBeAmendedWithoutDuplicateAttemptsAndPersists() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = StudyStore(qualificationID: catalog.qualification.id, directory: directory)
+        let question = catalog.questions[0]
+        let attempt = answer(question.id, at: start, correct: false)
+        store.record(attempt, question: question)
+        XCTAssertTrue(store.updateConfidence(.sure, answerID: attempt.id, question: question))
+        XCTAssertEqual(store.data.answers.count, 1)
+        XCTAssertEqual(store.data.answers.first?.confidence, .sure)
+        XCTAssertEqual(store.data.mastery[question.id]?.attempts, 1)
+        XCTAssertEqual(store.data.mastery[question.id]?.misconception, true)
+        XCTAssertTrue(store.updateConfidence(.unsure, answerID: attempt.id, question: question))
+        XCTAssertEqual(store.data.mastery[question.id]?.misconception, false)
+        XCTAssertEqual(store.data.mastery[question.id]?.wrongChoices.values.reduce(0, +), 1)
+        let reopened = StudyStore(qualificationID: catalog.qualification.id, directory: directory)
+        XCTAssertEqual(reopened.data.answers.first?.confidence, .unsure)
+        XCTAssertEqual(reopened.data.answers.first?.id, attempt.id)
+    }
+
+    func testQuizLevelsStayWithinDifficultyAndFreeEntitlement() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        for level in 1...5 {
+            let pool = QuizLevel.questions(level: level, catalog: catalog, unlocked: false)
+            XCTAssertTrue(pool.allSatisfy { $0.difficulty == level && catalog.qualification.freeQuestionIDs.contains($0.id) })
+        }
+        XCTAssertEqual((1...5).flatMap { QuizLevel.questions(level: $0, catalog: catalog, unlocked: true) }.count, catalog.questions.count)
+    }
+
+    func testTopicMapCoversEveryQuestionExactlyOnceWithinSubject() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        for subject in catalog.qualification.subjects {
+            let topics = StudyTopic.grouped(subject: subject, questions: catalog.questions)
+            let ids = topics.flatMap { $0.questions.map(\.id) }
+            XCTAssertEqual(Set(ids), Set(catalog.questions.filter { $0.subject == subject }.map(\.id)))
+            XCTAssertEqual(ids.count, Set(ids).count)
+            for topic in topics {
+                let route = QuestionCollectionRoute.subjectTopic(subject, topic.title)
+                XCTAssertEqual(Set(QuestionCollections.questions(for: route, catalog: catalog, data: StudyData()).map(\.id)), Set(topic.questions.map(\.id)))
+            }
+        }
     }
 
     func testReviewOutlookCountsOnlyAvailableQuestionsAndGroupsNextDay() throws {

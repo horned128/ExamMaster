@@ -21,7 +21,14 @@ struct Qualification: Codable {
     var mockPassTitle: String? = nil
     var usesFixedMocks: Bool? = nil
     var contentCredit: String? = nil
+    var brandName: String? = nil
 
+    var appDisplayName: String { (brandName ?? "") + name }
+    var originalContentLabel: String { "\(brandName ?? "ExamMaster") オリジナル" }
+    func displaySource(_ source: String) -> String {
+        guard let brandName, source.hasPrefix("ExamMaster オリジナル") else { return source }
+        return brandName + String(source.dropFirst("ExamMaster".count))
+    }
     var mascotColorHex: String { mascotBaseHex ?? TankeiPalette.defaultChickenHex }
     var iconDisplayTitle: String { iconTitle ?? name }
     func choiceLabel(_ index: Int) -> String {
@@ -231,7 +238,7 @@ struct Answer: Codable, Identifiable {
     let selectedIndex: Int
     let correct: Bool
     let duration: TimeInterval
-    let confidence: Confidence?
+    var confidence: Confidence?
     let mode: StudyMode
 }
 

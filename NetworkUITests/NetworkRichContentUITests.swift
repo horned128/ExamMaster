@@ -69,7 +69,7 @@ final class NetworkRichContentUITests: XCTestCase {
 
     func testLargestTextOfficialMockTableAndResultBlocks() {
         let app = launchLargestText()
-        app.tabBars.buttons["問題を探す"].tap()
+        app.tabBars.buttons["年度別"].tap()
         tapListRow(app.buttons["年度別・オリジナル模試"], in: app)
         tapListRow(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "2025年春期")).firstMatch, in: app)
         XCTAssertTrue(app.buttons["mockNavigator"].waitForExistence(timeout: 5))
@@ -126,7 +126,7 @@ final class NetworkRichContentUITests: XCTestCase {
 
     private func openQuestion(containing keyword: String, in app: XCUIApplication) {
         if !app.navigationBars["すべての問題"].exists {
-            app.tabBars.buttons["問題を探す"].tap()
+            app.tabBars.buttons["年度別"].tap()
             tapListRow(app.buttons["問題を検索"], in: app)
         }
         let search = app.searchFields.firstMatch

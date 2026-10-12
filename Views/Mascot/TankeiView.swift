@@ -367,78 +367,31 @@ struct TankeiMoment: View {
 }
 
 /// A real app destination, not the Debug gallery. Reactions never alter study records.
-struct TankeiCompanionView: View {
-    let catalog: Catalog
-    let store: StudyStore
-    let purchase: PurchaseManager
-    @Binding var order: AnswerHistoryOrder
-    let start: (StudySession) -> Void
-    let paywall: () -> Void
-    @Environment(\.dismiss) private var dismiss
+/// The companion lives alongside progress and history in the learning record.
+struct TankeiRecordCompanion: View {
+    let growth: TankeiGrowth
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var state: TankeiState = .ready
     @State private var replay = 0
 
-    private var growth: TankeiGrowth { TankeiGrowth(catalog: catalog, data: store.data, unlocked: purchase.unlocked) }
-
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 24) {
-                    VStack(spacing: 8) {
-                        TankeiView(state: state, stage: growth.stage, size: 224, animated: true, idle: true, expressive: true, eventID: replay)
-                        Text(growth.stage.title).font(.title2.bold()).accessibilityIdentifier("mascotStage")
-                        Text(growth.stage.companionMessage).font(.subheadline).foregroundStyle(Palette.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity)
-                    ViewThatFits(in: .horizontal) {
-                        HStack(spacing: 8) { reactionButtons }
-                        VStack(alignment: .leading, spacing: 8) { reactionButtons }
-                    }
-                    Divider()
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("回答履歴").font(.title2.bold()).accessibilityAddTraits(.isHeader)
-                        if dynamicTypeSize.isAccessibilitySize {
-                            historyOrderPicker.pickerStyle(.menu)
-                        } else {
-                            historyOrderPicker.pickerStyle(.segmented)
-                        }
-                    }
-                    if store.data.answers.isEmpty {
-                        ContentUnavailableView("最初の1問から、ここに記録。", systemImage: "pencil.line")
-                    } else {
-                        ForEach(AnswerHistoryDay.grouped(store.data.answers, order: order)) { day in
-                            Section {
-                                ForEach(day.answers) { answer in
-                                    HistoryAnswerRow(answer: answer, catalog: catalog, purchase: purchase,
-                                                     start: start, paywall: paywall, showDate: false)
-                                    Divider()
-                                }
-                            } header: {
-                                Text(day.date, format: .dateTime.year().month().day().weekday())
-                                    .font(.headline).foregroundStyle(Palette.muted)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .accessibilityAddTraits(.isHeader).accessibilityIdentifier("historyDay")
-                            }
-                        }
-                    }
+        Surface(inset: 16) {
+            let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12)) :
+                AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+            layout {
+                TankeiView(state: state, stage: growth.stage, size: 104, animated: true, idle: true, expressive: true, eventID: replay)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("相棒の成長").font(.headline)
+                    Text(growth.stage.title).font(.title3.bold()).accessibilityIdentifier("mascotStage")
+                    Text(growth.stage.companionMessage).font(.caption).foregroundStyle(Palette.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .padding(24).frame(maxWidth: 600).frame(maxWidth: .infinity)
             }
-            .background(Palette.background)
-            .navigationTitle("学習の相棒")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("閉じる") { dismiss() } } }
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) { reactionButtons }
+                VStack(alignment: .leading, spacing: 8) { reactionButtons }
+            }
         }
-        .environment(\.mascotMotionEnabled, true)
-    }
-
-    private var historyOrderPicker: some View {
-        Picker("回答履歴の並び順", selection: $order) {
-            ForEach(AnswerHistoryOrder.allCases) { item in Text(item.title).tag(item) }
-        }
-        .frame(minHeight: 44).accessibilityIdentifier("historyOrder")
     }
 
     private var reactionButtons: some View {

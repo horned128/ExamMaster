@@ -7,14 +7,17 @@ struct StudySession: Identifiable {
     let questions: [Question]
     let timed: Bool
     let mockSetID: String?
+    let returnsToQuestionList: Bool
 
-    init(id: UUID = UUID(), title: String, mode: StudyMode, questions: [Question], timed: Bool, mockSetID: String? = nil) {
+    init(id: UUID = UUID(), title: String, mode: StudyMode, questions: [Question], timed: Bool, mockSetID: String? = nil,
+         returnsToQuestionList: Bool = false) {
         self.id = id
         self.title = title
         self.mode = mode
         self.questions = questions
         self.timed = timed
         self.mockSetID = mockSetID
+        self.returnsToQuestionList = returnsToQuestionList
     }
 }
 
@@ -47,7 +50,7 @@ enum SessionPlanner {
             chosen.append(next)
             pool.removeAll { $0.id == next.id }
         }
-        return StudySession(title: "今日のノルマ", mode: .recommended,
+        return StudySession(title: "復習", mode: .recommended,
                             questions: interleave(chosen), timed: false)
     }
 
@@ -70,15 +73,6 @@ enum SessionPlanner {
             result.append(remaining.remove(at: index))
         }
         return result
-    }
-
-    static func contrast(_ catalog: Catalog, data: StudyData, unlocked: Bool) -> StudySession {
-        let items = available(catalog, unlocked: unlocked)
-        let mistakes = items.filter { data.mastery[$0.id]?.misconception == true || data.mastery[$0.id]?.lastCorrect == false }
-        let concepts = Set(mistakes.flatMap(\.concepts))
-        let related = items.filter { q in mistakes.contains(q) || !concepts.isDisjoint(with: q.concepts) }
-        return StudySession(title: "似た問題を比べる", mode: .contrast,
-                            questions: interleave(Array(related.prefix(12))), timed: false)
     }
 
     static func mock(_ catalog: Catalog, unlocked: Bool) -> StudySession {

@@ -49,9 +49,10 @@ enum Palette {
 
 struct Surface<Content: View>: View {
     var inset: CGFloat = 20
+    var spacing: CGFloat = 16
     @ViewBuilder let content: Content
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) { content }
+        VStack(alignment: .leading, spacing: spacing) { content }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(inset)
             .background(Palette.surface, in: RoundedRectangle(cornerRadius: 20))
@@ -65,6 +66,7 @@ struct StudyButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
+            .contentShape(Rectangle())
             .opacity(configuration.isPressed ? 0.65 : 1)
             .animation(reduceMotion ? nil : .easeOut(duration: 0.12), value: configuration.isPressed)
     }
@@ -125,6 +127,7 @@ struct MemoryBar: View {
 struct MemoryBreakdown: View {
     let summary: RetentionSummary
     let identifier: String
+    var compact = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
@@ -146,12 +149,22 @@ struct MemoryBreakdown: View {
     }
 
     private func legend(_ title: String, count: Int, symbol: String, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Label { Text(title) } icon: { Image(systemName: symbol).accessibilityHidden(true) }
-                .font(.caption).foregroundStyle(color)
-                .fixedSize(horizontal: false, vertical: true)
-            Text("\(count)問").font(.subheadline.weight(.semibold).monospacedDigit())
-                .fixedSize(horizontal: false, vertical: true)
+        Group {
+            if compact && !dynamicTypeSize.isAccessibilitySize {
+                HStack(spacing: 4) {
+                    Text(title).foregroundStyle(color)
+                    Text("\(count)問").fontWeight(.semibold).monospacedDigit()
+                }
+                .font(.caption).fixedSize(horizontal: true, vertical: false)
+            } else {
+                VStack(alignment: .leading, spacing: 4) {
+                    Label { Text(title) } icon: { Image(systemName: symbol).accessibilityHidden(true) }
+                        .font(.caption).foregroundStyle(color)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("\(count)問").font(.subheadline.weight(.semibold).monospacedDigit())
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -236,5 +249,98 @@ struct MemoryRhythm: View {
         Label(title, systemImage: symbol)
             .font(.caption.weight(.semibold)).foregroundStyle(Palette.positive)
             .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
+/// Shared grid density; large text keeps the same navigation in one readable column.
+struct StudyGrid<Content: View>: View {
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @ViewBuilder let content: Content
+    var body: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12, alignment: .top),
+                                 count: typeSize.isAccessibilitySize ? 1 : 2), spacing: 12) { content }
+    }
+}
+
+struct FeatureCard: View {
+    let title: String
+    let symbol: String
+    var detail: String? = nil
+    var color: Color = Palette.positive
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: symbol).font(.title3.weight(.medium))
+                .foregroundStyle(color).frame(width: 38, height: 38)
+                .background(color.opacity(0.10), in: Circle()).accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title).font(.subheadline.weight(.semibold)).foregroundStyle(Palette.ink)
+                if let detail { Text(detail).font(.caption).foregroundStyle(Palette.muted) }
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(12).frame(maxWidth: .infinity, minHeight: 64, alignment: .leading)
+        .background(Palette.surface, in: RoundedRectangle(cornerRadius: 18))
+        .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(Palette.border, lineWidth: 0.5))
+        .contentShape(RoundedRectangle(cornerRadius: 18))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(detail ?? "")
+    }
+}
+
+/// Counts reflect the actual bank, including partial years and locked content.
+struct CollectionProgressCard: View {
+    let title: String
+    let questions: [Question]
+    let data: StudyData
+    let freeIDs: Set<String>
+    let unlocked: Bool
+    var compact = true
+    var countLabel: String? = nil
+    var now: Date = .now
+
+    private var answered: Int { questions.filter { data.mastery[$0.id] != nil }.count }
+    private var review: Int {
+        questions.filter { question in
+            guard let state = data.mastery[question.id] else { return false }
+            return !state.lastCorrect || state.misconception || (state.dueAt.map { $0 <= now } ?? false)
+        }.count
+    }
+    private var freeCount: Int { questions.filter { freeIDs.contains($0.id) }.count }
+    private var status: String {
+        if review > 0 { return "要復習 \(review)問" }
+        if answered == 0 { return "未着手" }
+        return answered == questions.count ? "ひと通り学習済み" : "学習中"
+    }
+    private var access: String {
+        if unlocked { return "利用可能" }
+        if freeCount == questions.count { return "無料" }
+        return freeCount == 0 ? "有料" : "無料 \(freeCount)問 / 有料 \(questions.count - freeCount)問"
+    }
+    var body: some View {
+        Surface(inset: 16) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top) {
+                    Text(title).font(compact ? .headline : .title3.bold())
+                        .foregroundStyle(Palette.ink).fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 4)
+                    Image(systemName: "chevron.right").font(.caption.weight(.semibold))
+                        .foregroundStyle(Palette.muted).accessibilityHidden(true)
+                }
+                Text("\(countLabel ?? "\(questions.count)問") · \(access)").font(.caption).foregroundStyle(Palette.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                ProgressView(value: Double(answered), total: Double(max(1, questions.count)))
+                    .tint(Palette.positive).accessibilityHidden(true)
+                HStack(alignment: .firstTextBaseline) {
+                    Text(status).foregroundStyle(review > 0 ? Palette.review : Palette.muted)
+                    Spacer(minLength: 4)
+                    Text("回答 \(answered)/\(questions.count)").foregroundStyle(Palette.muted).monospacedDigit()
+                }.font(.caption).fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(minHeight: compact ? 104 : 0, alignment: .top)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title)、\(countLabel ?? "\(questions.count)問")、\(access)、\(status)、回答済み \(answered)問")
     }
 }

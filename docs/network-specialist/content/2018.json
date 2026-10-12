@@ -1,5 +1,5 @@
 {
-  "version": 2, "isDraft": true, "mockSets": [],
+  "version": 2, "isDraft": false, "mockSets": [{"id": "nw-2018-autumn", "title": "2018年秋期 午前Ⅱ", "kind": "past", "questionIDs": ["nw-2018-autumn-q01", "nw-2018-autumn-q02", "nw-2018-autumn-q03", "nw-2018-autumn-q04", "nw-2018-autumn-q05", "nw-2018-autumn-q06", "nw-2018-autumn-q07", "nw-2018-autumn-q08", "nw-2018-autumn-q09", "nw-2018-autumn-q10", "nw-2018-autumn-q11", "nw-2018-autumn-q12", "nw-2018-autumn-q13", "nw-2018-autumn-q14", "nw-2018-autumn-q15", "nw-2018-autumn-q16", "nw-2018-autumn-q17", "nw-2018-autumn-q18", "nw-2018-autumn-q19", "nw-2018-autumn-q20", "nw-2018-autumn-q21", "nw-2018-autumn-q22", "nw-2018-autumn-q23", "nw-2018-autumn-q24", "nw-2018-autumn-q25"], "questionCount": 25, "minutes": 40}],
   "questions": [
     {
       "id": "nw-2018-autumn-q01", "year": 2018, "administration": "autumn", "kind": "past", "mockSetID": "nw-2018-autumn",
@@ -180,6 +180,48 @@
       "steps": ["ICMPを使う操作はpingと対応付ける。", "大量要求による回線過負荷を選び，他層の負荷と分ける。"],
       "source": "ネットワークスペシャリスト試験 2018年秋期 午前Ⅱ 問16", "questionNumber": 16, "imageName": null,
       "difficulty": 2, "tags": ["ICMP flood", "ping", "DoS"], "concepts": ["可用性", "プロトコルの区別"]
+    },
+    {
+      "id": "nw-2018-autumn-q17",
+      "year": 2018,
+      "administration": "autumn",
+      "kind": "past",
+      "mockSetID": "nw-2018-autumn",
+      "subject": "セキュリティ",
+      "category": "EAP認証",
+      "stem": "認証にクライアント証明書を用いるプロトコルはどれか。",
+      "choices": [
+        "EAP-FAST",
+        "EAP-MD5",
+        "EAP-TLS",
+        "EAP-TTLS"
+      ],
+      "correctIndex": 2,
+      "explanation": "当時の公式正答で採点します。\n2018年秋期のIPA公式正答はウ（EAP-TLS）です。EAP-TLSはTLSを用い、クライアント証明書による認証に対応するEAP方式です。\n\n仕様上の注意：EAP-TTLSも、RFC5281の第1段階で任意のクライアント証明書認証を利用できます。第2段階の認証を省く構成も規定されています。そのため、選択肢エを「クライアント証明書を使えないから誤り」とは説明できません。原問には「必須」「代表的」といった限定がないため、仕様上は解釈に注意が必要です。本アプリでは当時の公式正答ウで採点します。\n\n試験での公式正答と、各方式が実際に対応できる認証方法を分けて学びましょう。",
+      "choiceExplanations": [
+        "EAP-FASTはPACなどを使って保護されたトンネルを作り、その内部で認証を行う方式です。この過去問の公式正答ではありませんが、全ての構成で証明書を使えないと断定する説明は避けます。",
+        "EAP-MD5はチャレンジレスポンス方式です。クライアント証明書による相互認証の方式ではありません。",
+        "EAP-TLSはクライアント証明書によるTLS認証に対応します。当時のIPA公式正答ウに沿って正解として採点します。",
+        "EAP-TTLSはクライアント証明書を必須にしませんが、任意で利用できます。RFC5281 §7.1/7.6が認める構成なので、技術的に証明書を利用できないという意味での誤答ではありません。本アプリの採点は公式正答ウに従います。"
+      ],
+      "steps": [
+        "EAP-TLSと、トンネル内で追加認証を行えるEAP-TTLSを区別する。",
+        "クライアント証明書が任意であることと、利用できないことを混同しない。",
+        "この過去問では公式正答ウを選び、TTLSでも証明書を利用できる点を解説で確認する。"
+      ],
+      "source": "ネットワークスペシャリスト試験 2018年秋期 午前Ⅱ 問17",
+      "questionNumber": 17,
+      "imageName": null,
+      "difficulty": 3,
+      "tags": [
+        "EAP-TLS",
+        "クライアント証明書",
+        "EAP-TTLS"
+      ],
+      "concepts": [
+        "EAP方式比較",
+        "認証条件"
+      ]
     },
     {
       "id": "nw-2018-autumn-q18", "year": 2018, "administration": "autumn", "kind": "past", "mockSetID": "nw-2018-autumn",

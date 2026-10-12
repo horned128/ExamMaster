@@ -225,7 +225,7 @@ final class TankeiTests: XCTestCase {
         XCTAssertEqual(StudyStore(qualificationID: "growth-a", directory: directory).data.mascotHighestStage, 0)
     }
 
-    @MainActor func testLegacyGrowthMigrationWaitsForPendingStudyAndPreservesSavedStages() throws {
+    @MainActor func testLegacyGrowthMigrationDiscardsPendingStudyAndPreservesSavedStages() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -243,14 +243,9 @@ final class TankeiTests: XCTestCase {
         dictionary.removeValue(forKey: "mascotHighestStage")
         let url = directory.appendingPathComponent("study-legacy-growth.json")
         try JSONSerialization.data(withJSONObject: dictionary).write(to: url)
-        let original = try Data(contentsOf: url)
         let store = StudyStore(qualificationID: "legacy-growth", directory: directory)
         store.migrateMascotGrowthIfNeeded(questions: free, now: now)
-        XCTAssertEqual(store.data.mascotHighestStage, 0)
-        XCTAssertTrue(store.data.mascotNeedsMigration)
-        XCTAssertEqual(try Data(contentsOf: url), original)
-        store.clearPending()
-        store.migrateMascotGrowthIfNeeded(questions: free, now: now)
+        XCTAssertNil(store.data.pending)
         XCTAssertEqual(store.data.mascotHighestStage, TankeiStage.growingChick.rawValue)
         XCTAssertFalse(store.data.mascotNeedsMigration)
         XCTAssertEqual(store.data.answers.map(\.id), legacy.answers.map(\.id))
@@ -279,7 +274,7 @@ final class TankeiTests: XCTestCase {
         XCTAssertEqual(TankeiGrowth(questions: free, data: store.data, earnedOnly: true).stage, .chick)
         let restored = StudyStore(qualificationID: "deferred-growth", directory: directory)
         XCTAssertFalse(restored.data.mascotNeedsMigration)
-        XCTAssertNotNil(restored.data.pending)
+        XCTAssertNil(restored.data.pending)
         XCTAssertEqual(TankeiGrowth(questions: free, data: restored.data, earnedOnly: true).stage, .chick)
         restored.clearPending()
         restored.updateMascotGrowth(questions: free)

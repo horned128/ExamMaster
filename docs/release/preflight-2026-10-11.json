@@ -1,0 +1,98 @@
+{
+  "scheme": "NetworkSpecialist",
+  "localChecksPassed": false,
+  "checks": [
+    {
+      "id": "bundle",
+      "passed": false,
+      "message": "正式なBundle ID（jp.exampleは開発用）"
+    },
+    {
+      "id": "team",
+      "passed": true,
+      "message": "NWターゲットのApple Developer Team ID"
+    },
+    {
+      "id": "version",
+      "passed": true,
+      "message": "公開バージョン"
+    },
+    {
+      "id": "build",
+      "passed": true,
+      "message": "正のビルド番号（アップロード時は未使用の番号）"
+    },
+    {
+      "id": "sdk",
+      "passed": true,
+      "message": "iOS 26以降のSDK（2026-10-11確認）"
+    },
+    {
+      "id": "draft",
+      "passed": true,
+      "message": "レビューを終えた教材のisDraft解除（件数ゲートは別途検査）"
+    },
+    {
+      "id": "iap",
+      "passed": false,
+      "message": "正式な非消耗型商品IDと教材設定/StoreKit設定の一致（ASC側の登録は別途）"
+    },
+    {
+      "id": "policy_url",
+      "passed": true,
+      "message": "公開HTTPSプライバシーポリシーURL（到達性は別途確認）"
+    },
+    {
+      "id": "policy_text",
+      "passed": true,
+      "message": "同梱ポリシーの開発用サンプル文言を正式版に更新"
+    },
+    {
+      "id": "ad_app",
+      "passed": false,
+      "message": "本番AdMobアプリIDと生成Info.plistの一致"
+    },
+    {
+      "id": "ad_banner",
+      "passed": false,
+      "message": "banner広告の本番ユニットID（無効な枠は不要）"
+    },
+    {
+      "id": "ad_interstitial",
+      "passed": false,
+      "message": "interstitial広告の本番ユニットID（無効な枠は不要）"
+    },
+    {
+      "id": "att",
+      "passed": true,
+      "message": "ATT説明文"
+    },
+    {
+      "id": "iap_credit",
+      "passed": true,
+      "message": "過去問の出典・権利表記"
+    },
+    {
+      "id": "content_release",
+      "passed": true,
+      "message": "教材の正答・レビュー固定ハッシュ・件数・完成版ゲート"
+    }
+  ],
+  "manualChecks": [
+    "Developer契約/税務/銀行情報",
+    "App Store Connectのアプリ/商品/価格/販売地域",
+    "サポートURL/運営者連絡先/年齢区分/暗号化申告/コンテンツ権利",
+    "公開URLの到達性/AdMobとUMPの配信地域設定/Privacy ReportとApp Privacy",
+    "実機/VoiceOver/SandboxとTestFlightの購入・復元・返金",
+    "正式サイズのスクリーンショット/審査メモ/公開方法"
+  ],
+  "note": "ローカル検査はApple側の登録・審査・実機検証の完了を保証しません。",
+  "content": {
+    "included": 375,
+    "free": 75,
+    "paid": 300,
+    "errors": [],
+    "incomplete": [],
+    "releaseReady": true
+  }
+}

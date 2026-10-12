@@ -39,7 +39,7 @@ def assemble(parts, reviews, snapshots):
                 any(q is None or q["mockSetID"] != mock["id"] or q["kind"] != mock["kind"] for q in members) or \
                 [q["questionNumber"] for q in members] != list(range(1, 26)):
             raise ValueError(f"Incomplete or invalid mock: {mock['id']}")
-    questions.sort(key=lambda q: (-q["year"], q["administration"], q["questionNumber"]))
+    questions.sort(key=lambda q: (-q["year"], q["administration"], q["mockSetID"], q["questionNumber"]))
     sets.sort(key=lambda s: s["id"], reverse=True)
     return {"version": 2, "isDraft": any(p.get("isDraft", False) for p in parts),
             "mockSets": sets, "questions": questions}

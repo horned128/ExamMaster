@@ -30,8 +30,9 @@ class AssemblyTests(unittest.TestCase):
             assemble(self.parts, self.reviews, self.snapshots)
 
     def test_partial_year_cannot_be_mock(self):
-        partial = next(p for p in self.parts if len(p["questions"]) < 25)
-        partial["mockSets"] = [{"id": "nw-2024-spring", "title": "未完成年度", "kind": "past",
+        partial = self.parts[0]
+        partial["questions"].pop()
+        partial["mockSets"] = [{"id": partial["questions"][0]["mockSetID"], "title": "未完成年度", "kind": "past",
                                 "questionIDs": [q["id"] for q in partial["questions"]], "questionCount": 25, "minutes": 40}]
         with self.assertRaisesRegex(ValueError, "Incomplete or invalid mock"):
             assemble(self.parts, self.reviews, self.snapshots)

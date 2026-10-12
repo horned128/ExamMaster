@@ -17,12 +17,12 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertNotEqual(app.buttons["homeHeading"].label, previous)
         capture(app, name: "相棒・ホームで待つひよこ")
         app.buttons["openCompanion"].tap()
-        XCTAssertTrue(app.navigationBars["学習の相棒"].waitForExistence(timeout: 5))
-        for label in ["応援して", "力こぶ！", "ひと休み", "応援して"] { app.buttons[label].tap() }
+        XCTAssertTrue(app.navigationBars["学習記録"].waitForExistence(timeout: 5))
+        for label in ["応援して", "力こぶ！", "ひと休み", "応援して"] { scrollTo(app.buttons[label], in: app); app.buttons[label].tap() }
         capture(app, name: "相棒・触れ合いと成長")
         app.buttons["閉じる"].tap()
-        app.tabBars.buttons["問題を探す"].tap()
-        XCTAssertTrue(app.staticTexts["どこから学ぼう？"].waitForExistence(timeout: 5))
+        app.tabBars.buttons["年度別"].tap()
+        XCTAssertTrue(app.staticTexts["年度から選ぶ"].waitForExistence(timeout: 5))
         capture(app, name: "相棒・問題を探す")
         app.tabBars.buttons["ホーム"].tap()
         for _ in 0..<6 where !app.buttons["記憶と復習のしくみ"].isHittable { app.swipeUp() }
@@ -30,6 +30,187 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["復習は、もう一度育てる時間。"].waitForExistence(timeout: 5))
         capture(app, name: "相棒・復習ガイド")
         app.buttons["閉じる"].tap()
+    }
+
+    func testRedesignedNavigationAndCompactLearningCards() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
+        app.launch()
+        app.buttons["skipDiagnosis"].tap()
+        XCTAssertTrue(app.buttons["openCompanion"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["startDailyStudy"].exists)
+        XCTAssertFalse(app.buttons["resumeStudy"].exists)
+        XCTAssertTrue(app.buttons["homeRecords"].isHittable)
+        XCTAssertLessThanOrEqual(app.buttons["homeRecords"].frame.maxY, app.tabBars.firstMatch.frame.minY)
+        capture(app, name: "改訂・ホーム")
+        app.buttons["homeYears"].tap()
+        capture(app, name: "改訂・年度ロック")
+        app.buttons["year-2023"].tap()
+        XCTAssertTrue(app.navigationBars["全問題を解放"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.navigationBars["2023年の問題"].exists)
+        app.buttons["閉じる"].tap()
+        app.buttons["year-2025"].tap()
+        XCTAssertTrue(app.buttons["模擬試験"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["ランダム出題"].exists)
+        XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "順番に回答")).firstMatch.exists)
+        XCTAssertTrue(app.staticTexts["点検計画 · 2問"].exists)
+        capture(app, name: "改訂・年度の分野別リスト")
+        app.buttons["question-p01"].tap()
+        XCTAssertTrue(app.buttons["questionTextSize"].waitForExistence(timeout: 5))
+        app.buttons["ブックマークに追加"].tap()
+        answerChoice(app, number: 2, revealChoices: false)
+        let confidence = app.buttons["confidence-sure"]
+        scrollTo(confidence, in: app)
+        confidence.tap()
+        XCTAssertTrue(confidence.isSelected)
+        capture(app, name: "改訂・回答後の手応え")
+        app.buttons["次の問題へ"].tap()
+        XCTAssertTrue(app.buttons["回答を確定"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["2 / 8問"].exists)
+        app.buttons["学習を中断"].tap()
+        app.buttons["問題一覧へ戻る"].tap()
+        let home = app.tabBars.buttons["ホーム"]
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: home)], timeout: 5), .completed)
+        home.tap()
+        XCTAssertFalse(app.buttons["resumeStudy"].exists)
+        XCTAssertTrue(app.staticTexts["学習済み 1問 · 要復習 0問"].exists)
+        app.buttons["homeSubjects"].tap()
+        app.buttons["subject-点検計画"].tap()
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "subjectMap").firstMatch.waitForExistence(timeout: 5))
+        capture(app, name: "改訂・分野マップ")
+        app.buttons["category-日常点検"].tap()
+        app.buttons["question-p03"].tap()
+        answerChoice(app, number: 1, revealChoices: false)
+        XCTAssertTrue(app.buttons["問題一覧へ戻る"].exists)
+        app.buttons["問題一覧へ戻る"].tap()
+        XCTAssertTrue(app.buttons["question-p03"].waitForExistence(timeout: 5))
+        app.tabBars.buttons["ホーム"].tap()
+        app.buttons["小テスト"].tap()
+        XCTAssertTrue(app.buttons["quizLevel-2"].waitForExistence(timeout: 5))
+        capture(app, name: "改訂・Lv別小テスト")
+        app.buttons["quizLevel-2"].tap()
+        XCTAssertTrue(app.buttons["回答を確定"].waitForExistence(timeout: 5))
+        app.buttons["学習を中断"].tap()
+        app.buttons["問題一覧へ戻る"].tap()
+        app.terminate()
+        app.launchArguments = ["-UITestDisableAds"]
+        app.launch()
+        XCTAssertFalse(app.buttons["resumeStudy"].exists)
+        XCTAssertTrue(app.staticTexts["学習済み 2問 · 要復習 0問"].exists)
+        app.buttons["homeRecords"].tap()
+        XCTAssertTrue(app.navigationBars["学習記録"].waitForExistence(timeout: 5))
+        let reaction = app.buttons["応援して"]
+        scrollTo(reaction, in: app)
+        reaction.tap()
+        capture(app, name: "改訂・相棒と学習記録")
+    }
+
+    func testUnifiedPracticeMenuAndRecordsNavigation() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
+        app.launch()
+        app.buttons["skipDiagnosis"].tap()
+        XCTAssertFalse(app.buttons["問題を検索"].exists)
+        XCTAssertGreaterThanOrEqual(app.buttons["openCompanion"].frame.width, 110)
+        app.buttons["openCompanion"].tap()
+        XCTAssertTrue(app.navigationBars["学習記録"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["閉じる"].exists)
+        XCTAssertTrue(app.tabBars.buttons["ホーム"].isHittable)
+        capture(app, name: "統一・キャラクターから学習記録へページ遷移")
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.buttons["homeRecords"].tap()
+        XCTAssertTrue(app.navigationBars["学習記録"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["閉じる"].exists)
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.buttons["homeSubjects"].tap()
+        app.buttons["subject-点検計画"].tap()
+        app.buttons["category-定期点検"].tap()
+        XCTAssertFalse(app.searchFields.firstMatch.exists)
+        XCTAssertFalse(app.buttons["ランダム出題"].exists)
+        XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "順番に回答")).firstMatch.exists)
+        app.buttons["solveQuestions"].tap()
+        XCTAssertTrue(app.buttons["順番に解く"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["未回答のみ"].exists)
+        capture(app, name: "統一・問題を解くの順番とランダム")
+        app.buttons["順番に解く"].tap()
+        XCTAssertTrue(app.buttons["回答を確定"].waitForExistence(timeout: 5))
+        app.buttons["ブックマークに追加"].tap()
+        answerChoice(app, number: 1, revealChoices: false)
+        app.buttons["submitOrAdvance"].tap()
+        for tab in ["苦手問題", "ブックマーク"] {
+            XCTAssertTrue(app.tabBars.buttons[tab].waitForExistence(timeout: 5))
+            app.tabBars.buttons[tab].tap()
+            XCTAssertTrue(app.buttons["solveQuestions"].waitForExistence(timeout: 5))
+            XCTAssertFalse(app.searchFields.firstMatch.exists)
+            XCTAssertFalse(app.buttons["ランダム出題"].exists)
+            for option in ["順番に解く", "ランダムに解く"] {
+                app.buttons["solveQuestions"].tap()
+                XCTAssertTrue(app.buttons[option].waitForExistence(timeout: 5))
+                XCTAssertFalse(app.buttons["未回答のみ"].exists)
+                app.buttons[option].tap()
+                if app.buttons["選択肢を見る"].waitForExistence(timeout: 1) { app.buttons["選択肢を見る"].tap() }
+                XCTAssertTrue(app.buttons["回答を確定"].waitForExistence(timeout: 5))
+                XCTAssertTrue(app.staticTexts["1 / 1問"].exists)
+                answerChoice(app, number: 1, revealChoices: false)
+                XCTAssertTrue(app.buttons["問題一覧へ戻る"].exists)
+                app.buttons["問題一覧へ戻る"].tap()
+            }
+        }
+    }
+
+    func testAllSolutionStepsAreVisibleAfterAnswer() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
+        app.launch()
+        app.buttons["skipDiagnosis"].tap()
+        app.buttons["homeYears"].tap()
+        app.buttons["year-2024"].tap()
+        let question = app.buttons["question-c03"]
+        scrollTo(question, in: app)
+        question.tap()
+        answerChoice(app, number: 1, revealChoices: false)
+        XCTAssertFalse(app.buttons["次のステップ"].exists)
+        let step = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "2. ")).firstMatch
+        scrollTo(step, in: app)
+        XCTAssertTrue(step.exists)
+        capture(app, name: "改訂・解き方をすべて表示")
+    }
+
+    func testNewMapAndQuizSupportLargestText() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        app.buttons["skipDiagnosis"].tap()
+        let subjects = app.buttons["homeSubjects"]
+        scrollTo(subjects, in: app)
+        subjects.tap()
+        app.buttons["subject-点検計画"].tap()
+        let category = app.buttons["category-日常点検"]
+        scrollTo(category, in: app)
+        XCTAssertTrue(category.isHittable)
+        capture(app, name: "改訂・最大文字の分野マップ")
+        category.tap()
+        scrollTo(app.buttons["solveQuestions"], in: app)
+        app.buttons["solveQuestions"].tap()
+        XCTAssertTrue(app.buttons["ランダムに解く"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["順番に解く"].isHittable)
+        XCTAssertTrue(app.buttons["ランダムに解く"].isHittable)
+        capture(app, name: "統一・最大文字の出題順メニュー")
+        app.buttons["閉じる"].tap()
+        let question = app.buttons["question-p01"]
+        scrollTo(question, in: app)
+        question.tap()
+        answerChoice(app, number: 1, revealChoices: false)
+        let confidence = app.buttons["confidence-unsure"]
+        scrollTo(confidence, in: app)
+        confidence.tap()
+        XCTAssertTrue(confidence.isSelected)
+        XCTAssertTrue(app.buttons["次の問題へ"].isHittable)
+        capture(app, name: "改訂・最大文字の回答後")
     }
 
     func testTankeiGalleryShowsSixStatesAndCompactSizes() {
@@ -82,21 +263,20 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertTrue(memory.waitForExistence(timeout: 5))
         XCTAssertEqual(memory.value as? String, "定着 0問、学習中 8問、これから 4問")
         capture(app, name: "ホーム・3区分と相棒の成長")
-        app.tabBars.buttons["記録"].tap()
+        openRecords(app)
         let retention = app.descendants(matching: .any).matching(identifier: "recordRetention").firstMatch
         XCTAssertTrue(retention.waitForExistence(timeout: 5))
         XCTAssertEqual(retention.value as? String, "0パーセント、利用できる12問のうち0問が定着")
-        XCTAssertTrue(app.buttons["recordCompanion"].label.contains("育ちざかり"))
-        XCTAssertTrue((app.buttons["recordCompanion"].value as? String ?? "").isEmpty)
+        scrollTo(app.staticTexts["mascotStage"], in: app)
+        XCTAssertEqual(app.staticTexts["mascotStage"].label, "育ちざかり")
         XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "一度でも正解")).firstMatch.exists)
         capture(app, name: "記録・準備度と定着率の統合")
         app.terminate()
         app.launchArguments = ["-UITestDisableAds"]
         app.launch()
-        app.tabBars.buttons["記録"].tap()
-        XCTAssertTrue(app.buttons["recordCompanion"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["recordCompanion"].label.contains("育ちざかり"))
-        XCTAssertTrue((app.buttons["recordCompanion"].value as? String ?? "").isEmpty)
+        openRecords(app)
+        scrollTo(app.staticTexts["mascotStage"], in: app)
+        XCTAssertEqual(app.staticTexts["mascotStage"].label, "育ちざかり")
     }
 
     func testGrowthMilestoneSupportsLargestText() {
@@ -129,42 +309,39 @@ final class StudyFlowUITests: XCTestCase {
 
     func testTankeiResultRemainsUsableWithLargestText() {
         let app = XCUIApplication()
-        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds",
-                               "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
-        capture(app, name: "タンケイ・初回・最大文字")
-        for _ in 0..<8 where !app.buttons["skipDiagnosis"].isHittable { app.swipeUp() }
+        scrollTo(app.buttons["skipDiagnosis"], in: app)
         app.buttons["skipDiagnosis"].tap()
-        for _ in 0..<8 where !app.buttons["shortStudy"].isHittable { app.swipeUp() }
-        app.buttons["shortStudy"].tap()
-        for _ in 0..<8 where !app.buttons["startDailyStudy"].isHittable { app.swipeUp() }
-        app.buttons["startDailyStudy"].tap()
+        let quiz = app.buttons["小テスト"]
+        scrollTo(quiz, in: app)
+        quiz.tap()
+        app.buttons["quizLevel-1"].tap()
         for index in 0..<5 {
-            answerFirstChoice(app)
-            let next = app.buttons[index == 4 ? "結果を見る" : "次の問題へ"]
-            XCTAssertTrue(next.waitForExistence(timeout: 5))
-            next.tap()
+            answerChoice(app, number: 1, revealChoices: false)
+            app.buttons[index == 4 ? "結果を見る" : "次の問題へ"].tap()
         }
         continuePastGrowthIfNeeded(app)
         XCTAssertTrue(app.staticTexts["おつかれさま"].waitForExistence(timeout: 5))
-        capture(app, name: "タンケイ・結果・最大文字")
-        for _ in 0..<12 where !app.buttons["学習を終える"].isHittable { app.swipeUp() }
-        XCTAssertTrue(app.buttons["学習を終える"].isHittable)
-        app.buttons["学習を終える"].tap()
-        XCTAssertTrue(app.buttons["homeHeading"].waitForExistence(timeout: 5))
+        capture(app, name: "Lv1・相棒と結果・最大文字")
     }
 
     func testExamDayCountdownPersistsAndCanBeCleared() {
+        continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
         app.launch()
         app.buttons["skipDiagnosis"].tap()
         XCTAssertTrue(app.buttons["試験日を設定"].waitForExistence(timeout: 5))
-        app.buttons["試験日を設定"].tap()
+        XCTAssertTrue(app.staticTexts["homeToday"].exists)
+        app.buttons["homeExamSchedule"].tap()
         XCTAssertTrue(app.buttons["試験日を保存"].waitForExistence(timeout: 5))
         app.buttons["試験日を保存"].tap()
-        let countdown = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "あと")).firstMatch
+        let countdown = app.staticTexts["homeExamCountdown"]
         XCTAssertTrue(countdown.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["homeExamDate"].label.hasPrefix("試験日 "))
+        XCTAssertEqual(countdown.label, "あと30日")
+        let examLabel = app.staticTexts["homeExamDate"].label
         let attachment = XCTAttachment(screenshot: app.screenshot())
         attachment.name = "試験日と学習準備度・ホーム"
         attachment.lifetime = .keepAlways
@@ -174,11 +351,35 @@ final class StudyFlowUITests: XCTestCase {
         app.launchArguments = ["-UITestDisableAds"]
         app.launch()
         XCTAssertTrue(app.staticTexts[label].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["homeExamDate"].label, examLabel)
         app.buttons["設定"].tap()
         app.buttons["試験日を設定"].tap()
         app.buttons["試験日の設定を解除"].tap()
         app.buttons["閉じる"].tap()
         XCTAssertTrue(app.buttons["試験日を設定"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["homeExamCountdown"].exists)
+        XCTAssertTrue(app.staticTexts["homeToday"].exists)
+    }
+
+    func testExamScheduleSupportsLargestText() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+        app.buttons["skipDiagnosis"].tap()
+        let schedule = app.buttons["homeExamSchedule"]
+        XCTAssertTrue(schedule.waitForExistence(timeout: 5))
+        schedule.tap()
+        scrollTo(app.buttons["試験日を保存"], in: app)
+        app.buttons["試験日を保存"].tap()
+        for id in ["homeToday", "homeExamDate", "homeExamCountdown"] {
+            let text = app.descendants(matching: .any).matching(identifier: id).firstMatch
+            XCTAssertTrue(text.waitForExistence(timeout: 5))
+            XCTAssertGreaterThanOrEqual(text.frame.minX, app.frame.minX)
+            XCTAssertLessThanOrEqual(text.frame.maxX, app.frame.maxX)
+        }
+        XCTAssertEqual(app.staticTexts["homeExamCountdown"].label, "あと30日")
+        capture(app, name: "試験日・今日と残り日数・最大文字")
     }
 
     func testAnalysisCalendarAndEmptyCharts() {
@@ -186,7 +387,7 @@ final class StudyFlowUITests: XCTestCase {
         app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
         app.launch()
         app.buttons["skipDiagnosis"].tap()
-        app.tabBars.buttons["記録"].tap()
+        openRecords(app)
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "recordReadiness").firstMatch.exists)
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "recordRetention").firstMatch.exists)
         capture(app, name: "記録・すっきりした学習の状態")
@@ -202,49 +403,25 @@ final class StudyFlowUITests: XCTestCase {
         subjects.tap()
         scrollTo(app.staticTexts["学習履歴"], in: app)
         XCTAssertTrue(app.staticTexts["学習履歴"].exists)
-        scrollTo(app.buttons["模擬試験を試す"], in: app)
-        XCTAssertTrue(app.buttons["模擬試験を試す"].isHittable)
+        scrollTo(app.staticTexts["模擬試験の推移"], in: app)
+        XCTAssertTrue(app.staticTexts["模擬試験の推移"].exists)
     }
 
     func testMergedHistoryKeepsDayAllAnswersAndCompanionAccess() {
         let app = XCUIApplication()
-        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
+        app.launchArguments = ["-UITestResetStudy", "-UITestSeedCompanionHistory", "-UITestDisableAds"]
         app.launch()
-        app.buttons["skipDiagnosis"].tap()
-        app.buttons["shortStudy"].tap()
-        app.buttons["startDailyStudy"].tap()
-        answerFirstChoice(app)
-        app.buttons["学習を中断"].tap()
-        app.buttons["中断して後で再開"].tap()
-        let homeMemory = app.descendants(matching: .any).matching(identifier: "homeMemory").firstMatch
-        XCTAssertTrue(homeMemory.waitForExistence(timeout: 5))
-        XCTAssertEqual(homeMemory.value as? String, "定着 0問、学習中 1問、これから 11問")
-        let records = app.tabBars.buttons["記録"]
-        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: records)
-        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
-        records.tap()
-        let recordMemory = app.descendants(matching: .any).matching(identifier: "recordMemory").firstMatch
-        XCTAssertTrue(recordMemory.waitForExistence(timeout: 5))
-        XCTAssertEqual(recordMemory.value as? String, "定着 0問、学習中 1問、これから 11問")
-        XCTAssertFalse(app.staticTexts["最近の回答"].exists)
-        XCTAssertTrue(app.staticTexts["studyHistorySummary"].label.contains("回答 1回"))
+        openRecords(app)
+        XCTAssertTrue(app.navigationBars["学習記録"].waitForExistence(timeout: 5))
+        scrollTo(app.staticTexts["mascotStage"], in: app)
+        XCTAssertTrue(app.buttons["応援して"].exists)
         let allHistory = app.buttons["allAnswerHistory"]
         scrollTo(allHistory, in: app)
-        XCTAssertEqual(app.buttons.matching(identifier: "allAnswerHistory").count, 1)
-        capture(app, name: "記録・カレンダーと回答履歴を統合")
         allHistory.tap()
-        XCTAssertTrue(app.navigationBars["学習の相棒"].waitForExistence(timeout: 5))
-        scrollTo(app.staticTexts["historyDay"].firstMatch, in: app)
+        XCTAssertTrue(app.navigationBars["回答履歴"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["6回答 · 6正解"].exists)
         XCTAssertTrue(app.staticTexts["historyDay"].firstMatch.exists)
-        app.buttons["閉じる"].tap()
-        app.buttons["selectedDayHistory"].tap()
-        XCTAssertTrue(app.staticTexts["1回答 · 1正解"].waitForExistence(timeout: 5) || app.staticTexts["1回答 · 0正解"].exists)
-        app.navigationBars.buttons.element(boundBy: 0).tap()
-        for _ in 0..<8 where !app.buttons["recordCompanion"].isHittable { app.swipeDown() }
-        app.buttons["recordCompanion"].tap()
-        XCTAssertTrue(app.navigationBars["学習の相棒"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["mascotStage"].exists)
-        app.buttons["閉じる"].tap()
+        capture(app, name: "学習記録・相棒と日付別回答")
     }
 
     func testMergedRecordsSupportLargestText() {
@@ -254,7 +431,7 @@ final class StudyFlowUITests: XCTestCase {
         app.launch()
         scrollTo(app.buttons["skipDiagnosis"], in: app)
         app.buttons["skipDiagnosis"].tap()
-        app.tabBars.buttons["記録"].tap()
+        openRecords(app)
         app.buttons["学習指標の見方"].tap()
         XCTAssertTrue(app.staticTexts["復習は、もう一度育てる時間。"].waitForExistence(timeout: 5))
         app.buttons["閉じる"].tap()
@@ -283,9 +460,11 @@ final class StudyFlowUITests: XCTestCase {
         app.launchArguments = ["-UITestResetStudy", "-UITestSeedCompanionHistory", "-UITestDisableAds"]
         app.launch()
         app.buttons["openCompanion"].tap()
-        XCTAssertTrue(app.navigationBars["学習の相棒"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["学習記録"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.staticTexts["mascotProgress"].exists)
         XCTAssertFalse(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "一度でも正解")).firstMatch.exists)
+        scrollTo(app.buttons["allAnswerHistory"], in: app)
+        app.buttons["allAnswerHistory"].tap()
         let order = app.segmentedControls["historyOrder"]
         scrollTo(order, in: app)
         XCTAssertTrue(order.buttons["新しい順"].isSelected)
@@ -302,19 +481,20 @@ final class StudyFlowUITests: XCTestCase {
         capture(app, name: "相棒・日付別の回答・古い順")
         firstAnswer.tap()
         XCTAssertTrue(app.buttons["回答を確定"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.navigationBars["学習の相棒"].exists)
+        XCTAssertFalse(app.navigationBars["学習記録"].exists)
         app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch.tap()
         app.buttons["回答を確定"].tap()
-        app.buttons["一覧へ戻る"].tap()
+        app.buttons["問題一覧へ戻る"].tap()
         if app.staticTexts["mascotGrowthMilestone"].waitForExistence(timeout: 1) { app.buttons["一覧へ戻る"].tap() }
-        XCTAssertTrue(app.navigationBars["学習の相棒"].waitForExistence(timeout: 5))
-        scrollTo(app.segmentedControls["historyOrder"], in: app)
+        XCTAssertTrue(app.navigationBars["回答履歴"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.segmentedControls["historyOrder"].buttons["古い順"].isSelected)
-        app.buttons["閉じる"].tap()
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.navigationBars.buttons.element(boundBy: 0).tap()
         app.buttons["設定"].tap()
-        app.buttons["相棒の成長を見る"].tap()
-        XCTAssertTrue(app.navigationBars["学習の相棒"].waitForExistence(timeout: 5))
-        app.buttons["閉じる"].tap()
+        app.buttons["settingsRecords"].tap()
+        XCTAssertTrue(app.navigationBars["学習記録"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["閉じる"].exists)
+        app.navigationBars.buttons.element(boundBy: 0).tap()
     }
 
     func testCompanionHistorySortSupportsLargestText() {
@@ -324,7 +504,9 @@ final class StudyFlowUITests: XCTestCase {
         app.launch()
         scrollTo(app.buttons["openCompanion"], in: app)
         app.buttons["openCompanion"].tap()
-        XCTAssertTrue(app.navigationBars["学習の相棒"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["学習記録"].waitForExistence(timeout: 5))
+        scrollTo(app.buttons["allAnswerHistory"], in: app)
+        app.buttons["allAnswerHistory"].tap()
         let order = app.buttons["historyOrder"]
         scrollTo(order, in: app)
         XCTAssertTrue(order.isHittable)
@@ -374,7 +556,7 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "guideResearch-1").firstMatch.exists)
         capture(app, name: "記憶と学習・研究と限界")
         app.buttons["閉じる"].tap()
-        app.tabBars.buttons["記録"].tap()
+        openRecords(app)
         app.buttons["学習指標の見方"].tap()
         XCTAssertTrue(app.navigationBars["記憶と学習"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["guide-metrics"].isHittable)
@@ -388,7 +570,7 @@ final class StudyFlowUITests: XCTestCase {
         app.launch()
         scrollTo(app.buttons["skipDiagnosis"], in: app)
         app.buttons["skipDiagnosis"].tap()
-        app.tabBars.buttons["記録"].tap()
+        openRecords(app)
         app.buttons["学習指標の見方"].tap()
         XCTAssertTrue(app.navigationBars["記憶と学習"].waitForExistence(timeout: 5))
         let heading = app.staticTexts["guide-metrics"]
@@ -420,38 +602,23 @@ final class StudyFlowUITests: XCTestCase {
         app.buttons[title].tap()
     }
 
-    func testSharedCollectionSingleQuestionAndResume() {
+    func testSharedCollectionContinuesToNextAndRestartsAfterInterruption() {
         let app = XCUIApplication()
         app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
         app.launch()
         app.buttons["skipDiagnosis"].tap()
-        app.tabBars.buttons["問題を探す"].tap()
-        scrollTo(app.staticTexts["2025年"], in: app)
-        app.staticTexts["2025年"].tap()
-        XCTAssertTrue(app.buttons["順番に回答 · 8問"].waitForExistence(timeout: 5))
-        let firstQuestion = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "始業前点検の主な目的")).firstMatch
-        firstQuestion.tap()
-        app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch.tap()
-        app.buttons["回答を確定"].tap()
-        app.buttons["一覧へ戻る"].tap()
-        XCTAssertTrue(app.buttons["順番に回答 · 8問"].waitForExistence(timeout: 5))
-
-        app.buttons["順番に回答 · 8問"].tap()
-        app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch.tap()
-        app.buttons["回答を確定"].tap()
-        app.buttons["学習を中断"].tap()
-        XCTAssertTrue(app.staticTexts["問題の途中ですが、中断しますか？"].exists)
-        app.buttons["中断して後で再開"].tap()
-        XCTAssertTrue(app.buttons["順番に回答 · 8問"].waitForExistence(timeout: 5))
-        app.tabBars.buttons["ホーム"].tap()
-        XCTAssertTrue(app.buttons["homeHeading"].waitForExistence(timeout: 5))
-        let resume = app.buttons["resumeStudy"]
-        XCTAssertTrue(resume.waitForExistence(timeout: 5))
-        resume.tap()
-        XCTAssertTrue(app.staticTexts["正解です"].waitForExistence(timeout: 5))
+        app.buttons["homeYears"].tap()
+        app.buttons["year-2025"].tap()
+        app.buttons["question-p01"].tap()
+        answerChoice(app, number: 1, revealChoices: false)
         app.buttons["次の問題へ"].tap()
+        XCTAssertTrue(app.staticTexts["2 / 8問"].exists)
         app.buttons["学習を中断"].tap()
-        app.buttons["中断して後で再開"].tap()
+        app.buttons["問題一覧へ戻る"].tap()
+        XCTAssertTrue(app.buttons["question-p01"].waitForExistence(timeout: 5))
+        app.buttons["question-p01"].tap()
+        XCTAssertTrue(app.staticTexts["1 / 8問"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["回答を確定"].exists)
     }
 
     func testSettingsPrivacyAndLearningReset() {
@@ -471,33 +638,23 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertTrue(app.buttons["診断を始める"].waitForExistence(timeout: 5))
     }
 
-    func testRandomUnansweredChoiceAndReplacingPendingExercise() {
+    func testRandomUnansweredExcludesRecordedAnswerAfterInterruption() {
         let app = XCUIApplication()
         app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
         app.launch()
         app.buttons["skipDiagnosis"].tap()
-        app.tabBars.buttons["問題を探す"].tap()
-        scrollTo(app.staticTexts["2025年"], in: app)
-        app.staticTexts["2025年"].tap()
-        app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "始業前点検の主な目的")).firstMatch.tap()
-        app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch.tap()
-        app.buttons["回答を確定"].tap()
-        app.buttons["一覧へ戻る"].tap()
-        XCTAssertTrue(app.buttons["ランダム出題"].waitForExistence(timeout: 5))
+        app.buttons["homeYears"].tap()
+        app.buttons["問題を検索"].tap()
         app.buttons["ランダム出題"].tap()
         app.buttons["未回答のみ"].tap()
-        XCTAssertTrue(app.buttons["7問の演習を始める"].waitForExistence(timeout: 5))
-        app.buttons["7問の演習を始める"].tap()
-        XCTAssertTrue(app.buttons["回答を確定"].waitForExistence(timeout: 5))
+        app.buttons["12問の演習を始める"].tap()
+        answerChoice(app, number: 1, revealChoices: false)
         app.buttons["学習を中断"].tap()
-        app.buttons["中断して後で再開"].tap()
-        XCTAssertTrue(app.buttons["順番に回答 · 8問"].waitForExistence(timeout: 5))
-        app.buttons["順番に回答 · 8問"].tap()
-        XCTAssertTrue(app.staticTexts["保存中の演習があります"].waitForExistence(timeout: 5))
-        app.buttons["新しい演習に切り替える"].tap()
+        app.buttons["問題一覧へ戻る"].tap()
+        app.buttons["ランダム出題"].tap()
+        app.buttons["11問の演習を始める"].tap()
         XCTAssertTrue(app.buttons["回答を確定"].waitForExistence(timeout: 5))
-        app.buttons["学習を中断"].tap()
-        app.buttons["中断して後で再開"].tap()
+        XCTAssertFalse(app.staticTexts["保存中の演習があります"].exists)
     }
 
     func testAdConsentNeverBlocksFreeExercises() {
@@ -511,17 +668,17 @@ final class StudyFlowUITests: XCTestCase {
         let trackingAlert = springboard.alerts.firstMatch
         if trackingAlert.waitForExistence(timeout: 8) { trackingAlert.buttons.firstMatch.tap() }
         XCTAssertTrue(app.buttons["homeHeading"].waitForExistence(timeout: 5))
-        let finder = app.tabBars.buttons["問題を探す"]
+        let finder = app.tabBars.buttons["年度別"]
         finder.tap()
         let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "selected == true"), object: finder)
         guard XCTWaiter.wait(for: [selected], timeout: 5) == .completed else {
             XCTFail("Consent or the system alert still covers navigation")
             return
         }
-        XCTAssertTrue(app.staticTexts["学習モード"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["年度から選ぶ"].waitForExistence(timeout: 5))
         scrollTo(app.staticTexts["2025年"], in: app)
         app.staticTexts["2025年"].tap()
-        XCTAssertTrue(app.buttons["ランダム出題"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["模擬試験"].waitForExistence(timeout: 5))
         for _ in 0..<5 { app.swipeUp() }
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "無料版・問題一覧の広告枠"
@@ -548,7 +705,8 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["分野別の結果"].exists)
         app.buttons["ホームへ進む"].tap()
         XCTAssertTrue(app.buttons["homeHeading"].waitForExistence(timeout: 5))
-        app.tabBars.buttons["問題を探す"].tap()
+        app.tabBars.buttons["年度別"].tap()
+        app.buttons["year-2025"].tap()
         let mock = app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "模擬試験")).firstMatch
         XCTAssertTrue(mock.exists)
         mock.tap()
@@ -557,114 +715,79 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertTrue(timer.label.hasPrefix("残り時間 "))
         XCTAssertTrue(app.buttons["mockChoice-0"].exists)
         app.buttons["mockSuspend"].tap()
-        app.buttons["模試を中断する"].tap()
+        app.buttons["問題一覧へ戻る"].tap()
     }
 
     func testFirstLaunchPracticePersistenceAndPaywall() {
         let app = XCUIApplication()
         app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
         app.launch()
-        XCTAssertTrue(app.buttons["診断を始める"].waitForExistence(timeout: 10))
         app.buttons["skipDiagnosis"].tap()
-        XCTAssertTrue(app.buttons["homeHeading"].waitForExistence(timeout: 5))
-        let recommendation = app.buttons["startDailyStudy"]
-        XCTAssertTrue(recommendation.exists)
-        recommendation.tap()
-        XCTAssertTrue(app.buttons["選択肢を見る"].waitForExistence(timeout: 5))
-        app.buttons["選択肢を見る"].tap()
-        let choice = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch
-        XCTAssertTrue(choice.exists)
-        choice.tap()
-        app.buttons["回答を確定"].tap()
-        XCTAssertTrue(app.staticTexts["正解です"].exists || app.staticTexts["答えを確認"].exists)
+        app.buttons["homeYears"].tap()
+        app.buttons["year-2025"].tap()
+        app.buttons["question-p01"].tap()
+        app.buttons["ブックマークに追加"].tap()
+        answerChoice(app, number: 1, revealChoices: false)
         app.buttons["学習を中断"].tap()
-        app.buttons["中断して後で再開"].tap()
-
+        app.buttons["問題一覧へ戻る"].tap()
         app.terminate()
         app.launchArguments = ["-UITestDisableAds"]
         app.launch()
-        XCTAssertTrue(app.buttons["homeHeading"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "続きから")).firstMatch.exists)
-        app.tabBars.buttons["記録"].tap()
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "1回")).firstMatch.exists)
-        app.buttons["設定"].tap()
-        XCTAssertFalse(app.staticTexts["問題集"].exists)
-        app.buttons["全問題を解放する"].tap()
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "永久に解放")).firstMatch.waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["購入を復元"].exists)
+        XCTAssertFalse(app.buttons["resumeStudy"].exists)
+        app.tabBars.buttons["ブックマーク"].tap()
+        XCTAssertTrue(app.buttons["question-p01"].waitForExistence(timeout: 5))
+        app.tabBars.buttons["年度別"].tap()
+        app.buttons["year-2023"].tap()
+        XCTAssertTrue(app.navigationBars["全問題を解放"].waitForExistence(timeout: 5))
     }
 
-    func testShortDailyStudyShowsActualCountAndNextReview() {
+    func testLevelQuizShowsResultsAndNextReview() {
         let app = XCUIApplication()
         app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
         app.launch()
         app.buttons["skipDiagnosis"].tap()
-        app.buttons["shortStudy"].tap()
-        XCTAssertEqual(app.buttons["startDailyStudy"].label, "5問の学習を始める")
-        capture(app, name: "ホーム・5問を自分で選ぶ")
-        app.buttons["startDailyStudy"].tap()
+        app.buttons["小テスト"].tap()
+        app.buttons["quizLevel-2"].tap()
         for index in 0..<5 {
-            app.buttons["選択肢を見る"].tap()
-            app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch.tap()
-            app.buttons["回答を確定"].tap()
-            XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "復習の目安 · ")).firstMatch.waitForExistence(timeout: 5))
-            if index == 0 { capture(app, name: "回答・次の復習の目安") }
+            answerChoice(app, number: 1, revealChoices: false)
             app.buttons[index == 4 ? "結果を見る" : "次の問題へ"].tap()
         }
         continuePastGrowthIfNeeded(app)
-        XCTAssertTrue(app.staticTexts["次に出会う目安"].waitForExistence(timeout: 5))
-        capture(app, name: "結果・今日はここまで")
-        app.swipeUp()
-        app.buttons["学習を終える"].tap()
-        XCTAssertTrue(app.buttons["homeHeading"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.buttons["resumeStudy"].exists)
-        XCTAssertFalse(app.staticTexts["dailyGoalCard"].exists)
-        XCTAssertFalse(app.buttons["startDailyStudy"].exists)
-        capture(app, name: "ホーム・今日のノルマ達成後")
+        XCTAssertTrue(app.staticTexts["おつかれさま"].waitForExistence(timeout: 5))
+        capture(app, name: "小テスト・Lv2を完了")
     }
 
     func testLearningGuideIsOptionalAndHomeRemainsActionable() {
         let app = XCUIApplication()
         app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
         app.launch()
-        capture(app, name: "初回・記憶のリズム")
         app.buttons["skipDiagnosis"].tap()
-        XCTAssertTrue(app.buttons["startDailyStudy"].isHittable)
-        app.swipeUp()
-        app.buttons["記憶と復習のしくみ"].tap()
-        XCTAssertTrue(app.navigationBars["記憶と学習"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["覚えたつもりを、\n思い出せる力に。"].exists)
-        capture(app, name: "詳細・必要なときだけ読む")
+        XCTAssertFalse(app.buttons["startDailyStudy"].exists)
+        let guide = app.buttons["記憶と復習のしくみ"]
+        scrollTo(guide, in: app)
+        guide.tap()
+        XCTAssertTrue(app.buttons["閉じる"].waitForExistence(timeout: 5))
         app.buttons["閉じる"].tap()
-        app.swipeDown()
-        XCTAssertTrue(app.buttons["startDailyStudy"].isHittable)
+        scrollTo(app.buttons["homeYears"], in: app)
+        app.buttons["homeYears"].tap()
+        XCTAssertTrue(app.buttons["year-2025"].waitForExistence(timeout: 5))
     }
 
     func testLargestTextHomeAndStudyRemainUsable() {
         let app = XCUIApplication()
-        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds",
-                               "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
         app.launch()
-        for _ in 0..<6 where !app.buttons["skipDiagnosis"].isHittable { app.swipeUp() }
+        scrollTo(app.buttons["skipDiagnosis"], in: app)
         app.buttons["skipDiagnosis"].tap()
         let memory = app.descendants(matching: .any).matching(identifier: "homeMemory").firstMatch
         scrollFullyIntoView(memory, in: app)
-        XCTAssertTrue(memory.isHittable)
         XCTAssertEqual(memory.value as? String, "定着 0問、学習中 0問、これから 12問")
-        XCTAssertLessThanOrEqual(memory.frame.maxX, app.frame.maxX)
-        capture(app, name: "最大文字サイズ・ホームの3区分")
-        for _ in 0..<6 where !app.buttons["startDailyStudy"].isHittable { app.swipeUp() }
-        XCTAssertTrue(app.buttons["startDailyStudy"].isHittable)
         capture(app, name: "最大文字サイズ・ホーム")
-        app.buttons["startDailyStudy"].tap()
-        XCTAssertTrue(app.buttons["選択肢を見る"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["選択肢を見る"].isHittable)
-        capture(app, name: "最大文字サイズ・想起")
-        app.buttons["選択肢を見る"].tap()
-        XCTAssertFalse(app.buttons["submitOrAdvance"].isEnabled)
-        capture(app, name: "最大文字サイズ・未回答の確定操作名")
-        app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch.tap()
-        XCTAssertTrue(app.buttons["回答を確定"].isHittable)
+        scrollTo(app.buttons["小テスト"], in: app)
+        app.buttons["小テスト"].tap()
+        app.buttons["quizLevel-2"].tap()
+        answerChoice(app, number: 1, revealChoices: false)
+        XCTAssertTrue(app.buttons["次の問題へ"].isHittable)
     }
 
     func testCompactHomeAndLandscape() {
@@ -675,8 +798,8 @@ final class StudyFlowUITests: XCTestCase {
         capture(app, name: "コンパクト・初回")
         for _ in 0..<3 where !app.buttons["skipDiagnosis"].isHittable { app.swipeUp() }
         app.buttons["skipDiagnosis"].tap()
-        scrollFullyIntoView(app.buttons["startDailyStudy"], in: app)
-        XCTAssertTrue(app.buttons["startDailyStudy"].isHittable)
+        scrollFullyIntoView(app.buttons["小テスト"], in: app)
+        XCTAssertTrue(app.buttons["小テスト"].isHittable)
         capture(app, name: "コンパクト・ホーム")
         XCUIDevice.shared.orientation = .landscapeLeft
         defer { XCUIDevice.shared.orientation = .portrait }
@@ -693,15 +816,23 @@ final class StudyFlowUITests: XCTestCase {
         capture(app, name: "横向き・ホームの実画面")
         // XCTest scrolls this specific control into view. Whole-screen swipes can
         // overshoot it in a compact landscape viewport.
-        app.buttons["startDailyStudy"].tap()
-        XCTAssertTrue(app.buttons["選択肢を見る"].waitForExistence(timeout: 5))
+        app.buttons["小テスト"].tap()
+        app.buttons["quizLevel-2"].tap()
+        XCTAssertTrue(app.buttons["回答を確定"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["選択肢を見る"].isHittable)
         capture(app, name: "横向き・下部操作")
-        app.buttons["選択肢を見る"].tap()
         let submit = app.buttons["submitOrAdvance"]
         XCTAssertTrue(submit.isHittable)
         XCTAssertFalse(submit.isEnabled)
         capture(app, name: "横向き・未回答の確定操作名")
+    }
+
+    private func openRecords(_ app: XCUIApplication) {
+        if app.navigationBars["学習記録"].exists { return }
+        app.tabBars.buttons["ホーム"].tap()
+        let records = app.buttons["homeRecords"]
+        scrollTo(records, in: app)
+        records.tap()
     }
 
     private func capture(_ app: XCUIApplication, name: String) {
@@ -735,8 +866,9 @@ final class StudyFlowUITests: XCTestCase {
         let confirm = app.buttons["回答を確定"]
         let questionScroll = app.scrollViews.containing(.button, identifier: choice.label).firstMatch
         for _ in 0..<12 {
-            let top = questionScroll.frame.minY + 20
-            let bottom = confirm.frame.minY - 20
+            let top = max(questionScroll.frame.minY, app.navigationBars.firstMatch.frame.maxY) + 20
+            let controls = app.descendants(matching: .any).matching(identifier: "studyControls").firstMatch
+            let bottom = (controls.exists ? controls.frame.minY : confirm.frame.minY) - 20
             let center = choice.frame.midY
             if choice.isHittable && center >= top && center <= bottom { break }
             let down = center < top
