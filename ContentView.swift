@@ -153,6 +153,7 @@ struct StudyAppView: View {
         }
         .tint(Palette.linkAccent(catalog.qualification.accentHex))
         .environment(\.mascotBaseColor, Palette.accent(catalog.qualification.mascotColorHex))
+        .environment(\.mascotChickColor, catalog.qualification.chickBaseHex.map(Palette.accent))
     }
 
     private func start(_ newSession: StudySession) {
@@ -193,6 +194,9 @@ struct StudyAppView: View {
         if case .year(let year) = route,
            catalog.mockSets.filter({ set in set.kind == .prediction && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id } }).count > 1 {
             PredictionLibraryView(year: year, catalog: catalog, store: store, purchase: purchase, paywall: openPaywall)
+        } else if case .year(let year) = route,
+                  catalog.mockSets.filter({ set in set.kind == .past && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id } }).count > 1 {
+            PastMockLibraryView(year: year, catalog: catalog, store: store, purchase: purchase, paywall: openPaywall)
         } else {
             QuestionCollectionView(route: route, catalog: catalog, store: store, purchase: purchase,
                                    ads: ads, start: start, paywall: openPaywall)

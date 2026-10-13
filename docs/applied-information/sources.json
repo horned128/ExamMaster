@@ -1,0 +1,769 @@
+{
+  "checkedOn": "2026-10-12",
+  "indexURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/index.html",
+  "years": [
+    {
+      "year": 2009,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2009h21.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f3yi-att/2009h21a_ap_am_qs.pdf",
+          "file": "2009h21a_ap_am_qs.pdf",
+          "sha256": "658498500a3677f4f8252120799f689b7bfb65ccf7050e3b61403075f63c776e",
+          "bytes": 1293415,
+          "pages": 36,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f3yi-att/2009h21a_ap_am_ans.pdf",
+          "file": "2009h21a_ap_am_ans.pdf",
+          "sha256": "f520e37429a1ccab5b8dd254c055a8e46c765983c8f5e023af4578e97aec5c0a",
+          "bytes": 39517,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000009bhl-att/2009h21h_ap_am_qs.pdf",
+          "file": "2009h21h_ap_am_qs.pdf",
+          "sha256": "7a65135279dd931a85234d916a750bba8cafbd5b1c0207277d3af9ec14a29988",
+          "bytes": 1337406,
+          "pages": 37,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000009bhl-att/2009h21h_ap_am_ans.pdf",
+          "file": "2009h21h_ap_am_ans.pdf",
+          "sha256": "2447053cb9d8a828820fb6d783376b635659d9af5420e89d714b52f197272af9",
+          "bytes": 39538,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2010,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2010h22.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000004d6f-att/2010h22a_ap_am_qs.pdf",
+          "file": "2010h22a_ap_am_qs.pdf",
+          "sha256": "f6d605b6cce358b7ae94a97831e6dfea0d8470e8e68c61a04bb3db5ef2a961c1",
+          "bytes": 2072268,
+          "pages": 36,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000004d6f-att/2010h22a_ap_am_ans.pdf",
+          "file": "2010h22a_ap_am_ans.pdf",
+          "sha256": "f59ea67ac276dc84c69df3cf840b9a7a7e5bfed6351206317e5134e42ab7a28d",
+          "bytes": 36915,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000004n2z-att/2010h22h_ap_am_qs.pdf",
+          "file": "2010h22h_ap_am_qs.pdf",
+          "sha256": "315b3dbb86a2846d04637923642286f25d584807e35955d6602f587108983cef",
+          "bytes": 2029377,
+          "pages": 36,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000004n2z-att/2010h22h_ap_am_ans.pdf",
+          "file": "2010h22h_ap_am_ans.pdf",
+          "sha256": "f8dbe9f8b7c21299ee7fe66d13e50568721242aa55550e46223dcee1ca460622",
+          "bytes": 37022,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2011,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2011h23.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000003ojp-att/2011h23a_ap_am_qs.pdf",
+          "file": "2011h23a_ap_am_qs.pdf",
+          "sha256": "a450cfd4847bcda5c38c8af3cd985e3f0f7dd5a29872897017d33323d8e0a98c",
+          "bytes": 2166129,
+          "pages": 36,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000003ojp-att/2011h23a_ap_am_ans.pdf",
+          "file": "2011h23a_ap_am_ans.pdf",
+          "sha256": "e42159c6172f8dd158080c7b53dcb99c5f8e21e1f42175e93b93562852f81287",
+          "bytes": 58552,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000003ya2-att/2011h23tokubetsu_ap_am_qs.pdf",
+          "file": "2011h23tokubetsu_ap_am_qs.pdf",
+          "sha256": "a6ce8bcabd39e0bfd6c553c2c45b6e882123659e73da328b73eae95f764f123b",
+          "bytes": 2228158,
+          "pages": 36,
+          "administration": "special",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000003ya2-att/2011h23tokubetsu_ap_am_ans.pdf",
+          "file": "2011h23tokubetsu_ap_am_ans.pdf",
+          "sha256": "0b48a381efedc76b7ba12c9808d59f279be82d9d48871d286832a6d999add253",
+          "bytes": 39532,
+          "pages": 1,
+          "administration": "special",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2012,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2012h24.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000002h5m-att/2012h24a_ap_am_qs.pdf",
+          "file": "2012h24a_ap_am_qs.pdf",
+          "sha256": "20e074f5e85b8200aa2cc1a5d98c49302105e856be2b983ce741daf3d4f6abd6",
+          "bytes": 4767901,
+          "pages": 40,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000002h5m-att/2012h24a_ap_am_ans.pdf",
+          "file": "2012h24a_ap_am_ans.pdf",
+          "sha256": "4f76ba3e5fa50129e396983bfdf0c1b7cb3ce5b562eb7a61822f98a709cb7843",
+          "bytes": 24395,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p900000038er-att/2012h24h_ap_am_qs.pdf",
+          "file": "2012h24h_ap_am_qs.pdf",
+          "sha256": "f2dcb10f79302959f0f24ba7792b4dffa53ac2a2029bca0e997f3b9a83ce0934",
+          "bytes": 4725896,
+          "pages": 40,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p900000038er-att/2012h24h_ap_am_ans.pdf",
+          "file": "2012h24h_ap_am_ans.pdf",
+          "sha256": "ec8bea045b65de038b499d4441ac1645c68e5851225bb7a5f6a262000bfe757d",
+          "bytes": 58592,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2013,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2013h25.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p900000027za-att/2013h25a_ap_am_qs.pdf",
+          "file": "2013h25a_ap_am_qs.pdf",
+          "sha256": "f14274065e081b5d0600b437433a28c73377214d2cf6da80b7b36c2cf71c2980",
+          "bytes": 5261198,
+          "pages": 44,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p900000027za-att/2013h25a_ap_am_ans.pdf",
+          "file": "2013h25a_ap_am_ans.pdf",
+          "sha256": "16d6a2a5f3bfe8a33dce06c00c9f94c381a307a58802629d30cd4ebbadb54c30",
+          "bytes": 58656,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000002e6g-att/2013h25h_ap_am_qs.pdf",
+          "file": "2013h25h_ap_am_qs.pdf",
+          "sha256": "658fb6224222681337a36f5121e1073201e87d3bc240ffb94fa16e43d7378c59",
+          "bytes": 4904820,
+          "pages": 40,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000002e6g-att/2013h25h_ap_am_ans.pdf",
+          "file": "2013h25h_ap_am_ans.pdf",
+          "sha256": "fe49f012be15f214c42ee69454262c600431d2446ff36a36b9cd7194296dde64",
+          "bytes": 58708,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2014,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2014h26.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000000ye5-att/2014h26a_ap_am_qs.pdf",
+          "file": "2014h26a_ap_am_qs.pdf",
+          "sha256": "0e7ca00faa470a544d55f14865d4af5f138dac19dd4c4addaa0015ae32c4b656",
+          "bytes": 4865739,
+          "pages": 40,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000000ye5-att/2014h26a_ap_am_ans.pdf",
+          "file": "2014h26a_ap_am_ans.pdf",
+          "sha256": "5694ad61f712eaef7b180b0a5e3d5d86aad2ece743228eaa9a96cd01913482fd",
+          "bytes": 74808,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000001dzu-att/2014h26h_ap_am_qs.pdf",
+          "file": "2014h26h_ap_am_qs.pdf",
+          "sha256": "65021e00dd6a05cb255c3b0bfdba2cc1e42b032edd5a95e501d0666813cfa7d0",
+          "bytes": 4997579,
+          "pages": 40,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000001dzu-att/2014h26h_ap_am_ans.pdf",
+          "file": "2014h26h_ap_am_ans.pdf",
+          "sha256": "2c6c14fe8688d192715b043a337c25c8c1e85ee56bdbcd97ae50f445b2bb29b1",
+          "bytes": 62334,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2015,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2015h27.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000gxj0-att/2015h27a_ap_am_qs.pdf",
+          "file": "2015h27a_ap_am_qs.pdf",
+          "sha256": "3f671b2be3759a1741d81caef21f6b21940ddcd4ed884ea1e06b2ebbe8dc9336",
+          "bytes": 5507146,
+          "pages": 40,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000gxj0-att/2015h27a_ap_am_ans.pdf",
+          "file": "2015h27a_ap_am_ans.pdf",
+          "sha256": "b3ae2c40d6a804379ca4eba2a70e236b50648f524b0ededf4f8faba95ed7fe42",
+          "bytes": 41903,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000000f52-att/2015h27h_ap_am_qs.pdf",
+          "file": "2015h27h_ap_am_qs.pdf",
+          "sha256": "8cb2ac133aa2ff4fdc632dcb448f77e21521d9e6444dc692cffd223f5274f279",
+          "bytes": 4953815,
+          "pages": 40,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ug65p90000000f52-att/2015h27h_ap_am_ans.pdf",
+          "file": "2015h27h_ap_am_ans.pdf",
+          "sha256": "cdba059b74d93e11635cbf40705215f76f450bd80f988f646daf7913fb43c514",
+          "bytes": 56126,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2016h28.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_ap_am_qs.pdf",
+          "file": "2016h28a_ap_am_qs.pdf",
+          "sha256": "3eb408c3f5e9b4de6fbeac4972a85ff0e0a569da697137f7c4f953c44a43bc7d",
+          "bytes": 5490397,
+          "pages": 40,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000g6fw-att/2016h28a_ap_am_ans.pdf",
+          "file": "2016h28a_ap_am_ans.pdf",
+          "sha256": "5178b96f8c75cec064fd6e89d976205afc72872c9b4d9e902c0bc7d06d8fe863",
+          "bytes": 54521,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000gn5o-att/2016h28h_ap_am_qs.pdf",
+          "file": "2016h28h_ap_am_qs.pdf",
+          "sha256": "4ef2bdc10ee0a1b2f54e2f7f3bcab7fbf77926a7be3bb81b4a019827c0e93c2d",
+          "bytes": 5386623,
+          "pages": 40,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000gn5o-att/2016h28h_ap_am_ans.pdf",
+          "file": "2016h28h_ap_am_ans.pdf",
+          "sha256": "907c76f14cd3983558b95903d3a6a73fe551cc82d9cf7663c75d3da5c3deadf2",
+          "bytes": 52732,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2017,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2017h29.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fqpm-att/2017h29a_ap_am_qs.pdf",
+          "file": "2017h29a_ap_am_qs.pdf",
+          "sha256": "f653d813d30fad44bde192c6a7b9d0dde40e1227aa79e5fdea8b6504b3bc76d8",
+          "bytes": 4883032,
+          "pages": 41,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fqpm-att/2017h29a_ap_am_ans.pdf",
+          "file": "2017h29a_ap_am_ans.pdf",
+          "sha256": "2edbb2900e06b4dc4cf79375955708e7764b7e948598d05dd4e7d52315f33528",
+          "bytes": 80559,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fzx1-att/2017h29h_ap_am_qs.pdf",
+          "file": "2017h29h_ap_am_qs.pdf",
+          "sha256": "bd2737a30ba4cd5778e920423791d6a9a00ea7faefe8283c6a5e939531328c20",
+          "bytes": 5000951,
+          "pages": 40,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fzx1-att/2017h29h_ap_am_ans.pdf",
+          "file": "2017h29h_ap_am_ans.pdf",
+          "sha256": "8eb12090d315f165410953f0a14225c04a024865ec5bcb3498f1e269e4f356f2",
+          "bytes": 80479,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2018h30.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_ap_am_qs.pdf",
+          "file": "2018h30a_ap_am_qs.pdf",
+          "sha256": "f9b2c668f49cd0f29290df0427860d5e40c2fc124830f62825d98e3e75cc1977",
+          "bytes": 5207627,
+          "pages": 44,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000f01f-att/2018h30a_ap_am_ans.pdf",
+          "file": "2018h30a_ap_am_ans.pdf",
+          "sha256": "a27e3a9112c5cac84d9ff161000e7c28cd6983310e43b61e26a4b62052297461",
+          "bytes": 80574,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fabr-att/2018h30h_ap_am_qs.pdf",
+          "file": "2018h30h_ap_am_qs.pdf",
+          "sha256": "fead1be5eda1186606d04c20d8146463a918b3943600e1eef2e7a8a974a96a73",
+          "bytes": 5012823,
+          "pages": 40,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000fabr-att/2018h30h_ap_am_ans.pdf",
+          "file": "2018h30h_ap_am_ans.pdf",
+          "sha256": "1b46e9aeaa26e977a365abfdd20b6c0f86e0520837b0c84e9752e788be19ebcd",
+          "bytes": 54500,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2019,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2019h31.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_ap_am_qs.pdf",
+          "file": "2019r01a_ap_am_qs.pdf",
+          "sha256": "31aaa0686e9bdae6bec22f3d2ab930627637908cbb54eaf6676282ec3d27d8e6",
+          "bytes": 5085533,
+          "pages": 40,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000dict-att/2019r01a_ap_am_ans.pdf",
+          "file": "2019r01a_ap_am_ans.pdf",
+          "sha256": "64d8b3e848c673b783ceb07ea3589dd309c6461fc03bbb8150991972e9e51dc6",
+          "bytes": 55548,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000ddiw-att/2019h31h_ap_am_qs.pdf",
+          "file": "2019h31h_ap_am_qs.pdf",
+          "sha256": "6603308387c4ef7e2648db30be973e4ca6de936012351e5aa4e1fa94550e56ee",
+          "bytes": 5040673,
+          "pages": 44,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000ddiw-att/2019h31h_ap_am_ans.pdf",
+          "file": "2019h31h_ap_am_ans.pdf",
+          "sha256": "ea5db939d02ab136a31f18c98d89458680d82aff979acd36acbe1c1eab6f76cf",
+          "bytes": 81498,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2020r02.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d05l-att/2020r02o_ap_am_qs.pdf",
+          "file": "2020r02o_ap_am_qs.pdf",
+          "sha256": "1574cc9c17739d9227b6464676163d2cf4182826b0c946ba70c8b8f6aa0ef438",
+          "bytes": 5284176,
+          "pages": 44,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d05l-att/2020r02o_ap_am_ans.pdf",
+          "file": "2020r02o_ap_am_ans.pdf",
+          "sha256": "da5a0d78c031062c56bea2a9dd07277ba693a29f0199041db8471d3be466c6c1",
+          "bytes": 54524,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2021r03.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000apad-att/2021r03a_ap_am_qs.pdf",
+          "file": "2021r03a_ap_am_qs.pdf",
+          "sha256": "925e7ba7c230c42ce653d1cd43198a47dfe7c88493800d0a13af0297c18bb9af",
+          "bytes": 5399282,
+          "pages": 44,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000apad-att/2021r03a_ap_am_ans.pdf",
+          "file": "2021r03a_ap_am_ans.pdf",
+          "sha256": "7de38604ec8ce68484acb20ba4a13c7722c0f54fc7e420368c8ceea01947d799",
+          "bytes": 55237,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_ap_am_qs.pdf",
+          "file": "2021r03h_ap_am_qs.pdf",
+          "sha256": "f5740921e635739d0d707ae68c5db14d49525c4e09cba4b0243c3d85e4095e07",
+          "bytes": 5126478,
+          "pages": 44,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt8000000d5ru-att/2021r03h_ap_am_ans.pdf",
+          "file": "2021r03h_ap_am_ans.pdf",
+          "sha256": "7a8c92e7c23b232eb08ec134d6e17eeaa2c6f6a3a3161f9765322e25f37b54a1",
+          "bytes": 55269,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2022r04.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000008smf-att/2022r04a_ap_am_qs.pdf",
+          "file": "2022r04a_ap_am_qs.pdf",
+          "sha256": "be15eff0f6a9245ea1ffa7581fed55cac5eccc3df1b1c00924b8321d45a719ca",
+          "bytes": 4897441,
+          "pages": 40,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000008smf-att/2022r04a_ap_am_ans.pdf",
+          "file": "2022r04a_ap_am_ans.pdf",
+          "sha256": "cd68eafa610df4365fa478311b7a560f7bbbcbaabf647ae6be637d05cc0862a1",
+          "bytes": 56456,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_ap_am_qs.pdf",
+          "file": "2022r04h_ap_am_qs.pdf",
+          "sha256": "22a1cc0d7653631a977dcf2f0061e5b9e7632f23f5ee010a800b23a9df4a2c1d",
+          "bytes": 4694559,
+          "pages": 40,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/gmcbt80000009sgk-att/2022r04h_ap_am_ans.pdf",
+          "file": "2022r04h_ap_am_ans.pdf",
+          "sha256": "92d7035cef510e293003d8838681a66440dbc88facc3b50d416ad06828378a59",
+          "bytes": 115385,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2023r05.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_ap_am_qs.pdf",
+          "file": "2023r05a_ap_am_qs.pdf",
+          "sha256": "fe0ecb20676af5e67385cccba3b2ac7b8a03d88a2e4858a7fa16427702c63fa2",
+          "bytes": 4899449,
+          "pages": 44,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05a_ap_am_ans.pdf",
+          "file": "2023r05a_ap_am_ans.pdf",
+          "sha256": "412a0691b6d0e6b4856d2a512d0634ab561d11443e0a157c6bbd8767768bc741",
+          "bytes": 39613,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_ap_am_qs.pdf",
+          "file": "2023r05h_ap_am_qs.pdf",
+          "sha256": "70efa5ffb5676105191c6e53f6897c00eec46ad4c3007d1b930b0016aacc9a5a",
+          "bytes": 5237315,
+          "pages": 44,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/ps6vr70000010d6y-att/2023r05h_ap_am_ans.pdf",
+          "file": "2023r05h_ap_am_ans.pdf",
+          "sha256": "334407e6c98a5fcf15ef2d03ee9980326b55fcf7abfa9c44948e9ff4f0d76546",
+          "bytes": 39462,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2024r06.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_ap_am_qs.pdf",
+          "file": "2024r06a_ap_am_qs.pdf",
+          "sha256": "08103c1758973e085b66672cfc404c28b2035bff8603570d88506a98df5a7908",
+          "bytes": 4975081,
+          "pages": 40,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06a_ap_am_ans.pdf",
+          "file": "2024r06a_ap_am_ans.pdf",
+          "sha256": "e0b959f62990aad2da659cd59a20a54d0b001c5c7c388511f11e9f053d666732",
+          "bytes": 40026,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_ap_am_qs.pdf",
+          "file": "2024r06h_ap_am_qs.pdf",
+          "sha256": "aaaa80a132d543435e1c3d7dcf5edb9762f8c2d5db46b78cba205017789a543c",
+          "bytes": 5282900,
+          "pages": 44,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/m42obm000000afqx-att/2024r06h_ap_am_ans.pdf",
+          "file": "2024r06h_ap_am_ans.pdf",
+          "sha256": "2bfa304bc0745e8b4a07e81e5c6023569ccdebffe8166483957bef624a8bde37",
+          "bytes": 40055,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/2025r07.html",
+      "documents": [
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_ap_am_qs.pdf",
+          "file": "2025r07a_ap_am_qs.pdf",
+          "sha256": "1e705af2f38ad50eeebcad436b8476264a6f101e3c0d8cfa2f177f9962770f27",
+          "bytes": 4817616,
+          "pages": 40,
+          "administration": "autumn",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07a_ap_am_ans.pdf",
+          "file": "2025r07a_ap_am_ans.pdf",
+          "sha256": "ee7109c6dcd4c4e452a880d28268877974413172e38ed56f1143d69aaff70b82",
+          "bytes": 40025,
+          "pages": 1,
+          "administration": "autumn",
+          "section": "A",
+          "role": "ans"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_ap_am_qs.pdf",
+          "file": "2025r07h_ap_am_qs.pdf",
+          "sha256": "1e95bc839260464cbadb209a3d41685cad66662dc1f33cdb187c1b03c6607c2c",
+          "bytes": 5243495,
+          "pages": 44,
+          "administration": "spring",
+          "section": "A",
+          "role": "qs"
+        },
+        {
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/nl10bi0000009lh8-att/2025r07h_ap_am_ans.pdf",
+          "file": "2025r07h_ap_am_ans.pdf",
+          "sha256": "656af75ddbf63ac5ece53a73f5ab674ff110710ce3d25f1caa854892d9ac3907",
+          "bytes": 40066,
+          "pages": 1,
+          "administration": "spring",
+          "section": "A",
+          "role": "ans"
+        }
+      ]
+    }
+  ],
+  "scope": "科目Aのみ（2026-10-13に科目Bを対象から除外）"
+}

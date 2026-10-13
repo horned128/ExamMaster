@@ -56,6 +56,7 @@ POSES = {
 }
 PAINT = ("fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "opacity")
 CHICKEN_BASE_FILL = "#FFF3DA"
+CHICK_BASE_FILL = "#FFE259"
 FACE_PARTS = ("chickenHead", "chickenComb", "chickenEyes", "chickenCheeks", "chickenBeak", "chickenMouth")
 
 
@@ -136,7 +137,8 @@ def native_source(parts):
                 lines += ["        do {"] + native_path(shape)
                 paints = {key: "nil" if a.get(key, "none") == "none" else native_color(a[key]) for key in ("fill", "stroke")}
                 cap, join = a.get("stroke-linecap", "butt"), a.get("stroke-linejoin", "miter")
-                uses_base = "true" if name.startswith("chicken") and a.get("fill") == CHICKEN_BASE_FILL else "false"
+                base_fill = CHICKEN_BASE_FILL if name.startswith("chicken") else CHICK_BASE_FILL
+                uses_base = "true" if a.get("fill") == base_fill else "false"
                 lines.append(f"            shapes.append(VectorShape(path: path, fill: {paints['fill']}, usesBaseColor: {uses_base}, stroke: {paints['stroke']}, style: StrokeStyle(lineWidth: {a.get('stroke-width', '1')}, lineCap: .{cap}, lineJoin: .{join})))")
                 lines += ["        }"]
             lines += ["        return shapes", "    }()", ""]

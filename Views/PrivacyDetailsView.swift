@@ -12,9 +12,12 @@ struct PrivacyDetailsView: View {
         Form {
             Section("学習データ") {
                 Text("回答履歴、問題ごとの習熟状態、模擬試験、お気に入り、途中の演習、相棒の成長段階はこの端末に保存します。アカウント登録は必要ありません。アプリの削除で端末内の学習情報は失われます。")
+
             }
             Section("購入と広告") {
-                Text("買い切り購入はAppleのStoreKitで確認します。無料版にはGoogle AdMobの広告を表示し、購入後は全問題が使え、広告も永久に非表示になります。")
+                Text(catalog.qualification.ads.enabled
+                     ? "買い切り購入はAppleのStoreKitで確認します。無料版にはGoogle AdMobの広告を表示し、購入後は全問題が使え、広告も永久に非表示になります。"
+                     : "買い切り購入はAppleのStoreKitで確認します。購入後は全問題を利用できます。このアプリでは現在、広告を表示しません。")
                 if !purchase.unlocked && catalog.qualification.ads.enabled && ads.canShowPrivacyOptions {
                     Button("広告のプライバシー設定を変更") { Task { await ads.presentPrivacyOptions() } }
                 }

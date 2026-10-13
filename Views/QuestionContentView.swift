@@ -26,6 +26,7 @@ struct RichContentView: View {
                 switch block.type {
                 case .text:
                     Text(block.text ?? "").fixedSize(horizontal: false, vertical: true)
+                        .textSelection(.enabled).accessibilityIdentifier("contentBodyText")
                 case .monospace, .formula:
                     ScrollView(.horizontal) {
                         Text(block.text ?? "").font(.system(.body, design: .monospaced))
@@ -60,6 +61,7 @@ private struct ContentTableView: View {
                 GridRow {
                     ForEach(headers.indices, id: \.self) { column in
                         Text(headers[column]).font(.body.bold()).padding(12)
+                            .textSelection(.enabled)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Palette.track).border(Palette.border, width: 0.5)
                     }
@@ -68,6 +70,7 @@ private struct ContentTableView: View {
                     GridRow {
                         ForEach(rows[row].indices, id: \.self) { column in
                             Text(rows[row][column]).font(.system(.body, design: .monospaced)).padding(12)
+                                .textSelection(.enabled)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .border(Palette.border, width: 0.5)
                                 .accessibilityLabel("\(headers[column]): \(rows[row][column])")

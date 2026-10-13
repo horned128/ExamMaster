@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "unitTestsPassed": 20,
+  "localAPIIntegrationChecksPassed": 21,
+  "appleContractVersion": "4.5.1",
+  "appleLiveWritesTested": false,
+  "admobOAuthConfigured": false,
+  "previewCLIFlow": [
+    "ledger push",
+    "web publish",
+    "ledger pull"
+  ],
+  "privacyArchiveComparison": {
+    "fromBuild": "1",
+    "toBuild": "2",
+    "changedFields": [
+      "trackingDomains",
+      "issues"
+    ],
+    "currentIssues": []
+  },
+  "currentAppProfile": "docs/release/release.json",
+  "skill": "ios-release-submitdock",
+  "verifiedAt": "2026-10-12T23:33:27.727574+00:00",
+  "productionDeploy": {
+    "deploy_id": "6acd017439c66cfc96ac9852",
+    "deploy_url": "https://6acd017439c66cfc96ac9852--submitdock-ios-pages.netlify.app",
+    "site_id": "3d47734b-d2af-4acc-be74-353874add82d",
+    "site_url": null
+  },
+  "productionDashboard": "https://submitdock-ios-pages.netlify.app/admin/releases",
+  "productionAppRegistered": true,
+  "productionDraftPreviewVerified": true,
+  "productionAccessChecksPassed": 7
+}

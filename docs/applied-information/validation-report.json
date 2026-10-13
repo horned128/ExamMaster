@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "releaseReady": false,
+  "officialDocuments": 66,
+  "pastQuestions": 2640,
+  "predictionQuestions": 240,
+  "mockSets": 36,
+  "freeQuestions": 160,
+  "figures": 2157,
+  "nativeTextQuestions": 762,
+  "nativePastTextQuestions": 522,
+  "nativeTableQuestions": 55,
+  "writtenBooklets": 0,
+  "offlineWrittenBooklets": 0,
+  "detailedPastExplanations": 522,
+  "pastEditorialPending": 2118,
+  "limitations": [
+    "過去問の詳細解説・原問校合・読み上げ校閲は522/2640問完了（制作内AI校閲）",
+    "予想問題の外部専門家による校閲は未実施",
+    "本番IAP・広告・公開ポリシー・審査提出は未実施"
+  ]
+}

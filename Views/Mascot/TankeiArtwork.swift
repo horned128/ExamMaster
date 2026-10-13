@@ -51,7 +51,7 @@ enum TankeiArtwork {
             path.addQuadCurve(to: CGPoint(x: 52, y: 162), control: CGPoint(x: 48, y: 142))
             path.addQuadCurve(to: CGPoint(x: 80, y: 158), control: CGPoint(x: 64, y: 174))
             path.closeSubpath()
-            shapes.append(VectorShape(path: path, fill: Color(red: 255 / 255.0, green: 226 / 255.0, blue: 89 / 255.0), usesBaseColor: false, stroke: Color(red: 36 / 255.0, green: 59 / 255.0, blue: 58 / 255.0), style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)))
+            shapes.append(VectorShape(path: path, fill: Color(red: 255 / 255.0, green: 226 / 255.0, blue: 89 / 255.0), usesBaseColor: true, stroke: Color(red: 36 / 255.0, green: 59 / 255.0, blue: 58 / 255.0), style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)))
         }
         return shapes
     }()
@@ -65,7 +65,7 @@ enum TankeiArtwork {
             path.addQuadCurve(to: CGPoint(x: 204, y: 162), control: CGPoint(x: 208, y: 142))
             path.addQuadCurve(to: CGPoint(x: 176, y: 158), control: CGPoint(x: 192, y: 174))
             path.closeSubpath()
-            shapes.append(VectorShape(path: path, fill: Color(red: 255 / 255.0, green: 226 / 255.0, blue: 89 / 255.0), usesBaseColor: false, stroke: Color(red: 36 / 255.0, green: 59 / 255.0, blue: 58 / 255.0), style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)))
+            shapes.append(VectorShape(path: path, fill: Color(red: 255 / 255.0, green: 226 / 255.0, blue: 89 / 255.0), usesBaseColor: true, stroke: Color(red: 36 / 255.0, green: 59 / 255.0, blue: 58 / 255.0), style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)))
         }
         return shapes
     }()
@@ -81,7 +81,7 @@ enum TankeiArtwork {
             path.addQuadCurve(to: CGPoint(x: 72, y: 135), control: CGPoint(x: 70, y: 195))
             path.addQuadCurve(to: CGPoint(x: 128, y: 78), control: CGPoint(x: 74, y: 78))
             path.closeSubpath()
-            shapes.append(VectorShape(path: path, fill: Color(red: 255 / 255.0, green: 226 / 255.0, blue: 89 / 255.0), usesBaseColor: false, stroke: Color(red: 36 / 255.0, green: 59 / 255.0, blue: 58 / 255.0), style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)))
+            shapes.append(VectorShape(path: path, fill: Color(red: 255 / 255.0, green: 226 / 255.0, blue: 89 / 255.0), usesBaseColor: true, stroke: Color(red: 36 / 255.0, green: 59 / 255.0, blue: 58 / 255.0), style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round)))
         }
         return shapes
     }()

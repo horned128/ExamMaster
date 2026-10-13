@@ -1,0 +1,47 @@
+{
+  "setID": "ap-2011-autumn",
+  "questions": [
+    {
+      "id": "ap-2011-autumn-q02",
+      "stem": "式A＋B×Cの逆ポーランド表記を選ぶ。",
+      "choices": [
+        "＋×CBA",
+        "×＋ABC",
+        "ABC×＋",
+        "CBA＋×"
+      ],
+      "correctIndex": 2,
+      "explanation": "逆ポーランド表記では演算子を二つの被演算子の後ろへ置く。元の式では乗算が先なので、B×CをBC×と表し、その結果をAへ足す。従ってA BC× ＋、空白を除くとABC×＋。スタックで読むとA、B、Cを積み、×でBとCの積、＋でAとの和を求める。CBA＋×はC×(B＋A)という別の式になる。",
+      "choiceExplanations": [
+        "演算子が前にあり、後置表記ではない。",
+        "演算子が前にあり、後置表記ではない。",
+        "先にBC×を計算し、その結果とAを足す。",
+        "AとBの和へCを掛け、優先順位が変わる。"
+      ],
+      "steps": [
+        "乗算B×CをBC×へ変換する。",
+        "Aと乗算結果を並べる。",
+        "最後に＋を置いてABC×＋とする。"
+      ],
+      "category": "アルゴリズム・データ構造",
+      "difficulty": 3,
+      "tags": [
+        "逆ポーランド表記"
+      ],
+      "concepts": [
+        "逆ポーランド表記"
+      ],
+      "accessibilityText": "式A＋B×Cの逆ポーランド表記を選ぶ。\nア：＋×CBA\nイ：×＋ABC\nウ：ABC×＋\nエ：CBA＋×",
+      "references": [],
+      "reusedFrom": "ap-2024-autumn-q03",
+      "review": {
+        "status": "reviewed-in-session",
+        "reviewedOn": "2026-10-13",
+        "reviewer": "Codex（制作内AI校閲）",
+        "notes": "この年度の公式原問画像の本文・条件・全4選択肢を個別に目視確認。ap-2024-autumn-q03の校閲済み説明の適用条件と選択肢の順が一致することを確認し再利用。公式正答との一致と読み上げ説明も確認。外部専門家校閲ではない。",
+        "sourceSnapshot": "acd5e3dcb3cb838b31e65f9130b6f1b38a8e437a3909c42d5ef5c5b6b9542041",
+        "editorialSnapshot": "3e221f8ef0050b2979ba2ed9e35131546f688757956e81e3f73d20734af5f69b"
+      }
+    }
+  ]
+}

@@ -4,12 +4,15 @@
 
 架空のベースサンプルと、制作中のネットワークスペシャリスト専用アプリを含みます。共通コードは複製せず、資格別ターゲット・設定・教材で独立アプリを作ります。
 
-公開シリーズ名は「ピヨトレ！」。アプリ名は「ピヨトレ！＋資格名」で統一します。現在のネットワーク版は**ピヨトレ！ネットワークスペシャリスト**。今後の名称は「ピヨトレ！応用情報技術者」「ピヨトレ！システムアーキテクト」などとし、資格ごとに独立した教材・商品・Bundle IDを設定します。将来の資格版のターゲットや教材はまだ追加していません。
+公開シリーズ名は「ピヨトレ！」。アプリ名は「ピヨトレ！＋資格名」で統一します。**ピヨトレ！ネットワークスペシャリスト**に加え、**ピヨトレ！応用情報技術者**の開発用ターゲット・教材を追加しています。資格ごとに独立した教材・商品・Bundle IDを設定します。
 
 | Scheme | 資格 | Bundle ID | 問題 / 無料 |
 | --- | --- | --- | --- |
 | `ExamMaster` | 設備安全管理士（架空） | `jp.example.exammaster.demo` | 32 / 12 |
-| `NetworkSpecialist` | ネットワークスペシャリスト（制作中） | `jp.example.exammaster.networkspecialist` | 375 / 75 |
+| `NetworkSpecialist` | ネットワークスペシャリスト | `jp.hino.piyotre.networkspecialist` | 375 / 75 |
+| `AppliedInformation` | 応用情報技術者（開発版） | `jp.hino.piyotre.appliedinformation` | 2,880 / 160 |
+
+応用情報版は科目A専用で、公式33回2,640問と2026年オリジナル予想問題3セット240問を収録。校閲済み522問を本文・選択肢のテキスト表示へ変更し、表はUI、必要な図だけ画像にしています。残り2,118問は詳細解説・原問校合・テキスト化を制作中。科目Bの機能・教材は削除しました。配色はラベンダー系、各模試80問・150分。App Store登録・審査は保留。[制作状況と検証](docs/applied-information/STATUS.md)を参照してください。
 
 **設備安全管理士は架空の教材です。NWは375問（無料75・有料300）の教材を収録し、公開準備中です。** 対象は2013〜2025年の過去問300問（2020年は対象公開なし）と、オリジナル2026年予想問題の第1〜3回・計75問。全12年度と予想3回は各25問・40分の固定模試です。2010年問23はアプリから外し、制作資料をarchiveへ保管しました。回答済みの履歴は保持します。
 
@@ -76,13 +79,15 @@ UI、出題計画、習熟計算、端末保存、決済、広告は別ファイ
 
 ### アイコンと資格ごとの色
 
-`Qualifications/<id>/qualification.json` の `name` が資格名、任意の `brandName` がシリーズ名です。アプリ内の表示名は`brandName + name`で組み立て、ホームではブランドと資格名を2行にします。未指定なら従来の資格名のみ表示。`project.yml`の`displayName`とApp Storeの販売名も同じ全文にそろえてください。アイコンは資格名または`iconTitle`を使います。`mascotBaseHex` がチキンのベースカラーです。未指定なら原案の `#FFF3DA`。アプリ内の若鶏／チキンの全画面と、アイコンの顔に共通で反映します。ひよこ・顔の細部・輪郭は原案色。背景は `accentHex` の淡い色。長い資格名は自動で2行に分け、必要なら任意の `iconTitle` に短縮名や `\n` で2行の名前を指定できます。
+`Qualifications/<id>/qualification.json` の `name` が資格名、任意の `brandName` がシリーズ名です。アプリ内の表示名は`brandName + name`で組み立て、ホームではブランドと資格名を2行にします。未指定なら従来の資格名のみ表示。`project.yml`の`displayName`とApp Storeの販売名も同じ全文にそろえてください。アイコンは資格名または`iconTitle`を使います。`mascotBaseHex` がチキンのベースカラーです。未指定なら原案の `#FFF3DA`。アプリ内の若鶏／チキンの全画面と、アイコンの顔に共通で反映します。ひよこは `chickBaseHex` の未指定時に原案色を使い、顔の細部・輪郭は原案色を維持します。アイコン背景は `theme.backgroundLight`、未指定時は `accentHex` の淡い色。長い資格名は自動で2行に分け、必要なら任意の `iconTitle` に短縮名や `\n` で2行の名前を指定できます。
 
 ```sh
 python3 tools/GenerateMascot.py
 swift tools/GenerateIcon.swift Qualifications/demo-safety/qualification.json Assets.xcassets/AppIcon.appiconset/AppIcon.png
 swift tools/GenerateIcon.swift Qualifications/demo-safety/qualification.json Assets.xcassets/AppIcon.appiconset/AppIcon.png --check
 ```
+
+`chickBaseHex` でひよこの体・羽のベース色も変更できます。未指定の場合は原案の黄色を維持します。任意の `theme` で背景・カード・境界・補助文字・学習状態の色をライト／ダーク別に変更でき、未指定の資格は従来の配色を維持します。応用情報版の設定が実例です。
 
 名前や色の変更後はビルドするだけでアイコンも自動再生成します（iOSのホーム画面アイコンはビルド時の画像です）。上のコマンドは手動プレビューと整合性確認用。別資格でもスクリプトやSwiftUIコードの編集は不要です。
 

@@ -1,15 +1,24 @@
 import SwiftUI
 
 enum Palette {
+    private static let theme: QualificationTheme? = {
+        guard let url = Bundle.main.url(forResource: "qualification", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else { return nil }
+        return (try? JSONDecoder().decode(Qualification.self, from: data))?.theme
+    }()
     static let ink = Color.primary
-    static let muted = adaptive(light: 0x636B65, dark: 0xB5BEB7)
-    static let background = adaptive(light: 0xF5F4F0, dark: 0x181C1A)
-    static let surface = adaptive(light: 0xFFFFFF, dark: 0x242A26)
-    static let border = adaptive(light: 0xE2E5DF, dark: 0x465048)
-    static let track = adaptive(light: 0xE6E9E3, dark: 0x3C453E)
-    static let positive = adaptive(light: 0x326D4F, dark: 0xA0D7B5)
-    static let review = adaptive(light: 0x87592D, dark: 0xE5BC8F)
-    static let growing = adaptive(light: 0x738D80, dark: 0x7D9C8B)
+    static let muted = adaptive(light: hex(theme?.mutedLight, fallback: 0x636B65), dark: hex(theme?.mutedDark, fallback: 0xB5BEB7))
+    static let background = adaptive(light: hex(theme?.backgroundLight, fallback: 0xF5F4F0), dark: hex(theme?.backgroundDark, fallback: 0x181C1A))
+    static let surface = adaptive(light: hex(theme?.surfaceLight, fallback: 0xFFFFFF), dark: hex(theme?.surfaceDark, fallback: 0x242A26))
+    static let border = adaptive(light: hex(theme?.borderLight, fallback: 0xE2E5DF), dark: hex(theme?.borderDark, fallback: 0x465048))
+    static let track = adaptive(light: hex(theme?.trackLight, fallback: 0xE6E9E3), dark: hex(theme?.trackDark, fallback: 0x3C453E))
+    static let positive = adaptive(light: hex(theme?.positiveLight, fallback: 0x326D4F), dark: hex(theme?.positiveDark, fallback: 0xA0D7B5))
+    static let review = adaptive(light: hex(theme?.reviewLight, fallback: 0x87592D), dark: hex(theme?.reviewDark, fallback: 0xE5BC8F))
+    static let growing = adaptive(light: hex(theme?.growingLight, fallback: 0x738D80), dark: hex(theme?.growingDark, fallback: 0x7D9C8B))
+
+    private static func hex(_ value: String?, fallback: Int) -> Int {
+        value.flatMap { Int($0.dropFirst(), radix: 16) } ?? fallback
+    }
 
     private static func adaptive(light: Int, dark: Int) -> Color {
         Color(uiColor: UIColor { traits in

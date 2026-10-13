@@ -9,7 +9,15 @@ private struct TankeiBaseColorKey: EnvironmentKey {
     static let defaultValue = Palette.accent(TankeiPalette.defaultChickenHex)
 }
 
+private struct TankeiChickColorKey: EnvironmentKey {
+    static let defaultValue: Color? = nil
+}
+
 extension EnvironmentValues {
+    var mascotChickColor: Color? {
+        get { self[TankeiChickColorKey.self] }
+        set { self[TankeiChickColorKey.self] = newValue }
+    }
     var mascotBaseColor: Color {
         get { self[TankeiBaseColorKey.self] }
         set { self[TankeiBaseColorKey.self] = newValue }
@@ -182,6 +190,7 @@ struct TankeiView: View {
 
 private struct TankeiDrawing: View {
     @Environment(\.mascotBaseColor) private var baseColor
+    @Environment(\.mascotChickColor) private var chickColor
     let state: TankeiState
     let stage: TankeiStage
     let size: CGFloat
@@ -208,9 +217,9 @@ private struct TankeiDrawing: View {
                 var body = transformed(rig, degrees: pose.head + frame.nod, x: 128, y: 183)
                 var left = transformed(body, degrees: wing, x: 78, y: 144, scale: proportions.wingScale)
                 var right = transformed(body, degrees: -wing, x: 178, y: 144, scale: proportions.wingScale)
-                TankeiArtwork.chickWingLeft(&left)
-                TankeiArtwork.chickWingRight(&right)
-                TankeiArtwork.chickBody(&body)
+                TankeiArtwork.chickWingLeft(&left, baseColor: chickColor)
+                TankeiArtwork.chickWingRight(&right, baseColor: chickColor)
+                TankeiArtwork.chickBody(&body, baseColor: chickColor)
                 var fluff = transformed(body, degrees: frame.tail * 0.5, x: 128, y: 78)
                 TankeiArtwork.chickFluff(&fluff)
                 var eyes = transformed(body, x: 128, y: 124, scaleY: pose.eyes * frame.eyeScale)

@@ -1,0 +1,262 @@
+{
+  "setID": "ap-2013-autumn",
+  "questions": [
+    {
+      "id": "ap-2013-autumn-q04",
+      "stem": "PとQがともに真のとき、Rの真偽にかかわらず真になる論理式を選ぶ。¬は否定、∨は論理和、∧は論理積、→は含意で、含意は真→偽のときだけ偽となる。",
+      "choices": [
+        "((P→Q)∧(Q→P))→(R→¬Q)",
+        "((P→Q)∧¬(Q→¬P))→(Q→R)",
+        "((P→¬Q)∨(Q→P))→(R→¬Q)",
+        "((P→¬Q)∨(Q→¬P))→(Q→R)"
+      ],
+      "correctIndex": 3,
+      "explanation": "P＝Q＝真を代入して、外側の含意の前件を先に評価する。エのP→¬QとQ→¬Pはいずれも真→偽で偽。その論理和も偽なので、外側は偽→(Q→R)となり、Rの値に関係なく真となる。アとウは前件が真で、Rが真なら後件R→¬Qが偽。イも前件が真で、Rが偽なら後件Q→Rが偽となる。イの否定線はQ→¬P全体に掛かっていることにも注意する。",
+      "choiceExplanations": [
+        "P→QとQ→Pは真。Rが真ならR→¬Qが偽となる。",
+        "Q→¬Pは偽で、その式全体の否定は真。外側の前件は真なのでRが偽なら式も偽。",
+        "前件は偽∨真＝真。Rが真なら後件が偽。",
+        "前件が偽∨偽＝偽なので、含意はRに関係なく真。"
+      ],
+      "steps": [
+        "PとQへ真、¬Pと¬Qへ偽を代入する。",
+        "外側の含意の前件を評価する。",
+        "前件が偽なら含意は必ず真であることを使う。"
+      ],
+      "category": "基礎理論",
+      "difficulty": 3,
+      "tags": [
+        "含意の真理値"
+      ],
+      "concepts": [
+        "含意の真理値"
+      ],
+      "accessibilityText": "PとQがともに真のとき、Rの真偽にかかわらず真になる論理式を選ぶ。¬は否定、∨は論理和、∧は論理積、→は含意で、含意は真→偽のときだけ偽となる。\nア：((P→Q)∧(Q→P))→(R→¬Q)\nイ：((P→Q)∧¬(Q→¬P))→(Q→R)\nウ：((P→¬Q)∨(Q→P))→(R→¬Q)\nエ：((P→¬Q)∨(Q→¬P))→(Q→R)",
+      "references": [],
+      "reusedFrom": "ap-2025-spring-q01",
+      "review": {
+        "status": "reviewed-in-session",
+        "reviewedOn": "2026-10-13",
+        "reviewer": "Codex（制作内AI校閲）",
+        "notes": "この年度の公式原問画像の本文・条件・全4選択肢を個別に目視確認。ap-2025-spring-q01の校閲済み説明の適用条件と選択肢の順が一致することを確認し再利用。公式正答との一致と読み上げ説明も確認。外部専門家校閲ではない。",
+        "sourceSnapshot": "b4ec9ad88c60ff2c7463e5a1a7771fa848005526a19cefcdecf216518fc8245b",
+        "editorialSnapshot": "aa2ff7d89c117011b6e661c2d8dd1dbbb8303fd233d71a7bf2106ea6c5212c88"
+      }
+    },
+    {
+      "id": "ap-2013-autumn-q21",
+      "stem": "配布時のソース提供について、表のa〜dへGPL・LGPL・MPL・BSDを対応付ける。表は、改変したOSSではa,b,cが必要でdは不要、静的リンクしたプログラムではa,bが必要でc,dは不要、動的リンクではaだけ必要でb,c,dは不要としている。",
+      "choices": [
+        "a GPL・b LGPL・c MPL・d BSD",
+        "a GPL・b MPL・c BSD・d LGPL",
+        "a LGPL・b GPL・c MPL・d BSD",
+        "a LGPL・b MPL・c BSD・d GPL"
+      ],
+      "correctIndex": 0,
+      "explanation": "本問の表は、強いコピーレフトのGPL、ライブラリを中心とするLGPL、ファイル単位のMPL、公開義務を課さない許諾型BSDという順に整理したもの。公式正答はア。実務上は表を「全プログラムのソースを常に一般公開する義務」と読み替えない。LGPLの静的リンクは、対象ライブラリの対応ソースと再リンク可能なアプリのオブジェクト等を提供して条件を満たせる場合があり、独自アプリのソース全部の開示が必須とは限らない。MPLも対象ファイルのソース提供義務があり、組み合わせた全ファイルへの義務ではない。版・結合方法・配布相手に応じた原文条件を確認する。",
+      "choiceExplanations": [
+        "表の想定するGPL→LGPL→MPL→BSDの順に合う。公開範囲やLGPLの再リンク条件は解説の注意を参照。",
+        "MPLは表のbではなくc、BSDはd、LGPLはbに対応する。",
+        "表の動的リンクの欄はGPLをaに置く整理で、LGPLと入れ替えている。",
+        "GPLを公開義務なしのdとするのは適切でない。"
+      ],
+      "steps": [
+        "表のコピーレフトの範囲を強いものから対応付ける。",
+        "a GPL、b LGPL、c MPL、d BSDで公式正答を確認する。",
+        "一般公開と受領者への提供、全体ソースと対象部分・再リンク資料を区別する。"
+      ],
+      "category": "法務",
+      "difficulty": 3,
+      "tags": [
+        "OSSライセンス"
+      ],
+      "concepts": [
+        "OSSライセンス"
+      ],
+      "accessibilityText": "配布時のソース提供について、表のa〜dへGPL・LGPL・MPL・BSDを対応付ける。表は、改変したOSSではa,b,cが必要でdは不要、静的リンクしたプログラムではa,bが必要でc,dは不要、動的リンクではaだけ必要でb,c,dは不要としている。\n図表：表の必要・不要の組は、OSS改変:○○○×、静的リンク:○○××、動的リンク:○×××。列はa,b,c,d。\nア：a GPL・b LGPL・c MPL・d BSD\nイ：a GPL・b MPL・c BSD・d LGPL\nウ：a LGPL・b GPL・c MPL・d BSD\nエ：a LGPL・b MPL・c BSD・d GPL",
+      "references": [
+        "https://www.gnu.org/licenses/gpl-faq.html#LGPLStaticVsDynamic",
+        "https://www.mozilla.org/en-US/MPL/2.0/FAQ/"
+      ],
+      "reusedFrom": "ap-2025-spring-q16",
+      "review": {
+        "status": "reviewed-in-session",
+        "reviewedOn": "2026-10-13",
+        "reviewer": "Codex（制作内AI校閲）",
+        "notes": "この年度の公式原問画像の本文・条件・全4選択肢を個別に目視確認。ap-2025-spring-q16の校閲済み説明の適用条件と選択肢の順が一致することを確認し再利用。公式正答との一致と読み上げ説明も確認。外部専門家校閲ではない。",
+        "sourceSnapshot": "2e9a289d5121d456eae449dbf5aeaa1e1cd564617ff6fe9ed0488597a68264b1",
+        "editorialSnapshot": "1ef6d4a642125fa95ab5c17f500e168a0092b834390de0df266bb817af9db83e"
+      }
+    },
+    {
+      "id": "ap-2013-autumn-q29",
+      "stem": "関係を第2正規形から第3正規形へ変換するための手順を選ぶ。",
+      "choices": [
+        "候補キー以外の属性から候補キーの一部への関数従属を分解する",
+        "候補キー以外の属性間の関数従属を分解する",
+        "候補キーの一部から候補キー以外の属性への関数従属を分解する",
+        "一つの属性の複数の値を単一の値へ分解する"
+      ],
+      "correctIndex": 1,
+      "explanation": "第2正規形は候補キーの一部への非キー属性の部分関数従属を除いた状態。第3正規形へ進める基本的な手順は、非キー属性間の従属による推移的な関数従属を分離すること。例えば社員番号→部署番号→部署名なら、部署番号と部署名を部署表へ分ける。原問の候補キー以外の属性という表現は、キーに含まれない属性として読む。複数値の除去や部分従属の除去は、前段階の正規化と区別する。",
+      "choiceExplanations": [
+        "キー側へ向かう従属で、非キー属性の推移的従属を除く手順ではない。",
+        "キー→非キー属性→別の非キー属性という推移的従属を分離する。",
+        "第1正規形から第2正規形へ進める部分従属の除去。",
+        "第1正規形にするための値の原子化に対応する。"
+      ],
+      "steps": [
+        "第2正規形では部分従属が除かれていると確認する。",
+        "非キー属性同士の従属を探す。",
+        "推移的従属を別の関係へ分離する。"
+      ],
+      "category": "データベース",
+      "difficulty": 3,
+      "tags": [
+        "第3正規形"
+      ],
+      "concepts": [
+        "第3正規形"
+      ],
+      "accessibilityText": "関係を第2正規形から第3正規形へ変換するための手順を選ぶ。\nア：候補キー以外の属性から候補キーの一部への関数従属を分解する\nイ：候補キー以外の属性間の関数従属を分解する\nウ：候補キーの一部から候補キー以外の属性への関数従属を分解する\nエ：一つの属性の複数の値を単一の値へ分解する",
+      "references": [],
+      "reusedFrom": "ap-2025-spring-q26",
+      "review": {
+        "status": "reviewed-in-session",
+        "reviewedOn": "2026-10-13",
+        "reviewer": "Codex（制作内AI校閲）",
+        "notes": "この年度の公式原問画像の本文・条件・全4選択肢を個別に目視確認。ap-2025-spring-q26の校閲済み説明の適用条件と選択肢の順が一致することを確認し再利用。公式正答との一致と読み上げ説明も確認。外部専門家校閲ではない。",
+        "sourceSnapshot": "78b2cab58ed5399ae92b5bb37cb1c17c9adf1c56fb117a88708296452b527b1d",
+        "editorialSnapshot": "33f76cd065dc976f20327ec4b2384677808599b431dc6250d577ddead00d9cfb"
+      }
+    },
+    {
+      "id": "ap-2013-autumn-q37",
+      "stem": "IPv6でPCとサーバが通信するとき、ネットワーク層で暗号化する仕組みを選ぶ。",
+      "choices": [
+        "IPsec",
+        "PPP",
+        "SSH",
+        "SSL"
+      ],
+      "correctIndex": 0,
+      "explanation": "IPsecはIP層で認証や暗号化を提供する仕組みで、暗号化にはESPを用いる。AHは認証・完全性を提供し暗号化しないため、IPsecの全ての構成が秘匿するわけではない。PPPはデータリンク層の2点間接続、SSHは安全なリモートログイン等、選択肢のSSL（現在は後継のTLS）はアプリの通信路を保護する仕組みで、設問のIP・ネットワーク層の暗号化とは異なる。IPv6でも暗号化が自動的に全通信へ有効になるわけではない。",
+      "choiceExplanations": [
+        "ESP等によりIP層で通信を暗号化する仕組み。",
+        "データリンク層の接続プロトコルで、IP層暗号化の名称ではない。",
+        "リモート操作等の安全なアプリケーションプロトコル。",
+        "SSLは上位層の通信を保護する仕組みで、ネットワーク層のIPsecとは異なる。現在は後継のTLSを用い、旧SSLは使わない。"
+      ],
+      "steps": [
+        "要求がネットワーク層の保護であると確認する。",
+        "IPsecのESPによる暗号化を選ぶ。",
+        "IPv6を使うだけで暗号化されるという解釈を避ける。"
+      ],
+      "category": "セキュリティ",
+      "difficulty": 3,
+      "tags": [
+        "ネットワーク層の暗号化"
+      ],
+      "concepts": [
+        "ネットワーク層の暗号化"
+      ],
+      "accessibilityText": "IPv6でPCとサーバが通信するとき、ネットワーク層で暗号化する仕組みを選ぶ。\nア：IPsec\nイ：PPP\nウ：SSH\nエ：SSL",
+      "references": [
+        "https://www.rfc-editor.org/rfc/rfc4301.html"
+      ],
+      "reusedFrom": "ap-2024-spring-q42",
+      "review": {
+        "status": "reviewed-in-session",
+        "reviewedOn": "2026-10-13",
+        "reviewer": "Codex（制作内AI校閲）",
+        "notes": "この年度の公式原問画像の本文・条件・全4選択肢を個別に目視確認。ap-2024-spring-q42の校閲済み説明の適用条件と選択肢の順が一致することを確認し再利用。公式正答との一致と読み上げ説明も確認。外部専門家校閲ではない。原問のエはSSLなので現行TLSへ置き換えず保持し、後継TLSを説明で補足。",
+        "sourceSnapshot": "b650b66c10f2c788fd5396822c28ccd78aa27bb9250690cbcd10a3a6446f7d58",
+        "editorialSnapshot": "18517099bbcc4b9b51a8613b0beb0e381ace08dcc83586eb8ead613878127011"
+      }
+    },
+    {
+      "id": "ap-2013-autumn-q68",
+      "stem": "マーケティングの4PのPromotionに対応する、顧客側の4Cの要素を選ぶ。",
+      "choices": [
+        "Customer Value",
+        "Customer Cost（顧客コスト）",
+        "Communication",
+        "Convenience"
+      ],
+      "correctIndex": 2,
+      "explanation": "4Pを提供側、4Cを顧客側の視点として対応付ける。Productは顧客価値、Priceは顧客にとっての費用、Placeは入手の利便性、Promotionは顧客とのコミュニケーションに対応する。Promotionを一方向の広告だけとして見るのではなく、顧客との情報のやり取りとして捉えるのが4Cの視点である。",
+      "choiceExplanations": [
+        "Productに対応する顧客価値。",
+        "Priceに対応する顧客の費用。",
+        "Promotionに対応するコミュニケーション。",
+        "Placeに対応する利便性。"
+      ],
+      "steps": [
+        "4Pと4Cの視点の違いを確認する。",
+        "Product→価値、Price→費用、Place→利便性を整理する。",
+        "Promotion→Communicationを選ぶ。"
+      ],
+      "category": "経営戦略",
+      "difficulty": 3,
+      "tags": [
+        "マーケティング4P・4C"
+      ],
+      "concepts": [
+        "マーケティング4P・4C"
+      ],
+      "accessibilityText": "マーケティングの4PのPromotionに対応する、顧客側の4Cの要素を選ぶ。\nア：Customer Value\nイ：Customer Cost（顧客コスト）\nウ：Communication\nエ：Convenience",
+      "references": [],
+      "reusedFrom": "ap-2025-autumn-q67",
+      "review": {
+        "status": "reviewed-in-session",
+        "reviewedOn": "2026-10-13",
+        "reviewer": "Codex（制作内AI校閲）",
+        "notes": "この年度の公式原問画像の本文・条件・全4選択肢を個別に目視確認。ap-2025-autumn-q67の校閲済み説明の適用条件と選択肢の順が一致することを確認し再利用。公式正答との一致と読み上げ説明も確認。外部専門家校閲ではない。原問のイはCustomer Cost（顧客コスト）なので、その表記を保持。",
+        "sourceSnapshot": "f3d8eec90b2fa477c95ffc0ed234cd4b3695960cad85155b677adfd3bc39621b",
+        "editorialSnapshot": "1d81894081e483c35e3b8d339a5dcf6aeb0c45dbcd4e3060c6cdb84566fccfe4"
+      }
+    },
+    {
+      "id": "ap-2013-autumn-q76",
+      "stem": "今年2500台、単価200千円、固定費150000千円、変動費100千円/台。来年固定費5％増・単価5％減で変動費は同じ。同じ営業利益を得る最低台数を選ぶ。",
+      "choices": [
+        "2575台",
+        "2750台",
+        "2778台",
+        "2862台"
+      ],
+      "correctIndex": 3,
+      "explanation": "今年の営業利益は(200−100)×2500−150000＝100000千円。来年の単価190、固定費157500なので、台数nに対し利益は(190−100)n−157500。これが100000以上となる条件は90n≧257500、n≧2861.111…で、整数の最低は2862台。2861台では99990千円で10千円不足する。5％増減が異なる費用・単価に掛かるため、台数を一律5％増やす計算ではない。",
+      "choiceExplanations": [
+        "固定費増の影響だけ等を考え、単価低下を十分反映しない。",
+        "10％程度の一律増加では、単価と固定費の変化に対応できない。",
+        "固定費据置き等の計算に近く、正しい必要台数2862を満たさない。",
+        "必要台数2861.111…を切り上げる最小の整数。"
+      ],
+      "steps": [
+        "今年の利益100000千円を求める。",
+        "来年の限界利益単価90と固定費157500を求める。",
+        "90n−157500≧100000を解き、2862へ切り上げる。"
+      ],
+      "category": "企業活動",
+      "difficulty": 3,
+      "tags": [
+        "目標利益を確保する販売台数"
+      ],
+      "concepts": [
+        "目標利益を確保する販売台数"
+      ],
+      "accessibilityText": "今年2500台、単価200千円、固定費150000千円、変動費100千円/台。来年固定費5％増・単価5％減で変動費は同じ。同じ営業利益を得る最低台数を選ぶ。\n図表：今年度の表と増減率は本文に記載。金額は千円単位で統一。\nア：2575台\nイ：2750台\nウ：2778台\nエ：2862台",
+      "references": [],
+      "reusedFrom": "ap-2024-spring-q76",
+      "review": {
+        "status": "reviewed-in-session",
+        "reviewedOn": "2026-10-13",
+        "reviewer": "Codex（制作内AI校閲）",
+        "notes": "この年度の公式原問画像の本文・条件・全4選択肢を個別に目視確認。ap-2024-spring-q76の校閲済み説明の適用条件と選択肢の順が一致することを確認し再利用。公式正答との一致と読み上げ説明も確認。外部専門家校閲ではない。",
+        "sourceSnapshot": "0aa080097d0653a8aaf55798c4fcb980d12d5e60c01d832ad418309f7733e70b",
+        "editorialSnapshot": "a2b14154f7a4664ab1f1257fc6853cb0187949532a5eb76166e74c90df2625e3"
+      }
+    }
+  ]
+}

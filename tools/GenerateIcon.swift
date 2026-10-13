@@ -94,9 +94,11 @@ func generate(configuration: URL) throws -> Data {
     NSGraphicsContext.current = graphics
     let context = graphics.cgContext
     context.setShouldAntialias(true)
-    NSColor(srgbRed: 0.90 + accent.redComponent * 0.10,
+    let defaultBackground = NSColor(srgbRed: 0.90 + accent.redComponent * 0.10,
             green: 0.90 + accent.greenComponent * 0.10,
-            blue: 0.90 + accent.blueComponent * 0.10, alpha: 1).setFill()
+            blue: 0.90 + accent.blueComponent * 0.10, alpha: 1)
+    let backgroundHex = (config["theme"] as? [String: Any])?["backgroundLight"] as? String
+    (try backgroundHex.map(color) ?? defaultBackground).setFill()
     NSRect(x: 0, y: 0, width: 1024, height: 1024).fill()
 
     context.saveGState()

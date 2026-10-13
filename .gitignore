@@ -14,3 +14,8 @@ release-artifacts/
 *.p8
 *.p12
 *.mobileprovision
+docs/applied-information/evidence/
+tools/applied-information/__pycache__/
+
+# 共通リリースCLIのローカル操作記録
+.submitdock/

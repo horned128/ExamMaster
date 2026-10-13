@@ -22,6 +22,8 @@ struct Qualification: Codable {
     var usesFixedMocks: Bool? = nil
     var contentCredit: String? = nil
     var brandName: String? = nil
+    var chickBaseHex: String? = nil
+    var theme: QualificationTheme? = nil
 
     var appDisplayName: String { (brandName ?? "") + name }
     var originalContentLabel: String { "\(brandName ?? "ExamMaster") オリジナル" }
@@ -140,6 +142,8 @@ struct Catalog {
               qualification.minimumSubjectPercent <= qualification.passingPercent,
               qualification.accentHex.range(of: "^#[0-9A-Fa-f]{6}$", options: .regularExpression) != nil,
               qualification.mascotColorHex.range(of: "^#[0-9A-Fa-f]{6}$", options: .regularExpression) != nil,
+              qualification.chickBaseHex.map(QualificationTheme.validHex) ?? true,
+              qualification.theme?.isValid ?? true,
               !qualification.iconDisplayTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               !qualification.subjects.isEmpty, Set(qualification.subjects).count == qualification.subjects.count,
               !qualification.productID.isEmpty, qualification.ads.isValid,
@@ -178,6 +182,36 @@ struct Catalog {
         self.qualification = qualification
         self.questions = bank.questions
         self.mockSets = sets
+    }
+}
+
+/// Optional per-qualification colours keep existing apps' appearance intact.
+struct QualificationTheme: Codable {
+    let backgroundLight: String
+    let backgroundDark: String
+    let surfaceLight: String
+    let surfaceDark: String
+    let borderLight: String
+    let borderDark: String
+    let trackLight: String
+    let trackDark: String
+    let mutedLight: String
+    let mutedDark: String
+    var positiveLight: String? = nil
+    var positiveDark: String? = nil
+    var reviewLight: String? = nil
+    var reviewDark: String? = nil
+    var growingLight: String? = nil
+    var growingDark: String? = nil
+
+    static func validHex(_ value: String) -> Bool {
+        value.range(of: "^#[0-9A-Fa-f]{6}$", options: .regularExpression) != nil
+    }
+    var isValid: Bool {
+        [backgroundLight, backgroundDark, surfaceLight, surfaceDark, borderLight, borderDark,
+         trackLight, trackDark, mutedLight, mutedDark].allSatisfy(Self.validHex) &&
+        [positiveLight, positiveDark, reviewLight, reviewDark, growingLight, growingDark]
+            .compactMap { $0 }.allSatisfy(Self.validHex)
     }
 }
 

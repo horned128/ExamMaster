@@ -131,6 +131,46 @@ targetTemplates:
         PRODUCT_NAME: ${target_name}
         ENABLE_USER_SCRIPT_SANDBOXING: NO
 targets:
+  AppliedInformation:
+    templates: [QualificationApp]
+    templateAttributes:
+      qualificationID: applied-information
+      privacyPolicyPath: Qualifications/applied-information/PrivacyPolicy.txt
+      displayName: ピヨトレ！応用情報技術者
+      bundleID: jp.hino.piyotre.appliedinformation
+      iconName: AppliedInformationIcon
+      adMobAppID: ca-app-pub-3940256099942544~1458002511
+    settings:
+      base:
+        CODE_SIGN_IDENTITY: iPhone Developer
+        DEVELOPMENT_TEAM: QZH83KGFVX
+    sources:
+      - path: Qualifications/applied-information/Figures
+        type: folder
+        buildPhase: resources
+    scheme:
+      testTargets: [AppliedInformationTests, AppliedInformationUITests]
+      storeKitConfiguration: Qualifications/applied-information/products.storekit
+  AppliedInformationTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: AppliedTests
+      - path: Qualifications/applied-information/products.storekit
+    dependencies:
+      - target: AppliedInformation
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.hino.piyotre.appliedinformation.tests
+  AppliedInformationUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [AppliedUITests]
+    dependencies:
+      - target: AppliedInformation
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.hino.piyotre.appliedinformation.uitests
   ExamMaster:
     templates: [QualificationApp]
     templateAttributes:

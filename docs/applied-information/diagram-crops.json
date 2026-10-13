@@ -1,0 +1,86 @@
+[
+  {
+    "asset": "ap-2025-autumn-q22-diagram.jpg",
+    "booklet": "2025r07a_ap_am_qs.pdf",
+    "page": 13,
+    "box": [
+      0.10095,
+      0.4457021624857793,
+      0.9140499999999999,
+      0.7269158870627541
+    ],
+    "sha256": "1dc3ed2ab2cf96890e4863849015c73962708c944dea8f5f7f7e7158390bbdfa"
+  },
+  {
+    "asset": "ap-2025-spring-q06-diagram.jpg",
+    "booklet": "2025r07h_ap_am_qs.pdf",
+    "page": 6,
+    "box": [
+      0.10095,
+      0.14670356123892644,
+      0.9140499999999999,
+      0.8596207017367835
+    ],
+    "sha256": "f18b8ba87654c2ff394f9b65b69a09e83b56753d07de8ba05f8a5f87023af5cf"
+  },
+  {
+    "asset": "ap-2024-autumn-q21-diagram.jpg",
+    "booklet": "2024r06a_ap_am_qs.pdf",
+    "page": 12,
+    "box": [
+      0.10095,
+      0.2647615170009456,
+      0.9140499999999999,
+      0.894298995055971
+    ],
+    "sha256": "de714fdab0b57eb03da26a80262112fa120e2489fbb98a2a8c9661a3386ad5cc"
+  },
+  {
+    "asset": "ap-2024-spring-q21-diagram.jpg",
+    "booklet": "2024r06h_ap_am_qs.pdf",
+    "page": 14,
+    "box": [
+      0.10095,
+      0.4430642085112629,
+      0.9140499999999999,
+      0.7212800472221628
+    ],
+    "sha256": "ef8b2d23a5fe6d645e415937df824a746a002cd70b5183e90077213939f6efae"
+  },
+  {
+    "asset": "ap-2024-spring-q47-diagram.jpg",
+    "booklet": "2024r06h_ap_am_qs.pdf",
+    "page": 25,
+    "box": [
+      0.10095,
+      0.15677312293555487,
+      0.9140499999999999,
+      0.51944315612885
+    ],
+    "sha256": "2dc5c414db30dbcd0f42f3d6dacfa168da9cb41f85d162473c5ba4415302ee74"
+  },
+  {
+    "asset": "ap-2023-autumn-q22-diagram.jpg",
+    "booklet": "2023r05a_ap_am_qs.pdf",
+    "page": 13,
+    "box": [
+      0.36910000000000004,
+      0.45332074705892583,
+      0.6632,
+      0.5755300411425454
+    ],
+    "sha256": "6cbf15af853d5e6e0c3a750731c748a9067e65336f189d637fdfba7b5c17f12b"
+  },
+  {
+    "asset": "ap-2023-autumn-q23-diagram.jpg",
+    "booklet": "2023r05a_ap_am_qs.pdf",
+    "page": 14,
+    "box": [
+      0.11825,
+      0.3700920756802115,
+      0.8967499999999999,
+      0.6913641510353874
+    ],
+    "sha256": "5076136bdf144ebe0d285c9a9fb978aea3d2771a5880481cfd9c88504a147e43"
+  }
+]

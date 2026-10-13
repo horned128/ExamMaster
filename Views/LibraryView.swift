@@ -121,7 +121,7 @@ struct PredictionLibraryView: View {
                 Surface(inset: 16) {
                     VStack(alignment: .leading, spacing: 6) {
                         Label("\(sets.count)セットから選ぶ", systemImage: "square.stack").font(.headline)
-                        Text("各25問・40分。問題を選んで練習、または模擬試験へ。")
+                        Text("各\(catalog.qualification.mockQuestionCount)問・\(catalog.qualification.examMinutes)分。問題を選んで練習、または模擬試験へ。")
                             .font(.caption).foregroundStyle(Palette.muted)
                         Text(catalog.qualification.originalContentLabel).font(.caption2).foregroundStyle(Palette.muted)
                     }.frame(maxWidth: .infinity, alignment: .leading)
@@ -162,6 +162,58 @@ struct PredictionLibraryView: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(set.title)、\(set.questionCount)問、\(set.minutes)分、\(locked ? "有料、ロック中" : "学習済み\(learned)問")")
+    }
+}
+
+/// Spring/autumn (or special) administrations remain independent 80-question exams.
+struct PastMockLibraryView: View {
+    let year: Int
+    let catalog: Catalog
+    let store: StudyStore
+    let purchase: PurchaseManager
+    let paywall: () -> Void
+    private var sets: [MockSet] {
+        catalog.mockSets.filter { set in
+            set.kind == .past && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id }
+        }.sorted { $0.id > $1.id }
+    }
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Surface {
+                    Label("試験の回を選ぶ", systemImage: "calendar").font(.headline)
+                    Text("各回の原問と公式正答で練習。模擬試験は\(catalog.qualification.mockQuestionCount)問・\(catalog.qualification.examMinutes)分です。")
+                        .font(.subheadline).foregroundStyle(Palette.muted)
+                }
+                ForEach(sets) { set in
+                    let free = Set(set.questionIDs).isSubset(of: Set(catalog.qualification.freeQuestionIDs))
+                    if purchase.unlocked || free {
+                        NavigationLink(value: QuestionCollectionRoute.mockSet(set.id)) { card(set, locked: false) }
+                            .accessibilityIdentifier("pastSet-\(set.id)")
+                    } else {
+                        Button(action: paywall) { card(set, locked: true) }
+                            .accessibilityIdentifier("pastSet-\(set.id)")
+                    }
+                }
+            }.padding(16).frame(maxWidth: 640).frame(maxWidth: .infinity)
+                .buttonStyle(StudyButtonStyle())
+        }
+        .background(Palette.background)
+        .navigationTitle("\(year.formatted(.number.grouping(.never)))年度").navigationBarTitleDisplayMode(.inline)
+    }
+    private func card(_ set: MockSet, locked: Bool) -> some View {
+        Surface {
+            HStack {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(set.title).font(.headline).foregroundStyle(Palette.ink)
+                    Text("\(set.questionCount)問 · \(set.minutes)分").font(.subheadline).foregroundStyle(Palette.muted)
+                    Text(locked ? "購入で解放" : "学習済み \(set.questionIDs.filter { store.data.mastery[$0] != nil }.count)問")
+                        .font(.caption).foregroundStyle(locked ? Palette.review : Palette.positive)
+                }
+                Spacer()
+                Image(systemName: locked ? "lock.fill" : "chevron.right").foregroundStyle(Palette.muted)
+            }
+        }
     }
 }
 

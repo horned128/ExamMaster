@@ -148,6 +148,25 @@ struct StudyTopic: Identifiable {
     private static func theme(subject: String, category: String) -> String {
         let rules: [(String, [String])]
         switch subject {
+        case "テクノロジ": rules = [
+            ("理論・アルゴリズム", ["基礎", "アルゴリズム", "データ構造"]),
+            ("システム・クラウド", ["コンピュータ", "システム構成", "OS", "クラウド"]),
+            ("ネットワーク", ["ネットワーク"]),
+            ("セキュリティ", ["セキュリティ"]),
+            ("データベース", ["データベース"]),
+            ("開発・データ分析", ["開発", "AI", "データ分析"])
+        ]
+        case "マネジメント": rules = [
+            ("プロジェクト管理", ["プロジェクト"]),
+            ("サービス管理", ["サービス"]),
+            ("システム監査", ["監査"])
+        ]
+        case "ストラテジ": rules = [
+            ("会計・財務", ["会計", "財務"]),
+            ("法務", ["法務"]),
+            ("システム戦略・企画", ["システム戦略", "システム企画", "業務システム"]),
+            ("経営戦略・企業活動", ["経営", "企業", "技術戦略"])
+        ]
         case "ネットワーク": rules = [
             ("IP・アドレス設計", ["ARP", "RARP", "IPアドレス", "IPv", "サブネット", "CIDR", "VLSM", "ホスト部", "ICMP", "DHCP"]),
             ("経路制御・冗長化", ["BGP", "OSPF", "RIP", "経路", "ルーティング", "STP", "スパニング", "冗長", "MPLS", "SDN", "アグリゲーション"]),
@@ -175,6 +194,9 @@ struct StudyTopic: Identifiable {
         }
         for (title, words) in rules where words.contains(where: { category.localizedCaseInsensitiveContains($0) }) { return title }
         switch subject {
+        case "テクノロジ": return "開発・データ分析"
+        case "マネジメント": return "プロジェクト管理"
+        case "ストラテジ": return "経営戦略・企業活動"
         case "ネットワーク": return "通信の基礎・プロトコル"
         case "セキュリティ": return "防御・可用性"
         case "コンピュータシステム": return "システム構成・運用"
