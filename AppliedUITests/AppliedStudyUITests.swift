@@ -25,6 +25,24 @@ final class AppliedStudyUITests: XCTestCase {
         capture("APホーム・科目Aのみ")
     }
 
+    func testSubjectMapAddsSubcategorySelectionBeforeQuestions() {
+        let app = launch()
+        app.tabBars.buttons["分野別"].tap()
+        app.buttons["subject-テクノロジ"].tap()
+        let security = app.buttons["category-セキュリティ"]
+        XCTAssertTrue(security.waitForExistence(timeout: 5))
+        security.tap()
+        let authentication = app.buttons["subcategory-認証・アクセス制御"]
+        XCTAssertTrue(authentication.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["subcategory-攻撃・脆弱性"].exists)
+        XCTAssertTrue(app.buttons["topic-all-セキュリティ"].exists)
+        capture("AP分野マップ・サブカテゴリ一覧")
+        authentication.tap()
+        XCTAssertTrue(app.navigationBars["認証・アクセス制御"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["solveQuestions"].waitForExistence(timeout: 5))
+        capture("AP分野マップ・選択したサブカテゴリ")
+    }
+
     func testNativeTextAndEssentialDiagram() {
         let app = launch()
         app.tabBars.buttons["年度別"].tap()

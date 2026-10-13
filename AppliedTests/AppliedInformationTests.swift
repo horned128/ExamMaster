@@ -80,6 +80,33 @@ final class AppliedInformationTests: XCTestCase {
         }
     }
 
+    func testStudyMapSecondLevelPartitionsEveryQuestionExactlyOnce() throws {
+        let catalog = try Catalog.load(id: "applied-information")
+        var unreviewedCount = 0
+        var partitionedIDs = [String]()
+        for subject in catalog.qualification.subjects {
+            let topics = StudyTopic.grouped(subject: subject, questions: catalog.questions)
+            for topic in topics {
+                let subtopics = StudySubtopic.grouped(topic: topic)
+                XCTAssertFalse(subtopics.isEmpty, "\(topic.title)にサブカテゴリがありません")
+                XCTAssertTrue(subtopics.allSatisfy { !$0.questions.isEmpty })
+                XCTAssertEqual(subtopics.reduce(0) { $0 + $1.questions.count }, topic.questions.count)
+                let ids = subtopics.flatMap { $0.questions.map(\.id) }
+                XCTAssertEqual(Set(ids).count, topic.questions.count, "\(topic.title)で問題が重複分類されています")
+                partitionedIDs.append(contentsOf: ids)
+                unreviewedCount += subtopics.first { $0.title == StudySubtopic.unreviewedTitle }?.questions.count ?? 0
+
+                for subtopic in subtopics {
+                    let route = QuestionCollectionRoute.subjectSubtopic(subject, topic.title, subtopic.title)
+                    let routedIDs = QuestionCollections.questions(for: route, catalog: catalog, data: StudyData()).map(\.id)
+                    XCTAssertEqual(Set(routedIDs), Set(subtopic.questions.map(\.id)))
+                }
+            }
+        }
+        XCTAssertEqual(Set(partitionedIDs).count, catalog.questions.count)
+        XCTAssertEqual(unreviewedCount, 1072)
+    }
+
     func test2022AnswerTableTranscriptionAndUnansweredMockScoring() throws {
         let catalog = try Catalog.load(id: "applied-information")
         let set = try XCTUnwrap(catalog.mockSets.first { $0.id == "ap-2022-spring" })

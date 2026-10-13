@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum StudyDestination: Hashable { case years, subjects, records, quiz, subjectCategories(String) }
+enum StudyDestination: Hashable { case years, subjects, records, quiz, subjectCategories(String), topicSubcategories(String, String) }
 enum LibrarySection { case years, subjects }
 
 struct LibraryView: View {
@@ -235,7 +235,8 @@ struct SubjectLibraryView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("学びのマップ").font(.headline)
-                        Text("テーマをタップして問題へ").font(.caption).foregroundStyle(Palette.muted)
+                        Text(catalog.qualification.id == "applied-information" ? "テーマをタップして、さらに絞り込む" : "テーマをタップして問題へ")
+                            .font(.caption).foregroundStyle(Palette.muted)
                     }
                     Spacer()
                     if !dynamicTypeSize.isAccessibilitySize {
@@ -317,22 +318,85 @@ struct SubjectLibraryView: View {
         .frame(width: width, height: mapHeight)
     }
 
-    private func topicLink(_ topic: StudyTopic) -> some View {
-        NavigationLink(value: QuestionCollectionRoute.subjectTopic(subject, topic.title)) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(topic.title).font(.subheadline.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
-                let available = topic.questions.filter { purchase.unlocked || catalog.qualification.freeQuestionIDs.contains($0.id) }
-                let answered = available.filter { store.data.mastery[$0.id] != nil }.count
-                Text("\(topic.questions.count)問").font(.caption).foregroundStyle(Palette.muted)
-                if available.isEmpty { Label("有料", systemImage: "lock").font(.caption).foregroundStyle(Palette.review) }
-                else { Text("学習済み \(answered)問").font(.caption2).foregroundStyle(Palette.positive) }
+    @ViewBuilder private func topicLink(_ topic: StudyTopic) -> some View {
+        if catalog.qualification.id == "applied-information" {
+            NavigationLink(value: StudyDestination.topicSubcategories(subject, topic.title)) {
+                topicCard(topic)
             }
-            .frame(maxWidth: .infinity, alignment: .leading).padding(12)
-            .background(Palette.surface, in: RoundedRectangle(cornerRadius: 16))
-            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Palette.positive.opacity(0.4), lineWidth: 1.5))
+            .accessibilityLabel("\(topic.title)、\(topic.questions.count)問")
+            .accessibilityIdentifier("category-\(topic.title)")
+        } else {
+            NavigationLink(value: QuestionCollectionRoute.subjectTopic(subject, topic.title)) {
+                topicCard(topic)
+            }
+            .accessibilityLabel("\(topic.title)、\(topic.questions.count)問")
+            .accessibilityIdentifier("category-\(topic.title)")
         }
-        .accessibilityLabel("\(topic.title)、\(topic.questions.count)問")
-        .accessibilityIdentifier("category-\(topic.title)")
+    }
+
+    private func topicCard(_ topic: StudyTopic) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(topic.title).font(.subheadline.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
+            let available = topic.questions.filter { purchase.unlocked || catalog.qualification.freeQuestionIDs.contains($0.id) }
+            let answered = available.filter { store.data.mastery[$0.id] != nil }.count
+            Text("\(topic.questions.count)問").font(.caption).foregroundStyle(Palette.muted)
+            if available.isEmpty { Label("有料", systemImage: "lock").font(.caption).foregroundStyle(Palette.review) }
+            else { Text("学習済み \(answered)問").font(.caption2).foregroundStyle(Palette.positive) }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading).padding(12)
+        .background(Palette.surface, in: RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Palette.positive.opacity(0.4), lineWidth: 1.5))
+    }
+}
+
+struct StudySubtopicLibraryView: View {
+    let subject: String
+    let topicTitle: String
+    let catalog: Catalog
+    let store: StudyStore
+    let purchase: PurchaseManager
+
+    private var topic: StudyTopic? {
+        StudyTopic.grouped(subject: subject, questions: catalog.questions).first { $0.title == topicTitle }
+    }
+    private var subtopics: [StudySubtopic] {
+        topic.map { StudySubtopic.grouped(topic: $0) } ?? []
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Surface(inset: 16) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Label("サブカテゴリから選ぶ", systemImage: "square.grid.2x2").font(.headline)
+                        Text("\(topic?.questions.count ?? 0)問を、もう一段階テーマで絞れます。")
+                            .font(.caption).foregroundStyle(Palette.muted)
+                    }.frame(maxWidth: .infinity, alignment: .leading)
+                }
+                if let topic {
+                    NavigationLink(value: QuestionCollectionRoute.subjectTopic(subject, topicTitle)) {
+                        FeatureCard(title: "このテーマの全問題", symbol: "list.bullet", detail: "\(topic.questions.count)問")
+                    }
+                    .accessibilityIdentifier("topic-all-\(topicTitle)")
+                }
+                ForEach(subtopics) { subtopic in
+                    NavigationLink(value: QuestionCollectionRoute.subjectSubtopic(subject, topicTitle, subtopic.title)) {
+                        CollectionProgressCard(title: subtopic.title, questions: subtopic.questions, data: store.data,
+                                               freeIDs: Set(catalog.qualification.freeQuestionIDs), unlocked: purchase.unlocked,
+                                               compact: false)
+                    }
+                    .accessibilityIdentifier("subcategory-\(subtopic.title)")
+                }
+                if subtopics.contains(where: { $0.title == StudySubtopic.unreviewedTitle }) {
+                    Text("2015年以前の未校閲問題は、誤った細分類を付けないよう、この一覧ではまとめて表示しています。")
+                        .font(.caption).foregroundStyle(Palette.muted)
+                        .padding(.horizontal, 4)
+                }
+            }
+            .buttonStyle(StudyButtonStyle()).padding(16).frame(maxWidth: 640).frame(maxWidth: .infinity)
+        }
+        .background(Palette.background)
+        .navigationTitle(topicTitle).navigationBarTitleDisplayMode(.inline)
     }
 }
 
