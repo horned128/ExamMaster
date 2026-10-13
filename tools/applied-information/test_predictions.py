@@ -1,5 +1,6 @@
 import math
 import unittest
+from collections import Counter
 from predictions import build_sets, calculation_questions
 
 
@@ -26,10 +27,19 @@ class PredictionTests(unittest.TestCase):
         self.assertEqual(len(questions),240)
         self.assertEqual(len(sets),3)
         self.assertEqual(len({q["stem"] for q in questions}),240)
+        syllabus_url="https://www.ipa.go.jp/shiken/syllabus/omgdg50000005kq5-att/syllabus_ap_ver7_2.pdf"
         for q in questions:
             self.assertEqual(len(set(q["choices"])),4)
             self.assertEqual(len(q["choiceExplanations"]),4)
+            self.assertEqual(len(set(q["choiceExplanations"])),4)
             self.assertTrue(q["explanation"].strip())
+            self.assertIn(syllabus_url,{r["url"] for r in q["references"]})
+        for mock in sets:
+            rows=[q for q in questions if q["mockSetID"]==mock["id"]]
+            self.assertEqual(len(rows),80)
+            self.assertEqual(Counter(q["subject"] for q in rows),
+                             {"テクノロジ":50,"マネジメント":10,"ストラテジ":20})
+            self.assertEqual(mock["minutes"],150)
 
 
 if __name__=="__main__":unittest.main()

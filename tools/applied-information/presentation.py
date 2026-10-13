@@ -57,6 +57,22 @@ TABLES={
  'ap-2024-spring-q77':[table(['項目','百万円'],[['売上','500'],['材料費（変動）','200'],['外注費（変動）','100'],['製造固定費','100'],['総利益','100'],['販売固定費','80'],['利益','20']])],
 }
 
+def load_reviewed_presentation():
+    """Inline presentation belongs to the same hashed, reviewed editorial row.
+
+    Different yearly banks can be authored independently. Loading metadata does
+    not certify a review; editorial.load_editorial verifies the row and sources
+    before apply_native uses it.
+    """
+    for path in sorted((DOCS/'content').glob('*.json')):
+        for row in json.loads(path.read_text())['questions']:
+            id_=row['id']
+            if 'nativeTables' in row:TABLES[id_]=row['nativeTables']
+            if 'nativeCodes' in row:CODES[id_]=row['nativeCodes']
+            if 'diagramBounds' in row:DIAGRAMS[id_]=tuple(row['diagramBounds'])
+
+load_reviewed_presentation()
+
 def extra_conditions(row):
     text=row['accessibilityText']
     if '\n図表：' not in text:return None
@@ -64,9 +80,10 @@ def extra_conditions(row):
 
 def diagram(row,crop):
     origin=row.get('reusedFrom',row['id'])
-    if origin not in DIAGRAMS:return None
+    key=row['id'] if row['id'] in DIAGRAMS else origin
+    if key not in DIAGRAMS:return None
     assert len(crop['crops'])==1,'Multi-page diagrams need explicit selection'
-    record=crop['crops'][0];u0,v0,u1,v1=DIAGRAMS[origin]
+    record=crop['crops'][0];u0,v0,u1,v1=DIAGRAMS[key]
     x0,y0,x1,y1=record['box']
     box=[x0+(x1-x0)*u0,y0+(y1-y0)*v0,x0+(x1-x0)*u1,y0+(y1-y0)*v1]
     pdf=fitz.open(DOCS/'evidence'/crop['booklet']);page=pdf[record['page']-1]
@@ -82,13 +99,15 @@ def apply_native(questions,editorial,crops):
         if not row:continue
         blocks=[dict(type='text',text=row['stem'])]
         origin=row.get('reusedFrom',row['id'])
-        blocks.extend(CODES.get(origin,[]))
-        blocks.extend(TABLES.get(origin,[]))
+        codes=CODES.get(row['id'],CODES.get(origin,[]))
+        tables=TABLES.get(row['id'],TABLES.get(origin,[]))
+        blocks.extend(codes)
+        blocks.extend(tables)
         image=diagram(row,by_id[row['id']])
         if image:
             blocks.append(image[0]);records.append(image[1])
         elif extra:=extra_conditions(row):
-            if origin not in TABLES:blocks.append(dict(type='text',text=extra))
+            if not tables:blocks.append(dict(type='text',text=extra))
         question['bodyBlocks']=blocks
     # Whole-question originals are production evidence, never needed for a
     # verified text presentation. Pending questions still reference their crop.

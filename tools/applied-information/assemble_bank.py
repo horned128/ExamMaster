@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Build original question crops and official answer mappings, never OCR choices.
+"""Build the AP bank from IPA source PDFs, verified answers and reviewed text.
 
-OCR finds boundaries and provides labelled search/VoiceOver assistance; each
-question is displayed as a crop of the original IPA PDF with all choices intact.
-Complete 1...80 sequence and source hashes are required before assembly.
+OCR locates source boundaries; pending questions retain their original PDF
+image, while individually reviewed questions are rendered as native text,
+tables and only the figures needed to preserve their meaning. Complete 1...80
+sets and source hashes are required before assembly.
 """
 import hashlib
 import json

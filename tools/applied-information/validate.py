@@ -86,9 +86,9 @@ def validate(release=False):
             assert question["choiceBlocks"]==row["choiceBlocks"]
         assert question["bodyBlocks"][0]==dict(type="text",text=row["stem"])
         origin=row.get("reusedFrom",row["id"])
-        assert [b for b in question["bodyBlocks"] if b["type"]=="table"]==TABLES.get(origin,[])
-        assert [b for b in question["bodyBlocks"] if b["type"]=="monospace"]==CODES.get(origin,[])
-        assert any(b["type"]=="image" for b in question["bodyBlocks"])==(origin in DIAGRAMS)
+        assert [b for b in question["bodyBlocks"] if b["type"]=="table"]==TABLES.get(id_,TABLES.get(origin,[]))
+        assert [b for b in question["bodyBlocks"] if b["type"] in ["monospace","formula"]]==CODES.get(id_,CODES.get(origin,[]))
+        assert any(b["type"]=="image" for b in question["bodyBlocks"])==(id_ in DIAGRAMS or origin in DIAGRAMS)
     pending=sorted(q["id"] for q in qs if q["kind"]=="past" and q["id"] not in editorial)
     dump(DOCS/"editorial-progress.json",dict(total=verified,reviewed=len(editorial),pending=len(pending),
          reviewType="制作内AI校閲（外部専門家による校閲ではない）",

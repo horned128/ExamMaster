@@ -26,6 +26,7 @@ enum PurchasePolicy {
     var error: String?
     let productID: String
     @ObservationIgnored private var updates: Task<Void, Never>?
+    @ObservationIgnored private var refreshTask: Task<Void, Never>?
 
     init(productID: String) {
         self.productID = productID
@@ -42,14 +43,46 @@ enum PurchasePolicy {
     deinit { updates?.cancel() }
 
     func refresh() async {
-        await refreshEntitlement()
-        do {
-            product = try await Product.products(for: [productID]).first { $0.id == productID && $0.type == .nonConsumable }
-            if product == nil { error = "商品情報を取得できません。通信状態と商品設定をご確認ください。" }
-        } catch {
-            self.error = "商品情報を取得できません。通信状態を確認して再試行してください。"
+        if let refreshTask {
+            await refreshTask.value
+            return
         }
-        loading = false
+        loading = true
+        error = nil
+        let task = Task { await self.loadProductAndEntitlement() }
+        refreshTask = task
+        await task.value
+        refreshTask = nil
+    }
+
+    private func loadProductAndEntitlement() async {
+        defer { loading = false }
+        await refreshEntitlement()
+        // A transient StoreKit failure must not persist for the whole app session.
+        // Bounded retries also cover an empty response, without inventing a price.
+        for attempt in 0..<3 {
+            do {
+                let products = try await Product.products(for: [productID])
+                if let available = products.first(where: { $0.id == productID && $0.type == .nonConsumable }) {
+                    product = available
+                    error = nil
+                    return
+                }
+            } catch is CancellationError {
+                return
+            } catch {
+                // Retry the real StoreKit request; purchase access still requires
+                // a verified transaction even when product metadata is unavailable.
+            }
+            if attempt < 2 {
+                do { try await Task.sleep(for: .milliseconds(500 * (attempt + 1))) }
+                catch { return }
+            }
+        }
+        product = nil
+        if !unlocked {
+            error = "購入情報を読み込めませんでした。時間をおいて再試行してください。無料の問題は引き続き利用できます。"
+        }
     }
 
     func refreshEntitlement() async {

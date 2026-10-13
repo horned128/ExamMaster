@@ -1260,8 +1260,9 @@ final class NetworkStudyUITests: XCTestCase {
     private func buyAndDismissPaywall(in app: XCUIApplication) {
         let buy = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "買い切り ")).firstMatch
         XCTAssertTrue(buy.waitForExistence(timeout: 10))
-        XCTAssertTrue(buy.label.contains("480"))
+        XCTAssertTrue(buy.label.contains("300"))
         for _ in 0..<8 where !buy.isHittable { app.swipeUp() }
+        capture("購入画面・300円買い切り")
         buy.tap()
         let done = app.buttons["学習を続ける"]
         XCTAssertTrue(done.waitForExistence(timeout: 10))

@@ -486,7 +486,7 @@ final class NetworkSpecialistTests: XCTestCase {
         let paidID = "nw-2026-pred-01-q01"
         let manager = PurchaseManager(productID: config.productID)
         await manager.refresh()
-        XCTAssertEqual(manager.product?.price, 480)
+        XCTAssertEqual(try XCTUnwrap(manager.product).price, 300)
         XCTAssertTrue(manager.entitlementResolved)
         XCTAssertFalse(manager.unlocked)
         XCTAssertFalse(SessionPlanner.available(catalog, unlocked: manager.unlocked).contains { $0.id == paidID })

@@ -82,5 +82,509 @@
       0.6913641510353874
     ],
     "sha256": "5076136bdf144ebe0d285c9a9fb978aea3d2771a5880481cfd9c88504a147e43"
+  },
+  {
+    "asset": "ap-2023-autumn-q53-diagram.jpg",
+    "booklet": "2023r05a_ap_am_qs.pdf",
+    "page": 28,
+    "box": [
+      0.096625,
+      0.19073228398491837,
+      0.9356749999999999,
+      0.5413982824363524
+    ],
+    "sha256": "5404bfc56993f014305ad5e335f9c2cfcc3991b071e5371fb6f8892508bc1d84"
+  },
+  {
+    "asset": "ap-2022-spring-q16-diagram.jpg",
+    "booklet": "2022r04h_ap_am_qs.pdf",
+    "page": 8,
+    "box": [
+      0.174475,
+      0.2168681046739508,
+      0.86215,
+      0.32757821741358406
+    ],
+    "sha256": "593b5ed5c993f259fe23625bff9bdab4d338cd4bb3d9d1391435aa7c92c17700"
+  },
+  {
+    "asset": "ap-2022-spring-q47-diagram.jpg",
+    "booklet": "2022r04h_ap_am_qs.pdf",
+    "page": 22,
+    "box": [
+      0.312875,
+      0.1687989853326562,
+      0.6848249999999999,
+      0.52949968864029
+    ],
+    "sha256": "5ce6ff7fb261a9829ad51eb2526aa3d72cd0fc0d530da7551dfafa9dd652e23e"
+  },
+  {
+    "asset": "ap-2021-autumn-q10-diagram.jpg",
+    "booklet": "2021r03a_ap_am_qs.pdf",
+    "page": 7,
+    "box": [
+      0.139875,
+      0.7664201652858008,
+      0.767,
+      0.9026033485930318
+    ],
+    "sha256": "31ee70153b682ecc36817ba6df949e1f3138098d8923821a516502c8823d900c"
+  },
+  {
+    "asset": "ap-2021-autumn-q22-diagram.jpg",
+    "booklet": "2021r03a_ap_am_qs.pdf",
+    "page": 12,
+    "box": [
+      0.139875,
+      0.17066726705845023,
+      0.7886249999999999,
+      0.38457133693180645
+    ],
+    "sha256": "06f35bba9e6c65a65e4ba43ef0b04d42e4927b36c07d5e05ab803b7289f11a92"
+  },
+  {
+    "asset": "ap-2021-autumn-q23-diagram.jpg",
+    "booklet": "2021r03a_ap_am_qs.pdf",
+    "page": 13,
+    "box": [
+      0.23935,
+      0.2641558143542463,
+      0.767,
+      0.5071375311147357
+    ],
+    "sha256": "2b474ccacd567419625b889139c97a1536d319cdaaeeca238da2a8c642b25211"
+  },
+  {
+    "asset": "ap-2021-autumn-q48-diagram.jpg",
+    "booklet": "2021r03a_ap_am_qs.pdf",
+    "page": 25,
+    "box": [
+      0.131225,
+      0.20567833119910767,
+      0.74105,
+      0.8934194184557516
+    ],
+    "sha256": "6ad5b0bb830c358c2196168afeb28316ceaa96f16d010d3ef0f75ee91838285e"
+  },
+  {
+    "asset": "ap-2021-autumn-q49-diagram.jpg",
+    "booklet": "2021r03a_ap_am_qs.pdf",
+    "page": 26,
+    "box": [
+      0.139875,
+      0.15972070442157235,
+      0.87945,
+      0.532727388105928
+    ],
+    "sha256": "615df4f4325e38e2bba0075f632d9043ab0ba213b894f4f9b9ffc0ae864f13ba"
+  },
+  {
+    "asset": "ap-2021-autumn-q52-diagram.jpg",
+    "booklet": "2021r03a_ap_am_qs.pdf",
+    "page": 28,
+    "box": [
+      0.13555,
+      0.1885799955443767,
+      0.8751249999999999,
+      0.8977237497215235
+    ],
+    "sha256": "67198bf39ded44e8c9dc1f4c94ad68bb9208ff53190803975af56e3d5caf27ee"
+  },
+  {
+    "asset": "ap-2021-spring-q14-diagram.jpg",
+    "booklet": "2021r03h_ap_am_qs.pdf",
+    "page": 9,
+    "box": [
+      0.139875,
+      0.19905684617010336,
+      0.8708,
+      0.7606577263523818
+    ],
+    "sha256": "e7f45d48b558cad4cf9b5cbd359eae68a5852e21d46904b3c4685a673ccbbbca"
+  },
+  {
+    "asset": "ap-2021-spring-q23-diagram.jpg",
+    "booklet": "2021r03h_ap_am_qs.pdf",
+    "page": 13,
+    "box": [
+      0.29125,
+      0.25004823961191125,
+      0.7280749999999999,
+      0.4861560889928062
+    ],
+    "sha256": "7bddb199e0806445c30a7364bf09176bd4a722adf13d62b18c4b6be395b43e60"
+  },
+  {
+    "asset": "ap-2021-spring-q25-diagram.jpg",
+    "booklet": "2021r03h_ap_am_qs.pdf",
+    "page": 14,
+    "box": [
+      0.373425,
+      0.16067833635976336,
+      0.6459,
+      0.26774007950672973
+    ],
+    "sha256": "9b2de59566705add0ab7ba3d79920017fbc445474a1a88e0b4f866a8ede81056"
+  },
+  {
+    "asset": "ap-2021-spring-q48-diagram.jpg",
+    "booklet": "2021r03h_ap_am_qs.pdf",
+    "page": 26,
+    "box": [
+      0.37775,
+      0.19673938178688283,
+      0.6285999999999999,
+      0.5021451132470214
+    ],
+    "sha256": "fb0181bd0d256239ff26913bbfb383e26d8c0a7640452ae49bba0d1501c6ec73"
+  },
+  {
+    "asset": "ap-2021-spring-q53-diagram.jpg",
+    "booklet": "2021r03h_ap_am_qs.pdf",
+    "page": 29,
+    "box": [
+      0.1788,
+      0.22366848998246144,
+      0.9356749999999999,
+      0.5585724053477472
+    ],
+    "sha256": "ba60835b43f338b36d93ff59b879125d75047f3a1a506ceab0822432fa5a586e"
+  },
+  {
+    "asset": "ap-2020-autumn-q22-diagram.jpg",
+    "booklet": "2020r02o_ap_am_qs.pdf",
+    "page": 13,
+    "box": [
+      0.139875,
+      0.1919785616549015,
+      0.7323999999999999,
+      0.5921556688897253
+    ],
+    "sha256": "148e87ac2c095d020c2290e02f40592db18756f39fb68902ddb96c1b288d0b76"
+  },
+  {
+    "asset": "ap-2020-autumn-q23-diagram.jpg",
+    "booklet": "2020r02o_ap_am_qs.pdf",
+    "page": 14,
+    "box": [
+      0.139875,
+      0.434124869521432,
+      0.8318749999999999,
+      0.5860035514511737
+    ],
+    "sha256": "61b41b6598e4a3f152dcdb7a268c0ed0745c1e8c8e673dcd6e43db24df055251"
+  },
+  {
+    "asset": "ap-2020-autumn-q47-diagram.jpg",
+    "booklet": "2020r02o_ap_am_qs.pdf",
+    "page": 26,
+    "box": [
+      0.22205000000000003,
+      0.2148598190086655,
+      0.8102499999999999,
+      0.4940310646818228
+    ],
+    "sha256": "fa501b1b6b96074d17e6c3417ff685ee42ac1bfc072e036deeb758981d62debc"
+  },
+  {
+    "asset": "ap-2020-autumn-q55-diagram.jpg",
+    "booklet": "2020r02o_ap_am_qs.pdf",
+    "page": 30,
+    "box": [
+      0.139875,
+      0.16421082535787618,
+      0.86215,
+      0.5384723394064952
+    ],
+    "sha256": "e16024ac974a7abd5d392b506c1049324d51be696c549fd0c23f8f0e10864666"
+  },
+  {
+    "asset": "ap-2020-autumn-q75-diagram.jpg",
+    "booklet": "2020r02o_ap_am_qs.pdf",
+    "page": 39,
+    "box": [
+      0.312875,
+      0.22397872760570975,
+      0.7496999999999999,
+      0.43057075932459743
+    ],
+    "sha256": "7e4edefc5075cffd900b25802cdaaddfaf451b99ec65b1c3b4103cbbeef38ad3"
+  },
+  {
+    "asset": "ap-2019-autumn-q23-diagram.jpg",
+    "booklet": "2019r01a_ap_am_qs.pdf",
+    "page": 12,
+    "box": [
+      0.096625,
+      0.6243241848025968,
+      0.9140499999999999,
+      0.9085595664548405
+    ],
+    "sha256": "6230f94c5d57cbca82888fc33e68c71501981058eca144aa8af0cd7b1be51602"
+  },
+  {
+    "asset": "ap-2019-autumn-q52-diagram.jpg",
+    "booklet": "2019r01a_ap_am_qs.pdf",
+    "page": 24,
+    "box": [
+      0.096625,
+      0.5887987286722127,
+      0.8880999999999999,
+      0.8553896172760284
+    ],
+    "sha256": "d9bea8db6117d7bb6b460badff8d2963a359ec58c26aa5872f2218e63f191555"
+  },
+  {
+    "asset": "ap-2019-autumn-q74-diagram.jpg",
+    "booklet": "2019r01a_ap_am_qs.pdf",
+    "page": 35,
+    "box": [
+      0.10527500000000001,
+      0.2491168620296399,
+      0.9227,
+      0.6435654724138291
+    ],
+    "sha256": "828117d82b1305e11ebbf21c26439768160a06927703b078523a5eaa9cf9f2b7"
+  },
+  {
+    "asset": "ap-2019-spring-q23-diagram.jpg",
+    "booklet": "2019h31h_ap_am_qs.pdf",
+    "page": 13,
+    "box": [
+      0.1615,
+      0.19340725863227826,
+      0.84485,
+      0.3282644705119723
+    ],
+    "sha256": "78f1d3145159ce2d4124824b202debdcba7b12165eb8ae99e6ef2bb6cba8016a"
+  },
+  {
+    "asset": "ap-2019-spring-q49-diagram.jpg",
+    "booklet": "2019h31h_ap_am_qs.pdf",
+    "page": 25,
+    "box": [
+      0.11825,
+      0.15885316047796094,
+      0.9140499999999999,
+      0.5296660974047454
+    ],
+    "sha256": "43f37cb86ef2fe78f87c9d8d68f8bf59daae4d36061c75d02e80663a3ce63b5d"
+  },
+  {
+    "asset": "ap-2019-spring-q53-diagram.jpg",
+    "booklet": "2019h31h_ap_am_qs.pdf",
+    "page": 27,
+    "box": [
+      0.15284999999999999,
+      0.1611739387117022,
+      0.86215,
+      0.3878958173894788
+    ],
+    "sha256": "874cf874647921cc89e856d32af83a982177e106b219f433ccd0a0e62ab80f3a"
+  },
+  {
+    "asset": "ap-2018-autumn-q23-diagram.jpg",
+    "booklet": "2018h30a_ap_am_qs.pdf",
+    "page": 12,
+    "box": [
+      0.13555,
+      0.6316670702268825,
+      0.8361999999999999,
+      0.8476916367164231
+    ],
+    "sha256": "9cb59c55e8b1a716418fdb63cdfacf7c55ade6c6b63f7576d4816618c2225f24"
+  },
+  {
+    "asset": "ap-2018-spring-q21-diagram.jpg",
+    "booklet": "2018h30h_ap_am_qs.pdf",
+    "page": 10,
+    "box": [
+      0.1442,
+      0.7141525488801023,
+      0.8708,
+      0.8671237514294321
+    ],
+    "sha256": "18626f4d799282cc8f24147d4eb2c6cac7b5b1dbef7de23edb2f45679d9eff8e"
+  },
+  {
+    "asset": "ap-2018-spring-q22-diagram.jpg",
+    "booklet": "2018h30h_ap_am_qs.pdf",
+    "page": 11,
+    "box": [
+      0.1788,
+      0.23999841556633084,
+      0.8534999999999999,
+      0.3611217411371371
+    ],
+    "sha256": "049301249f26549ebc3f1ee20e20ef87ae28b36626b2bffd444dc53da20876d0"
+  },
+  {
+    "asset": "ap-2018-spring-q26-diagram.jpg",
+    "booklet": "2018h30h_ap_am_qs.pdf",
+    "page": 13,
+    "box": [
+      0.14852500000000002,
+      0.2146908140942998,
+      0.84485,
+      0.7143760465560947
+    ],
+    "sha256": "213fa1c17b2adb24ae617b570c1049cc81fe0a85329263e7bd0fad3d6facdd57"
+  },
+  {
+    "asset": "ap-2018-spring-q74-diagram.jpg",
+    "booklet": "2018h30h_ap_am_qs.pdf",
+    "page": 34,
+    "box": [
+      0.22205000000000003,
+      0.16573945474020974,
+      0.8189,
+      0.38531010561451523
+    ],
+    "sha256": "26a7814a9d8967607f0011c148918dd82323aa1f0cf6c9523b2fe377b974591f"
+  },
+  {
+    "asset": "ap-2017-autumn-q21-diagram.jpg",
+    "booklet": "2017h29a_ap_am_qs.pdf",
+    "page": 12,
+    "box": [
+      0.13555,
+      0.408118077195773,
+      0.7496999999999999,
+      0.8043880678369881
+    ],
+    "sha256": "abcce185df743606508c9f1d8b9595a830b18071c39e85dd1823a6cdd2d909ae"
+  },
+  {
+    "asset": "ap-2017-autumn-q23-diagram.jpg",
+    "booklet": "2017h29a_ap_am_qs.pdf",
+    "page": 13,
+    "box": [
+      0.12689999999999999,
+      0.4377735694110021,
+      0.8275499999999999,
+      0.6913867847055011
+    ],
+    "sha256": "b5abc34454bc527b2d65620ea17266219cfaaf199e2971b5d5639aae960307bb"
+  },
+  {
+    "asset": "ap-2017-autumn-q29-diagram.jpg",
+    "booklet": "2017h29a_ap_am_qs.pdf",
+    "page": 16,
+    "box": [
+      0.1615,
+      0.26383784060736537,
+      0.6113,
+      0.3762337508986115
+    ],
+    "sha256": "d2f4d1c43db53194a15c817ecee027e60b51b19c5ce488968404f806cc18c900"
+  },
+  {
+    "asset": "ap-2017-autumn-q50-diagram.jpg",
+    "booklet": "2017h29a_ap_am_qs.pdf",
+    "page": 25,
+    "box": [
+      0.13555,
+      0.46666410956268134,
+      0.8880999999999999,
+      0.828197050009492
+    ],
+    "sha256": "f0b2465e6203cf54b174f7b8fd1eafa0488f05e445a1c6f05d455d786a6dd670"
+  },
+  {
+    "asset": "ap-2017-autumn-q53-diagram.jpg",
+    "booklet": "2017h29a_ap_am_qs.pdf",
+    "page": 27,
+    "box": [
+      0.12257499999999999,
+      0.18250451914366964,
+      0.901075,
+      0.897613275201019
+    ],
+    "sha256": "5904fdff8d0169a3017f262488f171fc7f5e35fb6ed1f4fa2aadae74222195ac"
+  },
+  {
+    "asset": "ap-2017-spring-q03-diagram.jpg",
+    "booklet": "2017h29h_ap_am_qs.pdf",
+    "page": 4,
+    "box": [
+      0.139875,
+      0.4137035471574597,
+      0.5766999999999999,
+      0.8197349826631408
+    ],
+    "sha256": "05354a305cda914dc6f0ca40d6beca1c7078cd0cdcc4304ed42d9546b6b561d6"
+  },
+  {
+    "asset": "ap-2017-spring-q23-diagram.jpg",
+    "booklet": "2017h29h_ap_am_qs.pdf",
+    "page": 12,
+    "box": [
+      0.28259999999999996,
+      0.6476888066964364,
+      0.7064499999999999,
+      0.7831723884550224
+    ],
+    "sha256": "4784d5c25b7d3db9148ba1fd39b8b4252b5367f79dc986dc944b1f8ac87de004"
+  },
+  {
+    "asset": "ap-2017-spring-q26-diagram.jpg",
+    "booklet": "2017h29h_ap_am_qs.pdf",
+    "page": 14,
+    "box": [
+      0.13555,
+      0.1838960988372247,
+      0.8708,
+      0.5903947733218887
+    ],
+    "sha256": "e86d5366db8c694eb10923ea414b518d756c7d7aafd6c3aac9fbee1a7fb9488b"
+  },
+  {
+    "asset": "ap-2017-spring-q52-diagram.jpg",
+    "booklet": "2017h29h_ap_am_qs.pdf",
+    "page": 27,
+    "box": [
+      0.17015,
+      0.5217856741351448,
+      0.8189,
+      0.745840317240068
+    ],
+    "sha256": "f632f2463af13490d607e498a09b848410524aace7ba0c22755af3412256b1ca"
+  },
+  {
+    "asset": "ap-2016-autumn-q52-diagram.jpg",
+    "booklet": "2016h28a_ap_am_qs.pdf",
+    "page": 25,
+    "box": [
+      0.18745,
+      0.19396619246166635,
+      0.8880999999999999,
+      0.34476787242553425
+    ],
+    "sha256": "981e3ccbe2941a15fba1d1fd9bddd8ed8934f97bd4eaf8cd42904ad0a22ea7b8"
+  },
+  {
+    "asset": "ap-2016-autumn-q75-diagram.jpg",
+    "booklet": "2016h28a_ap_am_qs.pdf",
+    "page": 35,
+    "box": [
+      0.23935,
+      0.13468983251188543,
+      0.7842999999999999,
+      0.3615247448169129
+    ],
+    "sha256": "d8502d4679fccc3ad2163f958b913d53e2eae9540fe7cf35e566f4a3feeda3eb"
+  },
+  {
+    "asset": "ap-2016-spring-q06-diagram.jpg",
+    "booklet": "2016h28h_ap_am_qs.pdf",
+    "page": 5,
+    "box": [
+      0.3864,
+      0.1692581540065946,
+      0.65455,
+      0.3716838405050194
+    ],
+    "sha256": "8364d499f0a0b680f8f0fae3b7330e45165dedc87e4f30eeb5549c1f49c27348"
   }
 ]

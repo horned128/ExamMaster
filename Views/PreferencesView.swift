@@ -118,13 +118,13 @@ struct PaywallView: View {
                         Label("学習履歴はそのまま", systemImage: "arrow.clockwise")
                         Label("広告なし", systemImage: "rectangle.slash")
                     }
-                    if purchase.loading {
-                        ProgressView("商品情報を確認中…")
-                    } else if purchase.unlocked {
+                    if purchase.unlocked {
                         Button("学習を続ける") { dismiss() }
                             .buttonStyle(.borderedProminent)
                             .tint(Palette.accent(catalog.qualification.accentHex))
                             .foregroundStyle(Palette.onAccent(catalog.qualification.accentHex))
+                    } else if purchase.loading {
+                        ProgressView("商品情報を確認中…")
                     } else if let product = purchase.product {
                         Button {
                             Task { await purchase.buy() }
@@ -142,6 +142,7 @@ struct PaywallView: View {
                     if let error = purchase.error {
                         Text(error).font(.footnote).foregroundStyle(.secondary)
                         Button("再試行") { Task { await purchase.refresh() } }
+                            .disabled(purchase.loading || purchase.purchasing)
                     }
                     Text("定期購入なし。Apple Accountで購入。")
                         .font(.footnote).foregroundStyle(Palette.muted)
@@ -153,6 +154,7 @@ struct PaywallView: View {
             .background(Palette.background)
             .navigationTitle("全問題を解放")
             .navigationBarTitleDisplayMode(.inline)
+            .task { await purchase.refresh() }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("閉じる", systemImage: "xmark") { dismiss() }

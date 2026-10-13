@@ -1,18 +1,18 @@
 {
-  "checkedAtJST": "2026-10-12 09:16",
+  "checkedAtJST": "2026-10-13 23:44",
   "appStoreConnectID": "6821629759",
   "version": "1.0",
   "build": "2",
   "buildID": "94d4738c-c081-487f-ad52-1f866277c0cd",
   "reviewSubmissionID": "4c610708-f1e2-4c12-ac8c-703a5596da5d",
   "reviewURL": "https://appstoreconnect.apple.com/apps/6821629759/distribution/reviewsubmissions/details/4c610708-f1e2-4c12-ac8c-703a5596da5d",
-  "appStatus": "WAITING_FOR_REVIEW",
+  "appStatus": "REJECTED",
   "iapAppleID": "6821756732",
-  "iapStatus": "WAITING_FOR_REVIEW",
+  "iapStatus": "READY_FOR_REVIEW",
   "itemsSubmitted": 2,
   "releaseMethod": "MANUAL",
   "appPriceJPY": 0,
-  "iapPriceJPY": 480,
+  "iapPriceJPY": 300,
   "territories": [
     "JPN"
   ],
@@ -31,7 +31,9 @@
     "mediumScreenshotUITestsPassed": 4,
     "largePurchaseUITestsPassed": 1,
     "archiveTrackingManifestChecksPassed": 3,
-    "ipaTrackingManifestChecksPassed": 3
+    "ipaTrackingManifestChecksPassed": 3,
+    "build3iPhoneTestsPassed": 24,
+    "build3iPhoneOS": "26.2"
   },
   "limitations": [
     "本番商品をSandbox/TestFlightで購入・復元・返金する動作は未確認",
@@ -61,22 +63,40 @@
       "reviewSubmissionStatus": "WAITING_FOR_REVIEW",
       "reviewSubmissionID": "4c610708-f1e2-4c12-ac8c-703a5596da5d",
       "build": "2"
+    },
+    {
+      "checkedAtJST": "2026-10-13 23:44",
+      "build": "2",
+      "appStatus": "REJECTED",
+      "iapStatus": "READY_FOR_REVIEW",
+      "reviewSubmissionStatus": "UNRESOLVED_ISSUES",
+      "iapPriceJPY": 300,
+      "reason": "2.1(b): failed to load in-app purchase product",
+      "source": "App Store Connect UI / Apple review notice supplied by user"
     }
   ],
-  "reviewSubmissionStatus": "WAITING_FOR_REVIEW",
+  "reviewSubmissionStatus": "UNRESOLVED_ISSUES",
   "binaryProcessingStatus": "VALID",
-  "failureReason": null,
-  "diagnosisStatus": "ITMS-91064を修正し、実Archive/IPA検査・配布署名・アップロード成功。2026-10-12 09:16 JSTにビルド2と480円商品を再提出、両方の審査待ちを確認。",
-  "replacementBuild": "2",
-  "replacementArchiveCreated": true,
-  "replacementUploaded": true,
-  "replacementExported": true,
-  "replacementUploadedAtJST": "2026-10-12 09:11:57",
-  "replacementUploadLog": "release-artifacts/app-store-1.0-build2-upload/upload.log",
-  "replacementProcessingStatus": "VALID",
-  "replacementBuildID": "94d4738c-c081-487f-ad52-1f866277c0cd",
+  "failureReason": "Guideline 2.1(b): failed to load in-app purchase product on iPad Air M3 / iPadOS 27.0",
+  "diagnosisStatus": "有料アプリ契約がNEW（新規）で未有効を確認。商品ID・非消耗型・日本の販売設定を確認し、価格を300円に変更・保存後の価格表を確認。商品再取得を改善したビルド3を準備中。",
+  "replacementBuild": "3",
+  "replacementArchiveCreated": false,
+  "replacementUploaded": false,
+  "replacementExported": false,
   "previousFailureReason": "ITMS-91064: PrivacyInfo.xcprivacyのtracking=trueに対する対象ドメインが空。",
-  "replacementResubmitted": true,
-  "replacementResubmittedAtJST": "2026-10-12 09:16",
-  "proofScreenshot": "/Users/hino/.codex/visualizations/2026/10/11/01a12d5a-d9db-7d30-a7cd-e805afb9bd82/app-store-build2-resubmitted.png"
+  "replacementResubmitted": false,
+  "paidAppsAgreement": {
+    "state": "NEW",
+    "source": "App Store Connect > Business UI",
+    "checkedAtJST": "2026-10-13 23:44",
+    "accountHolderActionRequired": "登録情報を確認・保存後、有料アプリ契約に同意し、必要な銀行・税務情報を登録して有効化"
+  },
+  "iapPriceObservation": {
+    "amountJPY": 300,
+    "source": "App Store Connect > IAP > current prices",
+    "checkedAtJST": "2026-10-13 23:44",
+    "availableTerritories": [
+      "JPN"
+    ]
+  }
 }

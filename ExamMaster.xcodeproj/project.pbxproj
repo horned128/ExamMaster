@@ -80,6 +80,7 @@
 		7BE32C15E44FF6AB81236F19 /* PrivacyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A87E383478FCEA8C77D53F2E /* PrivacyDetailsView.swift */; };
 		7C0F81A94468B1BE494AE850 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DE1E720722D7D936CF8FC3 /* InsightsView.swift */; };
 		7C4D037DBE707CB301872E87 /* QuestionContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0801F31BC59FDC3AD09FB876 /* QuestionContentView.swift */; };
+		7CA72C90E4280C301BB5B822 /* NetworkProductLoadingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2EA22BFC6F9DF9DD1F56B0 /* NetworkProductLoadingTests.swift */; };
 		7CC81D175E703FC74C6F9FBA /* AnswerHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8BE473D69CC861B8319BD1E /* AnswerHistory.swift */; };
 		82712EA2EE954219A5DB6634 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 3754B1AE44668DDEF7F84FFC /* GoogleMobileAds */; };
 		8319E8B63DDAD819ECE4754A /* MasteryEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5F6E4DD29B23FEA7E16CC05 /* MasteryEngine.swift */; };
@@ -248,6 +249,7 @@
 		D35C36699C3466E474BA87AA /* AdsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsService.swift; sourceTree = "<group>"; };
 		D76D7611E1C77C74B6ECBE4B /* StudyFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyFlowUITests.swift; sourceTree = "<group>"; };
 		D9DE1E720722D7D936CF8FC3 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
+		DC2EA22BFC6F9DF9DD1F56B0 /* NetworkProductLoadingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProductLoadingTests.swift; sourceTree = "<group>"; };
 		E248D128768BBC2BA12BE963 /* AdMobProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMobProvider.swift; sourceTree = "<group>"; };
 		E62029C8749ECBFC2FC654DA /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		E8BE473D69CC861B8319BD1E /* AnswerHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerHistory.swift; sourceTree = "<group>"; };
@@ -303,6 +305,7 @@
 		175B970685C8BA58D3A38935 /* NetworkTests */ = {
 			isa = PBXGroup;
 			children = (
+				DC2EA22BFC6F9DF9DD1F56B0 /* NetworkProductLoadingTests.swift */,
 				CDB58AB0281F2AAE60F88756 /* NetworkPurchaseAdsTests.swift */,
 				BE0596CBE51AB62DDC997928 /* NetworkSpecialistTests.swift */,
 			);
@@ -1041,6 +1044,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7CA72C90E4280C301BB5B822 /* NetworkProductLoadingTests.swift in Sources */,
 				50187FD51961CDBE2DFD32D8 /* NetworkPurchaseAdsTests.swift in Sources */,
 				D998B820DD32A148B2A1101A /* NetworkSpecialistTests.swift in Sources */,
 			);
@@ -1166,7 +1170,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = NetworkSpecialistIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = QZH83KGFVX;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Config/NetworkSpecialist-Info.plist";
@@ -1305,7 +1309,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = NetworkSpecialistIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = QZH83KGFVX;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = "Config/NetworkSpecialist-Info.plist";

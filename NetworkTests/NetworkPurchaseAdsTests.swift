@@ -53,7 +53,7 @@ import StoreKitTest
         XCTAssertNil(service.banner(width: 320) { _ in })
         await purchase.refresh()
         XCTAssertFalse(purchase.unlocked)
-        XCTAssertEqual(purchase.product?.price, 480)
+        XCTAssertEqual(try XCTUnwrap(purchase.product).price, 300)
         XCTAssertEqual(SessionPlanner.available(catalog, unlocked: purchase.unlocked).count, 75)
         service.updateAccess(access(purchase))
         for _ in 0..<100 {
