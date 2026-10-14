@@ -153,7 +153,7 @@ def main():
     candidates = [ipaddress.ip_network(s) for s in ["172.16.1.0/25", "172.16.1.128/25", "172.16.1.128/26", "172.16.1.192/26"]]
     require([i for i, c in enumerate(candidates) if not any(c.overlaps(e) for e in existing)] == [2], "サブネット正答一意性")
     products = load(APP / "products.storekit")["products"]
-    require(len(products) == 1 and products[0]["productID"] == config["productID"] and products[0]["type"] == "NonConsumable" and products[0]["displayPrice"] == "480", "資格固有IAP")
+    require(len(products) == 1 and products[0]["productID"] == config["productID"] and products[0]["type"] == "NonConsumable" and products[0]["displayPrice"] == "300", "資格固有IAP")
     if bank.get("isDraft"): incomplete.append("問題集は試作版")
     report = {"years": counts, "included": len(questions), "free": len(expected_free), "paid": len(questions) - len(expected_free), "figures": len(figures), "predictions": len(prediction), "predictionDifficulty": prediction_counts, "errors": errors, "incomplete": incomplete, "releaseReady": not errors and not incomplete}
     (DOCS / "validation-report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")

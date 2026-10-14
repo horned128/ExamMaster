@@ -31,10 +31,20 @@ def load_editorial(questions, crops=None):
     crops={row["id"]:row for row in crops}
     documents={d["file"]:d for row in json.loads((DOCS/"sources.json").read_text())["years"] for d in row["documents"]}
     result={}
+    seen=set()
     for path in sorted((DOCS/"content").glob("*.json")):
         for row in json.loads(path.read_text())["questions"]:
             id_=row["id"]
-            if id_ in result or id_ not in by_id: raise ValueError(f"Unknown/duplicate reviewed question: {id_}")
+            # Keep the full editorial archive, but validate and apply only the
+            # question IDs present in this release bank.
+            if id_ in seen:
+                raise ValueError(f"Unknown/duplicate reviewed question: {id_}")
+            seen.add(id_)
+            if id_ not in by_id:
+                parts=id_.split("-")
+                if len(parts)>2 and parts[0]=="ap" and parts[1].isdigit() and int(parts[1])<2016:
+                    continue
+                raise ValueError(f"Unknown/duplicate reviewed question: {id_}")
             original=by_id[id_]
             if row["review"]["sourceSnapshot"]!=source_snapshot(original,crops,documents):
                 raise ValueError(f"Original source changed after editorial review: {id_}")

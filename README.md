@@ -10,13 +10,13 @@
 | --- | --- | --- | --- |
 | `ExamMaster` | 設備安全管理士（架空） | `jp.example.exammaster.demo` | 32 / 12 |
 | `NetworkSpecialist` | ネットワークスペシャリスト | `jp.hino.piyotre.networkspecialist` | 375 / 75 |
-| `AppliedInformation` | 応用情報技術者（開発版） | `jp.hino.piyotre.appliedinformation` | 2,880 / 160 |
+| `AppliedInformation` | 応用情報技術者 | `jp.hino.piyotre.appliedinformation` | 1,760 / 160 |
 
-応用情報版は科目A専用で、公式33回2,640問と2026年オリジナル予想問題3セット240問を収録。過去問1,568問を制作内AIで個別校閲し、2016年春期〜2025年秋期の19回1,520問は全問完了。本文・選択肢はテキスト、表はUI、必要な図だけ画像にしています。残る1,072問はこの対象範囲より前の未校閲分です。科目Bの機能・教材は削除しました。分野別はテーマからサブカテゴリへ二段階で絞り、未校閲の旧問題は細分化せず別枠にしています。配色はラベンダー系、各模試80問・150分。開発用StoreKitの買い切り価格は300円、App Store登録・審査は保留です。[制作状況と検証](docs/applied-information/STATUS.md)を参照してください。
+応用情報版は科目A専用で、指定範囲の2016年春期〜2025年秋期の公式過去問19回1,520問と、2026年オリジナル予想問題3セット240問を収録します。過去問は全1,520問を制作内AIで個別校閲し、本文・選択肢はテキスト、表はUI、必要な図だけ画像にしています。2016年春期より前の1,120問はこの配信版に含めません。科目Bの機能・教材は除外し、分野別はテーマからサブカテゴリへ二段階で絞れます。配色はラベンダー系、各模試80問・150分。買い切り商品は300円の開発設定済みで、App Store Connectへの登録・提出を準備中です。[制作状況と検証](docs/applied-information/STATUS.md)を参照してください。
 
 **設備安全管理士は架空の教材です。NWは375問（無料75・有料300）の教材を収録し、公開準備中です。** 対象は2013〜2025年の過去問300問（2020年は対象公開なし）と、オリジナル2026年予想問題の第1〜3回・計75問。全12年度と予想3回は各25問・40分の固定模試です。2010年問23はアプリから外し、制作資料をarchiveへ保管しました。回答済みの履歴は保持します。
 
-2015問9・2018問17・2024問22は、利用者指定に従い当時のIPA公式正答で採点し、仕様上の注意を回答後の解説に常時表示します。原問の技術的一意性の解決やIPAの訂正を意味しません。[採点と解説の方針](docs/network-specialist/review-notes/historical-answer-policy.md)、[制作状況](docs/network-specialist/STATUS.md)、[収録表](docs/network-specialist/COVERAGE.md)、[旧調査履歴](docs/network-specialist/HELD.md)、予想のレビュー[第1回](docs/network-specialist/review-notes/2026-pred-01.md)・[第2回](docs/network-specialist/review-notes/2026-pred-02.md)・[第3回](docs/network-specialist/review-notes/2026-pred-03.md)を参照。教材の完成版検証は通過済み。制作内AIレビューを独立専門家校閲とは称しません。本番設定と審査提出は実施済み。初回ビルドのITMS-91064を修正し、2026-10-12 09:16 JSTに1.0（2）と480円商品を再提出、両方「審査待ち」を確認しました。[最新申請状態](docs/release/submission-status.json)を参照。ストア公開と実機・Sandbox等の一部検証は未完了です。
+2015問9・2018問17・2024問22は、利用者指定に従い当時のIPA公式正答で採点し、仕様上の注意を回答後の解説に常時表示します。原問の技術的一意性の解決やIPAの訂正を意味しません。[採点と解説の方針](docs/network-specialist/review-notes/historical-answer-policy.md)、[制作状況](docs/network-specialist/STATUS.md)、[収録表](docs/network-specialist/COVERAGE.md)、[旧調査履歴](docs/network-specialist/HELD.md)、予想のレビュー[第1回](docs/network-specialist/review-notes/2026-pred-01.md)・[第2回](docs/network-specialist/review-notes/2026-pred-02.md)・[第3回](docs/network-specialist/review-notes/2026-pred-03.md)を参照。教材の完成版検証は通過済み。制作内AIレビューを独立専門家校閲とは称しません。本番設定と審査提出は実施済み。初回ビルドのITMS-91064は修正済み。1.0（2）は課金商品を取得できず2.1(b)で却下されました。有料アプリ契約・銀行・税務情報の有効化を確認し、買い切り価格を300円に変更。商品再取得を改善したビルド3はアップロード・Apple処理完了・内部TestFlight配布済みです。利用者からTestFlightの購入確認完了を受領し、2026-10-14 10:27 JSTにビルド3と300円の買い切り商品を再提出。Apple受付済みで両方審査待ち（提出ID：01fd5a77-32b6-4c9c-ad66-52d2a43a2e38）。[最新申請状態](docs/release/submission-status.json)を参照。ストア公開はApple審査後に手動で行います。返金・VoiceOver・一部の実機検証は未完了です。
 
 ## 体験と技術選定
 

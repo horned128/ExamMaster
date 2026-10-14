@@ -17,8 +17,8 @@ def validate(release=False):
     config=json.loads((APP/"qualification.json").read_text())
     sources=json.loads((DOCS/"sources.json").read_text())
     qs=bank["questions"]; by_id={q["id"]:q for q in qs}
-    assert len(qs)==len(by_id)==2880
-    assert len(bank["mockSets"])==36
+    assert len(qs)==len(by_id)==1760
+    assert len(bank["mockSets"])==22
     assert config["mockQuestionCount"]==80 and config["examMinutes"]==150
     assert len(set(config["freeQuestionIDs"]))==160
     assert all(by_id[i]["year"]==2025 for i in config["freeQuestionIDs"])
@@ -47,6 +47,7 @@ def validate(release=False):
         assert [q["questionNumber"] for q in questions]==list(range(1,81))
         assert all(q["mockSetID"]==s["id"] for q in questions)
     verified=0
+    source_verified=0
     for row in sources["years"]:
         for doc in row["documents"]:
             assert hashlib.sha256((EVIDENCE/doc["file"]).read_bytes()).hexdigest()==doc["sha256"]
@@ -54,17 +55,21 @@ def validate(release=False):
             booklet=next(d for d in row["documents"] if d["section"]=="A" and d["role"]=="qs" and d["administration"]==doc["administration"])
             ocr=json.loads((EVIDENCE/Path(booklet["file"]).with_suffix(".ocr.json")).read_text())
             _,ranges=markers(ocr)
-            for n,(correct,subject) in load_answers(doc,ranges).items():
+            answers=load_answers(doc,ranges)
+            assert len(answers)==80
+            source_verified+=len(answers)
+            if row["year"]<2016: continue
+            for n,(correct,subject) in answers.items():
                 q=by_id[f"ap-{row['year']}-{doc['administration']}-q{n:02d}"]
                 assert q["correctIndex"]==correct and q["subject"]==subject
                 verified+=1
-    assert verified==2640
+    assert verified==1520 and source_verified==2640
     generated,_=build_sets()
     actual=[q for q in qs if q["kind"]=="prediction"]
     assert actual==generated
     assert len({q["stem"] for q in actual})==240
     crops=json.loads((DOCS/"figure-crops.json").read_text())
-    assert len(crops)==2640
+    assert len(crops)==1520
     for q in crops:
         for crop in q["crops"]:
             assert hashlib.sha256((ORIGINALS/crop["asset"]).read_bytes()).hexdigest()==crop["sha256"]
@@ -97,15 +102,15 @@ def validate(release=False):
     assert not (APP/"written-booklets.json").exists()
     assert not (APP/"WrittenResources").exists()
     if release:
-        assert not pending, f"過去問の詳細解説・原問校合・読み上げ校閲が未完了: {len(pending)}問"
+        assert not pending, f"リリース対象の過去問校閲が未完了: {len(pending)}問"
         assert bank.get("isDraft") is False, "公開前に全原問の目視校合・読み上げ・教材の校閲を完了してください。"
         assert config["privacyPolicyURL"], "公開用プライバシーポリシーが必要です。"
-    return dict(status="passed",releaseReady=False,officialDocuments=sum(len(r["documents"]) for r in sources["years"]),
-                pastQuestions=verified,predictionQuestions=len(actual),mockSets=36,freeQuestions=160,
+    return dict(status="passed",releaseReady=not pending and bank.get("isDraft") is False and bool(config["privacyPolicyURL"]),officialDocuments=sum(len(r["documents"]) for r in sources["years"]),
+                sourcePastQuestions=source_verified,pastQuestions=verified,excludedPastQuestions=1120,predictionQuestions=len(actual),mockSets=22,freeQuestions=160,
                 figures=len(images),nativeTextQuestions=len(editorial)+len(actual),nativePastTextQuestions=len(editorial),
                 nativeTableQuestions=sum(any(b["type"]=="table" for b in q.get("bodyBlocks",[])) for q in qs),writtenBooklets=0,offlineWrittenBooklets=0,
                 detailedPastExplanations=len(editorial),pastEditorialPending=len(pending),
-                limitations=[f"過去問の詳細解説・原問校合・読み上げ校閲は{len(editorial)}/{verified}問完了（制作内AI校閲）",
+                limitations=[f"収録する過去問{len(editorial)}/{verified}問は制作内AI校閲。2016年春より前の1120問はこの版に収録しない",
                              "予想問題の外部専門家による校閲は未実施", "本番IAP・広告・公開ポリシー・審査提出は未実施"])
 
 

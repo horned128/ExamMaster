@@ -99,7 +99,7 @@ targetTemplates:
       - path: Ads
       - path: Views
       - path: Assets.xcassets
-      - path: PrivacyInfo.xcprivacy
+      - path: ${privacyManifestPath}
       - path: ${privacyPolicyPath}
         buildPhase: resources
       - path: Qualifications/${qualificationID}/products.storekit
@@ -136,10 +136,11 @@ targets:
     templateAttributes:
       qualificationID: applied-information
       privacyPolicyPath: Qualifications/applied-information/PrivacyPolicy.txt
+      privacyManifestPath: Qualifications/applied-information/PrivacyInfo.xcprivacy
       displayName: ピヨトレ！応用情報技術者
       bundleID: jp.hino.piyotre.appliedinformation
       iconName: AppliedInformationIcon
-      adMobAppID: ca-app-pub-3940256099942544~1458002511
+      adMobAppID: ca-app-pub-9785585722959806~8315066647
     settings:
       base:
         CODE_SIGN_IDENTITY: iPhone Developer
@@ -165,7 +166,9 @@ targets:
   AppliedInformationUITests:
     type: bundle.ui-testing
     platform: iOS
-    sources: [AppliedUITests]
+    sources:
+      - path: AppliedUITests
+      - path: Qualifications/applied-information/products.storekit
     dependencies:
       - target: AppliedInformation
     settings:
@@ -176,6 +179,7 @@ targets:
     templateAttributes:
       qualificationID: demo-safety
       privacyPolicyPath: PrivacyPolicy.txt
+      privacyManifestPath: PrivacyInfo.xcprivacy
       displayName: 設備安全学習
       bundleID: jp.example.exammaster.demo
       iconName: AppIcon
@@ -203,6 +207,7 @@ targets:
     templateAttributes:
       qualificationID: network-specialist
       privacyPolicyPath: Qualifications/network-specialist/PrivacyPolicy.txt
+      privacyManifestPath: PrivacyInfo.xcprivacy
       displayName: ピヨトレ！ネットワークスペシャリスト
       bundleID: jp.hino.piyotre.networkspecialist
       iconName: NetworkSpecialistIcon

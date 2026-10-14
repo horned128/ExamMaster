@@ -29,7 +29,7 @@
       "currency": "JPY",
       "amount": 0
     },
-    "reviewNotes": "アカウント登録やログインは不要です。初回の学習診断はスキップできます。年度別の2023〜2025年の収録済み問題は無料です。有料年度と2026年予想問題は入口でロックし、非消耗型の全問題解放（300円）を購入すると利用できます。購入画面および設定に購入復元の入口があります。購入後は広告UIと新規広告リクエストを停止します。学習履歴は端末内に保存し、設定からリセットできます。過去問の出典と権利表記はアプリ内に表示し、2026年予想問題はピヨトレ！オリジナルと明示しています。"
+    "reviewNotes": "アカウント登録やログインは不要です。初回の学習診断はスキップできます。年度別の2023〜2025年の収録済み問題は無料です。有料年度と2026年予想問題は入口でロックし、非消耗型の全問題解放（300円）を購入すると利用できます。購入画面および設定に購入復元の入口があります。購入後は広告UIと新規広告リクエストを停止します。学習履歴は端末内に保存し、設定からリセットできます。過去問の出典と権利表記はアプリ内に表示し、2026年予想問題はピヨトレ！オリジナルと明示しています。\n\n販売対象は日本のみです。1.0（3）は購入画面を開くたびに商品を再取得し、一時的な取得失敗時の再試行を改善しました。有料アプリ契約・銀行・税務情報はApp Store Connectで有効化済みです。\nTestFlight 1.0（3）で買い切り商品の購入動作を確認済みです。"
   },
   "purchases": [
     {
@@ -46,7 +46,7 @@
       "territories": [
         "JPN"
       ],
-      "reviewScreenshot": "../../release-artifacts/app-store-selected/06-purchase-480.png"
+      "reviewScreenshot": "../../release-artifacts/app-store-selected/06-purchase-300.png"
     }
   ],
   "admob": {
@@ -120,8 +120,8 @@
         ]
       },
       {
-        "name": "app-store-selected-06-purchase-480",
-        "path": "../../release-artifacts/app-store-selected/06-purchase-480.png",
+        "name": "app-store-selected-06-purchase-300",
+        "path": "../../release-artifacts/app-store-selected/06-purchase-300.png",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
@@ -174,8 +174,8 @@
         ]
       },
       {
-        "name": "app-store-medium-06-purchase-480",
-        "path": "../../release-artifacts/app-store-medium/06-purchase-480.png",
+        "name": "app-store-medium-06-purchase-300",
+        "path": "../../release-artifacts/app-store-medium/06-purchase-300.png",
         "family": "APP_IPHONE_61",
         "size": [
           1206,
@@ -192,13 +192,23 @@
   },
   "status": {
     "apple": {
-      "state": "REJECTED",
-      "source": "App Store Connect UI / user review notice",
-      "checkedAt": "2026-10-13T23:35:00+09:00",
-      "buildID": "94d4738c-c081-487f-ad52-1f866277c0cd",
+      "state": "READY_FOR_REVIEW",
+      "source": "App Store Connect UI",
+      "checkedAt": "2026-10-14T09:00:49+09:00",
+      "buildID": "6d5616dc-ef6f-4f9c-81a5-1b0ea0c7b536",
       "submissionID": "4c610708-f1e2-4c12-ac8c-703a5596da5d",
-      "iapState": "READY_FOR_REVIEW",
-      "reason": "2.1(b): failed to load in-app purchase product; Paid Apps Agreement observed as NEW"
+      "iapState": "DEVELOPER_REJECTED",
+      "reason": "Build 3 review item updated after user confirmed TestFlight purchase. Same IAP currently removed from existing submission; IAP review note save awaiting a manual click due unresponsive browser automation. Not yet resubmitted.",
+      "paidAppsAgreement": "ACTIVE",
+      "selectedBuildID": "6d5616dc-ef6f-4f9c-81a5-1b0ea0c7b536",
+      "selectedBuild": "3",
+      "testFlightState": "TESTING",
+      "realSandboxVerification": {
+        "source": "User confirmation",
+        "reply": "購入確認完了",
+        "checkedAt": "2026-10-14T08:49:53+09:00",
+        "build": "3"
+      }
     },
     "admob": {
       "state": "REQUIRES_REVIEW",

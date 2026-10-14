@@ -3,10 +3,10 @@ import StoreKitTest
 @testable import AppliedInformation
 
 final class AppliedInformationTests: XCTestCase {
-    func testCompleteOfficialCoverageAndExamSizing() throws {
+    func testReviewedReleaseScopeAndExamSizing() throws {
         let catalog = try Catalog.load(id: "applied-information")
-        XCTAssertEqual(catalog.questions.count, 2880)
-        XCTAssertEqual(catalog.mockSets.count, 36)
+        XCTAssertEqual(catalog.questions.count, 1760)
+        XCTAssertEqual(catalog.mockSets.count, 22)
         XCTAssertEqual(catalog.qualification.freeQuestionIDs.count, 160)
         XCTAssertEqual(catalog.qualification.subjects, ["テクノロジ", "マネジメント", "ストラテジ"])
         for set in catalog.mockSets {
@@ -17,7 +17,9 @@ final class AppliedInformationTests: XCTestCase {
             XCTAssertEqual(MockExam.session(set: set, catalog: catalog, unlocked: true)?.questions.count, 80)
         }
         let past = catalog.questions.filter { $0.kind == .past }
-        XCTAssertEqual(past.count, 2640)
+        XCTAssertEqual(past.count, 1520)
+        XCTAssertTrue(past.allSatisfy { $0.year >= 2016 })
+        XCTAssertTrue(past.allSatisfy { $0.choiceExplanations?.count == 4 && !($0.steps ?? []).isEmpty })
         XCTAssertTrue(past.allSatisfy { !($0.bodyBlocks ?? []).isEmpty && $0.choices.count == 4 })
         XCTAssertTrue(catalog.questions.allSatisfy(\.validContent))
         let sqlChoices = try XCTUnwrap(past.first { $0.id == "ap-2023-autumn-q28" })
@@ -104,7 +106,7 @@ final class AppliedInformationTests: XCTestCase {
             }
         }
         XCTAssertEqual(Set(partitionedIDs).count, catalog.questions.count)
-        XCTAssertEqual(unreviewedCount, 1072)
+        XCTAssertEqual(unreviewedCount, 0)
     }
 
     func test2022AnswerTableTranscriptionAndUnansweredMockScoring() throws {
@@ -150,7 +152,7 @@ final class AppliedInformationTests: XCTestCase {
         await manager.buy()
         await manager.refreshEntitlement()
         XCTAssertTrue(manager.unlocked, manager.error ?? "購入権限が反映されませんでした")
-        XCTAssertEqual(SessionPlanner.available(catalog, unlocked: manager.unlocked).count, 2880)
+        XCTAssertEqual(SessionPlanner.available(catalog, unlocked: manager.unlocked).count, 1760)
         let restored = PurchaseManager(productID: catalog.qualification.productID)
         await restored.restore()
         XCTAssertTrue(restored.unlocked, restored.error ?? "復元権限が反映されませんでした")

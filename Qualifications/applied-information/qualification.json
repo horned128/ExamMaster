@@ -175,7 +175,7 @@
     "ap-2025-spring-q80"
   ],
   "productID": "jp.hino.piyotre.appliedinformation.unlock",
-  "privacyPolicyURL": null,
+  "privacyPolicyURL": "https://submitdock-ios-pages.netlify.app/privacy/rls-99384ab341592261d839923a",
   "accentHex": "#6554A4",
   "mascotBaseHex": "#E5DEF7",
   "iconTitle": "応用情報\n技術者",
@@ -187,18 +187,18 @@
   ],
   "usesFixedMocks": true,
   "mockPassTitle": "科目A基準点クリア",
-  "contentCredit": "過去問の問題・解答例・採点講評は独立行政法人情報処理推進機構（IPA）に帰属します。出典は年度・期・試験区分・問番号で表示します。2016年春期以降の校閲済み問題は本文と選択肢をテキストで表示し、表は画面内の表、必要な図だけ原問画像を使います。2016年春期より前の未校閲問題は原問画像を表示し、文字認識は検索・読み上げの補助として扱います。オリジナルの2026年予想問題と解説はIPAが作成・監修したものではありません。",
-  "examNote": "科目A（旧午前）専用。公式過去問33回・2,640問と、オリジナル2026年予想問題3セット・240問を収録し、科目Bは含みません。各模試80問・150分。2025年度の春期・秋期160問は無料です。2016年春期〜2025年秋期の19回・1,520問を制作内AIで個別校閲しました（外部専門家による校閲ではありません）。本文・選択肢はテキスト、表はUIで表示します。図の再現に必要な場合のみ画像を使います。2026年度はCBT方式ですが、IPAは出題範囲・問題数・試験時間に変更がないと案内しています。科目Aの基準点到達は試験全体の合否を意味しません。予想問題はIPA非公式で、実際の出題や合格を保証しません。",
+  "contentCredit": "収録した過去問の問題・解答例・採点講評は独立行政法人情報処理推進機構（IPA）に帰属します。出典は年度・期・試験区分・問番号で表示します。2016年春期〜2025年秋期の校閲済み問題は本文と選択肢をテキストで表示し、表は画面内の表、意味の保持に必要な図だけ原問画像を使います。オリジナルの2026年予想問題と解説はIPAが作成・監修したものではありません。",
+  "examNote": "科目A専用。2016年春期〜2025年秋期の公式過去問19回・1,520問と、オリジナル2026年予想問題3セット・240問を収録します。科目Bは含みません。各模試80問・150分、2025年度春期・秋期の160問は無料です。収録する過去問は制作内AIで原問・正答・解説を個別校閲しています（独立した外部専門家の校閲ではありません）。本文・選択肢はテキスト、表はUI、必要な図だけ画像で表示します。2026年度はCBT方式ですが、IPAは出題範囲・問題数・時間に変更がないと案内しています。科目Aの基準点到達は試験全体の合否を意味しません。予想問題はIPA非公式で、実際の出題や合格を保証しません。",
   "ads": {
-    "enabled": false,
-    "bannerEnabled": false,
-    "interstitialEnabled": false,
+    "enabled": true,
+    "bannerEnabled": true,
+    "interstitialEnabled": true,
     "interstitialMinimumIntervalSeconds": 1800,
     "interstitialMinimumSessions": 3,
     "interstitialMinimumAnsweredQuestions": 8,
-    "adMobAppID": "ca-app-pub-3940256099942544~1458002511",
-    "bannerAdUnitID": "ca-app-pub-3940256099942544/2934735716",
-    "interstitialAdUnitID": "ca-app-pub-3940256099942544/4411468910"
+    "adMobAppID": "ca-app-pub-9785585722959806~8315066647",
+    "bannerAdUnitID": "ca-app-pub-9785585722959806/3058870537",
+    "interstitialAdUnitID": "ca-app-pub-9785585722959806/3895466171"
   },
   "chickBaseHex": "#C5B1EF",
   "theme": {

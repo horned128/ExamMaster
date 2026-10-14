@@ -4,7 +4,8 @@
 OCR locates source boundaries; pending questions retain their original PDF
 image, while individually reviewed questions are rendered as native text,
 tables and only the figures needed to preserve their meaning. Complete 1...80
-sets and source hashes are required before assembly.
+sets and source hashes are required before assembly. The shipped question bank
+is intentionally limited to the reviewed 2016 spring through 2025 autumn sets.
 """
 import hashlib
 import json
@@ -26,6 +27,7 @@ APP = ROOT / "Qualifications/applied-information"
 LABELS = "アイウエ"
 SUBJECTS = {"T":"テクノロジ", "M":"マネジメント", "S":"ストラテジ"}
 PERIODS = {"spring":"春期", "autumn":"秋期", "special":"特別"}
+RELEASE_START_YEAR = 2016
 
 
 def dump(path, value):
@@ -164,21 +166,26 @@ def main():
     sources=json.loads((DOCS/"sources.json").read_text())
     predictions,sets=build_sets()
     questions,crops=[],[]
-    for year in sorted(sources["years"],key=lambda x:x["year"],reverse=True):
+    for year in sorted((x for x in sources["years"] if x["year"] >= RELEASE_START_YEAR),key=lambda x:x["year"],reverse=True):
         q,s,c=build_past(year["year"],year["documents"])
         questions.extend(q); sets.extend(s); crops.extend(c)
         print(year["year"],len(q),"past questions",flush=True)
-    assert len(questions)==2640 and len(sets)==36
+    assert len(questions)==1520 and len(sets)==22
     questions.extend(predictions)
     reviewed=apply_editorial(questions, crops)
+    assert len(reviewed)==1520, "リリース対象の全過去問を校閲してください。"
     apply_native(questions, reviewed, crops)
-    dump(APP/"questions.json",dict(version=2,isDraft=True,questions=questions,mockSets=sets))
+    used_images={b["assetName"] for q in questions for b in q.get("bodyBlocks",[]) if b["type"]=="image"}
+    for image in (APP/"Figures").glob("*.jpg"):
+        if image.name not in used_images:
+            image.unlink()
+    dump(APP/"questions.json",dict(version=2,isDraft=False,questions=questions,mockSets=sets))
     dump(DOCS/"figure-crops.json",crops)
     qualification=json.loads((APP/"qualification.json").read_text())
     qualification["freeQuestionIDs"]=[q["id"] for q in questions if q["year"]==2025]
     dump(APP/"qualification.json",qualification)
     print("Total",len(questions),"科目A questions",flush=True)
-    print("Question-specific explanations and in-session reviews:",len(reviewed),"/ 2640",flush=True)
+    print("Question-specific explanations and in-session reviews:",len(reviewed),"/ 1520 shipped past questions",flush=True)
 
 
 if __name__=="__main__":main()

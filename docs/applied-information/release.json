@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "id": "applied-information",
+  "app": {
+    "name": "ピヨトレ！応用情報技術者",
+    "platform": "IOS",
+    "bundleID": "jp.hino.piyotre.appliedinformation",
+    "version": "1.0",
+    "build": "1",
+    "developerName": "hino",
+    "supportEmail": "hino_lizard581@icloud.com",
+    "subtitle": "科目A過去問・分野別・予想模試",
+    "keywords": "応用情報,資格,試験,情報処理,科目A,過去問,模試,解説,分野別,IT,CBT",
+    "category": "EDUCATION",
+    "description": "応用情報技術者試験の科目Aに特化した学習アプリです。2016年春期〜2025年秋期の公式過去問19回・1,520問を原問・正答・詳しい解説まで個別に校閲し、本文と選択肢はテキスト、表は画面内の表、図は必要なものだけ画像で表示します。制作内AIによる校閲で、独立した外部専門家による校閲ではありません。\n\n2026年予想問題はオリジナル3セット、各80問・150分です。2025年度春期・秋期の公式過去問160問は無料で利用できます。年度別・分野別の演習、苦手問題、ブックマーク、学習記録、模試に対応します。\n\n科目Bは収録していません。予想問題はIPA非公式で、IPAが作成・監修したものではありません。科目Aの基準点到達は試験全体の合格を意味せず、実際の出題や合格を保証しません。\n\n無料版にはバナー広告と、学習の区切りで表示される全画面広告があります。300円の買い切り購入で全問題・模試を解放すると、広告も非表示になります。"
+  },
+  "apple": {
+    "appID": "6822732103",
+    "teamID": "QZH83KGFVX",
+    "sku": "piyotre-applied-information",
+    "locale": "ja",
+    "territories": [
+      "JPN"
+    ],
+    "releaseMethod": "MANUAL",
+    "price": {
+      "baseTerritory": "JPN",
+      "currency": "JPY",
+      "amount": 0
+    }
+  },
+  "purchases": [
+    {
+      "productID": "jp.hino.piyotre.appliedinformation.unlock",
+      "name": "応用情報技術者 全問題解放",
+      "type": "NON_CONSUMABLE",
+      "price": {
+        "baseTerritory": "JPN",
+        "currency": "JPY",
+        "amount": 300
+      },
+      "reviewScreenshot": "screenshots/iphone-6.9/08-unlock-300-yen.png"
+    }
+  ],
+  "admob": {
+    "enabled": true,
+    "publisherID": "pub-9785585722959806",
+    "appID": "ca-app-pub-9785585722959806~8315066647",
+    "adUnits": [
+      {
+        "name": "banner",
+        "id": "ca-app-pub-9785585722959806/3058870537"
+      },
+      {
+        "name": "interstitial",
+        "id": "ca-app-pub-9785585722959806/3895466171"
+      }
+    ]
+  },
+  "pages": {
+    "baseURL": "https://submitdock-ios-pages.netlify.app",
+    "id": "rls-99384ab341592261d839923a",
+    "about": "# ピヨトレ！応用情報技術者\n\n応用情報技術者試験の科目Aに特化した学習アプリです。2016年春期〜2025年秋期の公式過去問19回・1,520問と、オリジナル2026年予想問題3セット・240問を収録します。科目Bは含みません。\n\n各模試80問・150分。2025年度春期・秋期160問は無料です。収録する過去問は制作内AIで個別校閲していますが、独立した外部専門家による校閲ではありません。予想問題はIPA非公式です。無料版にはバナー広告と学習の区切りに表示される全画面広告があります。買い切り300円で全問題・模試を解放すると広告も停止します。",
+    "support": "# サポート\n\n購入した教材を利用できない場合は、購入時と同じApple Accountでサインインし、アプリ内の「購入を復元」をお試しください。\n\n問題の誤りや不具合は、年度・期・問題番号、端末名、iOSとアプリのバージョン、再現手順を添えてご連絡ください。パスワードや決済カード情報は送らないでください。\n\nメール：hino_lizard581@icloud.com\n\n運営者：hino",
+    "privacy": "# ピヨトレ！応用情報技術者 プライバシーポリシー\n\n制定日：2026年10月14日\n\n## 1. アプリ内の学習情報\n\n回答履歴、正誤、回答時間、自信度、習熟度、ブックマーク、模擬試験の選択・結果、オンボーディング状態、表示設定、任意で登録した試験日は、学習機能の提供と端末内の表示のために利用者の端末内へ保存します。アカウント登録や運営者の学習サーバーはなく、これらの学習情報を運営者へ送信しません。アプリ独自のクラウド同期もありません。Appleの端末バックアップを利用している場合、その取扱いは利用者のAppleの設定とAppleのポリシーに従います。\n\n## 2. 広告・同意管理\n\n無料版ではGoogle Mobile Ads SDK（AdMob）を使い、画面内にバナー広告を表示します。また、8問以上を解いた学習の区切りで、全画面広告を表示する場合があります。全画面広告には、初回3セッション後から表示し、前回表示から30分以上空ける制限を設けています。診断中には表示しません。300円の買い切り購入で全教材を解放すると、広告表示と新たな広告リクエストを停止します。\n\n広告の表示、測定、不正防止、品質向上のため、Google Mobile Ads SDKがIPアドレス（おおよその位置の推定に使われる場合があります）、端末識別子（広告識別子を含む場合があります）、表示・操作した広告、アプリ内の操作、性能情報、クラッシュ等の診断情報を処理する場合があります。情報はGoogleや広告配信に関わる事業者によって処理・共有されることがあります。学習回答や模試の成績を広告事業者へ送る機能はありません。\n\n同意管理にはGoogle User Messaging Platform（UMP）SDKを使います。対象地域や設定に応じて同意画面を表示し、同意状態を確認してから広告をリクエストします。広告のプライバシー設定が必要な場合は「設定」→「データとプライバシー」に表示される「広告のプライバシー設定を変更」から変更できます。アプリがトラッキング許可を求めた場合、許可は任意であり、許可しなくても無料範囲の学習を続けられます。広告識別子（IDFA）の利用とアプリ・Webサイトを横断したトラッキングは、AppleのApp Tracking Transparencyの許可と広告の同意設定に従います。\n\n広告に関する情報の詳しい取扱いは、[Googleのプライバシーポリシー](https://policies.google.com/privacy?hl=ja)と[Google Mobile Ads SDKのApp Storeデータ開示](https://developers.google.com/admob/ios/privacy/data-disclosure?hl=ja)をご確認ください。\n\n## 3. アプリ内購入\n\n全問題解放の買い切り購入と購入復元にはApple StoreKitを利用します。購入の処理と権限確認に必要な情報はAppleが処理します。運営者が決済カード番号などの決済情報を取得することはありません。購入はアプリ内の学習履歴とは別に扱われます。\n\n## 4. お問い合わせ\n\nメールでお問い合わせいただいた場合、送信者のメールアドレス、お名前（記載された場合）、お問い合わせ内容と添付情報を受け取ります。回答、不具合の確認、教材の修正のために必要な範囲で利用し、対応に必要な期間保管した後、不要になった情報を削除します。パスワードや決済カード情報は送らないでください。\n\n## 5. サポート・プライバシーページ\n\nこのポリシーとサポート情報はNetlify上のSubmitDockを通じて配信します。ページへのアクセス時、ホスティング提供者が配信と安全な運用のためIPアドレスなどのアクセス情報を処理する場合があります。ページ閲覧によりアプリ内の学習履歴が送信されることはありません。\n\n## 6. 保存情報の削除\n\n学習情報はアプリの「設定」→「データとプライバシー」→「学習情報をリセット」から削除できます。アプリを削除すると、端末内に保存した学習情報も削除される場合があります。購入権限はApple Accountに紐づき、学習情報をリセットしても削除されません。広告事業者が処理する情報は、各社のプライバシーポリシーと設定に従って管理されます。\n\n## 7. ポリシーの変更\n\nアプリの機能や利用するサービスが変わった場合、このポリシーを更新します。\n\n## 8. お問い合わせ窓口\n\n運営者：hino\n\nメール：hino_lizard581@icloud.com\n",
+    "storeURL": ""
+  },
+  "assets": {
+    "icon": "../../Assets.xcassets/AppliedInformationIcon.appiconset/AppIcon.png",
+    "screenshots": [
+      {
+        "name": "01-home",
+        "family": "APP_IPHONE_67",
+        "size": [
+          1320,
+          2868
+        ],
+        "path": "app-store-assets/png/1320x2868/01.png"
+      },
+      {
+        "name": "02-years",
+        "family": "APP_IPHONE_67",
+        "size": [
+          1320,
+          2868
+        ],
+        "path": "app-store-assets/png/1320x2868/02.png"
+      },
+      {
+        "name": "03-subcategory",
+        "family": "APP_IPHONE_67",
+        "size": [
+          1320,
+          2868
+        ],
+        "path": "app-store-assets/png/1320x2868/03.png"
+      },
+      {
+        "name": "04-question-text",
+        "family": "APP_IPHONE_67",
+        "size": [
+          1320,
+          2868
+        ],
+        "path": "app-store-assets/png/1320x2868/04.png"
+      },
+      {
+        "name": "05-explanation",
+        "family": "APP_IPHONE_67",
+        "size": [
+          1320,
+          2868
+        ],
+        "path": "app-store-assets/png/1320x2868/05.png"
+      },
+      {
+        "name": "06-unlock",
+        "family": "APP_IPHONE_67",
+        "size": [
+          1320,
+          2868
+        ],
+        "path": "app-store-assets/png/1320x2868/06.png"
+      }
+    ]
+  },
+  "status": {
+    "apple": {
+      "state": "APP_CREATED",
+      "source": "App Store Connect web (2026-10-14)"
+    },
+    "admob": {
+      "state": "CREATED_UNPUBLISHED",
+      "source": "AdMob web UI (2026-10-14)"
+    },
+    "storePublic": false
+  },
+  "local": {
+    "projectRoot": "../..",
+    "xcode": {
+      "project": "ExamMaster.xcodeproj",
+      "scheme": "AppliedInformation"
+    },
+    "checks": [
+      [
+        ".venv-network/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/applied-information",
+        "-p",
+        "test_*.py"
+      ]
+    ],
+    "screenshots": {
+      "testIdentifiers": [
+        "AppliedInformationUITests/AppliedStudyUITests/testHomeContainsSubjectABalanceAndNoWrittenPractice",
+        "AppliedInformationUITests/AppliedStudyUITests/testSubjectMapAddsSubcategorySelectionBeforeQuestions",
+        "AppliedInformationUITests/AppliedStudyUITests/testNativeTextAndEssentialDiagram",
+        "AppliedInformationUITests/AppliedStudyUITests/testDetailedExplanationAndIndividualChoiceReasons",
+        "AppliedInformationUITests/AppliedStudyUITests/test300YenNonConsumableUnlockScreen"
+      ],
+      "devices": [
+        {
+          "id": "iphone-large",
+          "udid": "4C0C0E62-55CA-4A0E-AF7A-D9AA956FBA0F",
+          "family": "APP_IPHONE_67"
+        },
+        {
+          "id": "iphone-medium",
+          "udid": "C11CE6C7-5800-42FB-B7A2-790F99E1A60A",
+          "family": "APP_IPHONE_61"
+        }
+      ]
+    },
+    "reviewContactFile": "../../release-artifacts/review-contact.private.json"
+  }
+}

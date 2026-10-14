@@ -1,4 +1,5 @@
 import XCTest
+import StoreKitTest
 
 final class AppliedStudyUITests: XCTestCase {
     private func launch() -> XCUIApplication {
@@ -90,5 +91,27 @@ final class AppliedStudyUITests: XCTestCase {
         reasons.tap()
         XCTAssertTrue(app.staticTexts["左右端の2セルと中央の4セルを、それぞれ¬A・¬B・¬DとB・Dで表している。"].waitForExistence(timeout: 5))
         capture("AP2025秋・全選択肢の理由と解き方")
+    }
+
+    func test300YenNonConsumableUnlockScreen() {
+        let store = try! SKTestSession(configurationFileNamed: "products")
+        store.disableDialogs = true
+        store.clearTransactions()
+        store.storefront = "JPN"
+        store.locale = Locale(identifier: "ja_JP")
+        defer {
+            store.clearTransactions()
+            store.resetToDefaultState()
+        }
+        let app = launch()
+        app.buttons["設定"].tap()
+        let unlock = app.buttons["全問題を解放する"]
+        XCTAssertTrue(unlock.waitForExistence(timeout: 5))
+        unlock.tap()
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label CONTAINS '1,760問を、永久に解放。'")).firstMatch.waitForExistence(timeout: 10))
+        let buy = app.buttons.matching(NSPredicate(format: "label CONTAINS '300'")).firstMatch
+        XCTAssertTrue(buy.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.buttons["購入を復元"].exists)
+        capture("AP全問題解放・300円買い切り")
     }
 }

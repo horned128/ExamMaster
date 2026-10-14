@@ -1,14 +1,14 @@
 {
-  "checkedAtJST": "2026-10-13 23:44",
+  "checkedAtJST": "2026-10-14 13:12",
   "appStoreConnectID": "6821629759",
   "version": "1.0",
-  "build": "2",
-  "buildID": "94d4738c-c081-487f-ad52-1f866277c0cd",
-  "reviewSubmissionID": "4c610708-f1e2-4c12-ac8c-703a5596da5d",
-  "reviewURL": "https://appstoreconnect.apple.com/apps/6821629759/distribution/reviewsubmissions/details/4c610708-f1e2-4c12-ac8c-703a5596da5d",
-  "appStatus": "REJECTED",
+  "build": "3",
+  "buildID": "6d5616dc-ef6f-4f9c-81a5-1b0ea0c7b536",
+  "reviewSubmissionID": "01fd5a77-32b6-4c9c-ad66-52d2a43a2e38",
+  "reviewURL": "https://appstoreconnect.apple.com/apps/6821629759/distribution/reviewsubmissions/details/01fd5a77-32b6-4c9c-ad66-52d2a43a2e38",
+  "appStatus": "WAITING_FOR_REVIEW",
   "iapAppleID": "6821756732",
-  "iapStatus": "READY_FOR_REVIEW",
+  "iapStatus": "WAITING_FOR_REVIEW",
   "itemsSubmitted": 2,
   "releaseMethod": "MANUAL",
   "appPriceJPY": 0,
@@ -33,10 +33,19 @@
     "archiveTrackingManifestChecksPassed": 3,
     "ipaTrackingManifestChecksPassed": 3,
     "build3iPhoneTestsPassed": 24,
-    "build3iPhoneOS": "26.2"
+    "build3iPhoneOS": "26.2",
+    "build3iPadOS27TestsPassed": 5,
+    "build3iPadOS27SmokeTestsPassed": 1,
+    "build3LargePurchaseUITestsPassed": 1,
+    "build3iPadDevice": "iPad Air 11-inch (M3) Simulator / iPadOS 27.0",
+    "build3ReleasePreflightChecksPassed": 16,
+    "build3ArchiveTrackingManifestChecksPassed": 3,
+    "build3ValidatorTestsPassed": 10,
+    "build3ArchivedBankMatchesReviewedBank": true,
+    "build3ArchivedBankSHA256": "bb6cfe077ed8a54945ff5f70986d9f416c34ba4caf19653182e29c6e142c9e01"
   },
   "limitations": [
-    "本番商品をSandbox/TestFlightで購入・復元・返金する動作は未確認",
+    "実Sandboxの購入確認は利用者申告。返金は未確認。",
     "最小対応OSの実機・VoiceOverは未確認",
     "Google広告SDK/UMPバイナリのdSYM警告あり。Appleへのアップロード自体は成功"
   ],
@@ -73,23 +82,77 @@
       "iapPriceJPY": 300,
       "reason": "2.1(b): failed to load in-app purchase product",
       "source": "App Store Connect UI / Apple review notice supplied by user"
+    },
+    {
+      "checkedAtJST": "2026-10-14 08:26",
+      "source": "App Store Connect > Business UI",
+      "paidAppsAgreement": "ACTIVE",
+      "bankingState": "ACTIVE",
+      "taxFormsState": "ACTIVE"
+    },
+    {
+      "checkedAtJST": "2026-10-14 08:35",
+      "source": "App Store Connect UI / shared releasekit upload log",
+      "replacementBuild": "3",
+      "replacementBuildID": "6d5616dc-ef6f-4f9c-81a5-1b0ea0c7b536",
+      "replacementUploaded": true,
+      "replacementBinaryProcessingStatus": "VALID",
+      "replacementResubmitted": false
+    },
+    {
+      "checkedAtJST": "2026-10-14 08:49",
+      "source": "User confirmation",
+      "testFlightBuild": "3",
+      "verificationReply": "購入確認完了"
+    },
+    {
+      "checkedAtJST": "2026-10-14 09:00",
+      "source": "App Store Connect submission detail UI",
+      "build": "3",
+      "appStatus": "READY_FOR_REVIEW",
+      "iapStatus": "DEVELOPER_REJECTED",
+      "reviewSubmissionStatus": "UNRESOLVED_ISSUES",
+      "replacementResubmitted": false
+    },
+    {
+      "checkedAtJST": "2026-10-14 13:12",
+      "source": "App Store Connect > App Review submission detail UI",
+      "build": "3",
+      "buildID": "6d5616dc-ef6f-4f9c-81a5-1b0ea0c7b536",
+      "iapAppleID": "6821756732",
+      "iapPriceJPY": 300,
+      "appStatus": "WAITING_FOR_REVIEW",
+      "iapStatus": "WAITING_FOR_REVIEW",
+      "reviewSubmissionStatus": "WAITING_FOR_REVIEW",
+      "reviewSubmissionID": "01fd5a77-32b6-4c9c-ad66-52d2a43a2e38",
+      "itemsSubmitted": 2,
+      "submittedAtJST": "2026-10-14 10:27",
+      "replacementResubmitted": true
+    },
+    {
+      "checkedAtJST": "2026-10-14 13:12",
+      "source": "App Store Connect > App Review submission list UI",
+      "previousSubmissionID": "4c610708-f1e2-4c12-ac8c-703a5596da5d",
+      "previousSubmissionStatus": "DELETED",
+      "reason": "商品を再追加できなかった旧提出物を取り下げ、同じアプリ版と買い切り商品を新しい提出物にまとめた。商品自体は削除・再作成していない。"
     }
   ],
-  "reviewSubmissionStatus": "UNRESOLVED_ISSUES",
+  "reviewSubmissionStatus": "WAITING_FOR_REVIEW",
   "binaryProcessingStatus": "VALID",
   "failureReason": "Guideline 2.1(b): failed to load in-app purchase product on iPad Air M3 / iPadOS 27.0",
-  "diagnosisStatus": "有料アプリ契約がNEW（新規）で未有効を確認。商品ID・非消耗型・日本の販売設定を確認し、価格を300円に変更・保存後の価格表を確認。商品再取得を改善したビルド3を準備中。",
+  "diagnosisStatus": "利用者がTestFlight 1.0（3）の購入動作を確認。300円・購入確認済みのIAP審査メモを保存し、旧提出物を取り下げたうえで、ビルド3と同一の買い切り商品を新しい提出物にまとめて再提出。2026-10-14 10:27 JSTにAppleがアプリ版とIAPの2項目を受け付け、どちらも審査待ち。",
   "replacementBuild": "3",
-  "replacementArchiveCreated": false,
-  "replacementUploaded": false,
-  "replacementExported": false,
+  "replacementArchiveCreated": true,
+  "replacementUploaded": true,
+  "replacementExported": true,
   "previousFailureReason": "ITMS-91064: PrivacyInfo.xcprivacyのtracking=trueに対する対象ドメインが空。",
-  "replacementResubmitted": false,
+  "replacementResubmitted": true,
   "paidAppsAgreement": {
-    "state": "NEW",
+    "state": "ACTIVE",
     "source": "App Store Connect > Business UI",
-    "checkedAtJST": "2026-10-13 23:44",
-    "accountHolderActionRequired": "登録情報を確認・保存後、有料アプリ契約に同意し、必要な銀行・税務情報を登録して有効化"
+    "checkedAtJST": "2026-10-14 08:26",
+    "bankingState": "ACTIVE",
+    "taxFormsState": "ACTIVE"
   },
   "iapPriceObservation": {
     "amountJPY": 300,
@@ -98,5 +161,41 @@
     "availableTerritories": [
       "JPN"
     ]
+  },
+  "replacementBuildID": "6d5616dc-ef6f-4f9c-81a5-1b0ea0c7b536",
+  "replacementBinaryProcessingStatus": "VALID",
+  "replacementArchive": ".submitdock/piyotre-network/1.0-3.xcarchive",
+  "replacementUploadLog": ".submitdock/piyotre-network/upload-1.0-3/upload.log",
+  "iapReviewAssociation": "300円の審査資料を編集するため既存提出物から一時削除。商品自体は同じApple IDで存在。再提出前に同じ商品を追加する。",
+  "testFlight": {
+    "build": "3",
+    "state": "TESTING",
+    "internalGroup": "あ",
+    "testerCount": 1,
+    "source": "App Store Connect > TestFlight UI",
+    "checkedAtJST": "2026-10-14 08:39",
+    "url": "https://appstoreconnect.apple.com/teams/913bbb14-4100-4965-a0ac-17ce22f7ac5a/apps/6821629759/testflight/ios/6d5616dc-ef6f-4f9c-81a5-1b0ea0c7b536",
+    "realSandboxVerified": true,
+    "verificationSource": "User confirmation after request to check product price, Sandbox purchase and restore",
+    "verificationReply": "購入確認完了",
+    "verifiedAtJST": "2026-10-14 08:49"
+  },
+  "autoReviewBlock": {
+    "action": "審査内容を更新",
+    "reason": "実Sandboxでの商品取得・購入・復元が未確認のままで、確認後に再提出する前提を満たしていない",
+    "nextStep": "TestFlight 1.0（3）で商品300円の表示・Sandbox購入・購入復元を利用者が確認する",
+    "resolvedBy": "User confirmed requested TestFlight purchase verification",
+    "resolvedAtJST": "2026-10-14 08:49"
+  },
+  "pendingActions": [],
+  "browserInteractionBlock": {
+    "observedAtJST": "2026-10-14 09:00",
+    "action": "IAP審査メモ保存・審査用に追加",
+    "symptom": "入力は反映されるが、許可されたブラウザのクリック・キーボード操作が確定しない",
+    "nativeFallback": "Computer Use rejected com.openai.codex app access for safety reasons",
+    "userHandoff": "現在のIAP画面の保存を一度押すよう依頼",
+    "resolved": true,
+    "resolvedAtJST": "2026-10-14 10:24",
+    "resolution": "ブラウザを再接続し、審査メモの保存済み状態を再読込で確認。IAPを新しい提出物へ追加できた。"
   }
 }

@@ -1,10 +1,16 @@
 # ピヨトレ！ネットワークスペシャリストの公開申請
 
-2026-10-12（日本時間）更新。対象は **NetworkSpecialist** Scheme。ExamMaster Schemeは架空資格のデモです。教材は最新指定に従い「3問を当時の公式正答で採点し、回答後に注意点を説明する」方針で375問を収録した。初回ビルド1のITMS-91064を修正し、署名付きビルド2のArchive/IPA検査とアップロードを完了。**2026-10-12 09:16 JSTにアプリ1.0（2）と買い切り商品を再提出し、両方とも「審査待ち」を確認した。** 承認後は手動公開。
+2026-10-14（日本時間）更新。対象は **NetworkSpecialist** Scheme。ExamMaster Schemeは架空資格のデモです。375問を収録。1.0（2）は課金商品を取得できずGuideline 2.1(b)で却下された。有料アプリ契約・銀行・税務情報を有効化し、買い切り価格を300円に変更。商品取得を改善した署名付きビルド3を提出し、TestFlightでの購入確認を受領。2026-10-14 10:27 JST、ビルド3と300円の買い切り商品を同じ提出物でAppleが受け付け、両項目とも審査待ち。提出IDは`01fd5a77-32b6-4c9c-ad66-52d2a43a2e38`。承認後は手動公開。
 
-[App Store Connectの提出物](https://appstoreconnect.apple.com/apps/6821629759/distribution/reviewsubmissions/details/4c610708-f1e2-4c12-ac8c-703a5596da5d)、[申請結果・検証記録](submission-status.json)。審査承認・ストア公開・AdMobアプリ審査はまだ完了していない。ストア公開後にAdMobへ公開ページをリンクし、Google側の審査とapp-ads.txt認証結果を確認する。
+[App Store Connectの提出物](https://appstoreconnect.apple.com/apps/6821629759/distribution/reviewsubmissions/details/01fd5a77-32b6-4c9c-ad66-52d2a43a2e38)、[申請結果・検証記録](submission-status.json)。Appleの審査・ストア公開・AdMobアプリ審査はまだ完了していない。ストア公開後にAdMobへ公開ページをリンクし、Google側の審査とapp-ads.txt認証結果を確認する。
 
 初回提出の履歴：08:34 JSTには1.0（1）とIAPが審査待ちだったが、その後ITMS-91064で「バイナリが無効」になった。アプリ本体のPrivacy Manifestでtracking=trueに対する対象ドメイン一覧が空だったため、広告ホストを追記し、回帰テストと実リソース検査を追加した。ビルド2はXcode再ログイン後に配布用書き出しとアップロードが成功。既存の審査提出物を更新して再提出した。詳細は[itms-91064-build1.md](itms-91064-build1.md)。
+
+## 1.0（3）の課金修正
+
+[調査と変更の記録](iap-review-2026-10-13.md)を参照。購入画面を開くたびに商品と購入権限を再取得し、商品が空・通信失敗の際は最大3回再試行する。成功時に古いエラーを消し、検証済み購入済み権限は商品情報の取得失敗で取り消さない。
+
+300円のStoreKitTestでiPhone単体23件＋購入UI1件、審査端末と同じiPad Air M3 / iPadOS 27.0の対象5件、iPhone 17 Pro Maxの購入UI1件が成功。両iPhone画像の6枚目を `06-purchase-300.png` へ差し替え、旧480円の画像とテスト結果は履歴として保持する。署名付きビルド3のArchiveと全3つのPrivacy Manifest検査が成功。SubmitDockの既存台帳と公開ページも300円へ更新済み。TestFlight 1.0（3）での買い切り商品の購入動作は利用者が確認済み。2026-10-14 10:27 JSTにビルド3とIAPを同一提出へまとめ、Apple受付済みで両項目とも審査待ち。実Sandboxの購入確認は利用者申告、返金動作は未確認。
 
 ## 375問の教材と3問の採点方針
 
@@ -22,19 +28,20 @@
 
 ## 必要な情報と現在の状態
 
-| 情報 | 2026-10-12の状態 |
+| 情報 | 2026-10-14の状態 |
 |---|---|
 | Apple登録 | Team QZH83KGFVX、App Store Connect ID 6821629759。既存アカウントで新アプリを登録済み。 |
 | 正式識別子 | Bundle `jp.hino.piyotre.networkspecialist`、非消耗型商品 `jp.hino.piyotre.networkspecialist.unlock`。本番設定は[production-config.json](production-config.json)。 |
-| 販売 | 本体無料、全問題解放＋広告停止は買い切り480円、日本のみ。バージョンのリリース方式は手動。商品ID 6821756732を正式登録し、アプリ1.0（2）と同じ提出物で審査待ち。 |
+| 販売 | 本体無料、全問題解放＋広告停止は買い切り300円、日本のみ。手動公開。商品ID 6821756732を維持。有料アプリ契約・銀行・税務情報は有効。 |
 | 掲載情報 | 正式名「ピヨトレ！ネットワークスペシャリスト」、サブタイトル・日本語説明・キーワード・教育カテゴリ・審査連絡先を保存。個人の審査連絡先はGit管理外のprivateファイルにのみ保存。 |
-| 公開Web | [サポート兼紹介ページ](https://submitdock-ios-pages.netlify.app/support/mv3sm6om-8784abde)、[プライバシー](https://submitdock-ios-pages.netlify.app/privacy/mv3sm6om-8784abde)。既存URLのままアイコン・Markdown・375問画像・480円表示を更新済み。 |
+| 公開Web | [サポート兼紹介ページ](https://submitdock-ios-pages.netlify.app/support/mv3sm6om-8784abde)、[プライバシー](https://submitdock-ios-pages.netlify.app/privacy/mv3sm6om-8784abde)。既存URLのままアイコン・Markdown・375問画像・300円表示を更新済み。 |
 | AdMob | 本番アプリ、バナー、インタースティシャルのIDを登録・実装済み。一般向けGレーティングに制限し、高エンゲージメント広告をオフ。日本語・英語の欧州向けUMPメッセージを公開。 |
 | app-ads.txt | ドメイン直下に正しい `pub-9785585722959806` のDIRECT行が公開済み。既存の正しい行を保持。App Store公開後にAdMobへストアを紐付け、認証・アプリ審査結果を確認する。 |
 | App Privacy | 最終ArchiveのGoogle広告/UMP Privacy Manifestに従い7種類を入力。利用者の実行時同意を得てプライバシーラベル公開済み。位置情報・ID・使用状況は本人に関連、診断は非関連、デバイスIDをトラッキング用途として申告。学習履歴は端末保存。 |
 | 年齢/権利/暗号 | 広告あり・教育4+、コンテンツ権利情報を保存。標準システム/SDKのネットワーク暗号化のみで`ITSAppUsesNonExemptEncryption=false`。 |
-| ビルド | `release-artifacts/app-store-1.0-build2-privacy-fix/` に修正版のArchive/IPAと検査結果、`app-store-1.0-build2-upload/` に **Upload succeeded / EXPORT SUCCEEDED** のログ。ビルド2は処理完了・再提出済み。アップロード済み番号を再送しない。旧ビルド1は履歴として保持。 |
-| 検証 | 教材103件・申請ツール17件・native単体20件を通過。事前検査16項目、実Archive/IPAの各3つのPrivacy Manifestも成功。480円の購入/解放/権限失効後ロックをUIテスト1件で確認。最小OS実機、VoiceOver、Sandbox/TestFlightでの本番商品の購入/復元/返金は別途未確認。 |
+| ビルド3 | `.submitdock/piyotre-network/1.0-3.xcarchive` を署名・検査済み。`upload-1.0-3/upload.log` に Upload succeeded / EXPORT SUCCEEDED。Appleでバイナリ確認済み、版1.0への選択保存と内部TestFlight配布済み。2026-10-14にビルド3と300円IAPを同時再提出し、両項目の審査待ちを確認。 |
+| ビルド2の履歴 | `release-artifacts/app-store-1.0-build2-privacy-fix/` に修正版のArchive/IPAと検査結果、`app-store-1.0-build2-upload/` に **Upload succeeded / EXPORT SUCCEEDED** のログ。ビルド2は処理完了・再提出済み。アップロード済み番号を再送しない。旧ビルド1は履歴として保持。 |
+| 検証 | 過去の教材103件に加え、ビルド3の申請ツール17件・教材検査の回帰10件・事前検査16項目・ArchiveのPrivacy Manifest3つが成功。300円のStoreKitTestはiPhone単体23＋UI1、iPadOS 27対象5、大型iPhone購入UI1が成功。実Sandboxの購入は利用者が確認済みと申告。返金・最小OS実機・VoiceOverは未確認。 |
 
 Appleは2026年4月28日からiOS 26以降のSDKでのビルドを要求。現在のXcode 27は対応範囲だが、提出時点の公式条件も再確認する。iOS 17という最小対応OSと、提出に必要なビルドSDKは別。2027年4月の追加要件を現在の要件と混同しない。
 
@@ -45,7 +52,7 @@ IPAの公開過去問は教育目的など制度の意義に反しない利用�
 1. 教材375問の完成版検証は通過済み。最終ビルドでも組立て一致・公式正答・レビュー／図版ハッシュを検査する。3問の採点方針と回答後の注意書きを保持する。
 2. Developer契約を確認。IAPを提供するのでPaid Apps Agreement・税務・銀行情報を本人が登録。販売国を決める。
 3. 正式Bundle IDを登録し、NetworkSpecialistにTeamと署名を設定。App Store Connectにアプリを作成（日本語、iOS、正式Bundle ID、管理用SKU）。名前の利用可否はApple側で確認する。
-4. 買い切り商品を作成。正式商品IDとアプリを一致させる。販売地域・税込480円の価格設定・商品名/説明・審査用購入画面を入力。
+4. 買い切り商品を作成。正式商品IDとアプリを一致させる。販売地域・税込300円の価格設定・商品名/説明・審査用購入画面を入力。
 5. 正式サポート/ポリシーを公開。本番広告・同意を設定し、App Privacy・年齢区分・暗号化・権利を回答。販売文・画像・審査メモを確定する。
 6. 下記のローカル検査と単体/対象UIテストを実行。署名付きArchiveからPrivacy Reportを生成・確認し、実機検証する。
 7. ArchiveからIPAを生成しApp Store Connectへアップロード。ビルドの処理完了を確認し、暗号化申告等を済ませ、TestFlight/Sandboxで検証。外部TestFlightはベータ審査が必要になる場合がある。
@@ -64,7 +71,7 @@ IPAの公開過去問は教育目的など制度の意義に反しない利用�
 
 Releaseの実ビルド設定と教材を読み、署名Team・正式ID・SDK・商品一致・広告ID/Info.plist一致・ポリシーを検査。既存教材の`validate.py --release`も実行する。未完了なら終了コード1、実行不能なら2。教材や本番IDを勝手に補完せず、Appleのアカウントにも変更を加えない。レポートのlocalChecksPassedはApple側・実機・法務・収集データの完了保証ではない。
 
-最新の[事前検査レポート](preflight-2026-10-12.json)は16項目すべて通過。正式ID・480円の設定・広告ID・完成375問に加え、Privacy Manifestのトラッキング宣言と対象ドメインの整合も確認した。旧10/11レポートは本番設定前の履歴として保持。
+最新の[事前検査レポート](preflight-2026-10-14.json)は16項目すべて通過。旧480円の固定値を300円に更新し、検査の回帰10件も成功。正式ID・300円の設定・広告ID・完成375問に加え、Privacy Manifestのトラッキング宣言と対象ドメインの整合も確認した。旧10/11レポートは本番設定前の履歴として保持。
 
 保存済み設定で再検査する場合:
 
@@ -107,7 +114,7 @@ bash tools/release/screenshots.sh <iPhone-17-Pro-MaxのSimulator-UDID> /tmp/exam
 
 ### SubmitDockの公開ページ（同じURLで更新済み）
 
-Page IDは`mv3sm6om-8784abde`。新しい `/api/pages` PATCH APIでアイコン、Markdown、375問版の画像3枚を更新した。紹介・FAQに無料75問と480円買い切り、公式正答採点の注意を反映。新規ページを作ってURLを変える必要はない。
+Page IDは`mv3sm6om-8784abde`。新しい `/api/pages` PATCH APIでアイコン、Markdown、375問版の画像3枚を更新した。紹介・FAQに無料75問と300円買い切り、公式正答採点の注意を反映。新規ページを作ってURLを変える必要はない。
 
 原稿は[web-pages](web-pages/)、公開情報は[published.json](web-pages/published.json)。編集トークンはGit対象外の`release-artifacts/submitdock/page.private.json`（0600）に保持し、ログに出さない。旧ページからの編集トークン取得と同一IDへの更新にも対応した。
 
