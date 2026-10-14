@@ -6,7 +6,7 @@
     "platform": "IOS",
     "bundleID": "jp.hino.piyotre.appliedinformation",
     "version": "1.0",
-    "build": "1",
+    "build": "2",
     "developerName": "hino",
     "supportEmail": "hino_lizard581@icloud.com",
     "subtitle": "科目A過去問・分野別・予想模試",
@@ -69,7 +69,7 @@
     "icon": "../../Assets.xcassets/AppliedInformationIcon.appiconset/AppIcon.png",
     "screenshots": [
       {
-        "name": "01-home",
+        "name": "01-learning-guide",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
@@ -78,7 +78,7 @@
         "path": "app-store-assets/png/1320x2868/01.png"
       },
       {
-        "name": "02-years",
+        "name": "02-topic-map",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
@@ -87,7 +87,7 @@
         "path": "app-store-assets/png/1320x2868/02.png"
       },
       {
-        "name": "03-subcategory",
+        "name": "03-topic-subcategories",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
@@ -156,6 +156,7 @@
     "screenshots": {
       "testIdentifiers": [
         "AppliedInformationUITests/AppliedStudyUITests/testHomeContainsSubjectABalanceAndNoWrittenPractice",
+        "AppliedInformationUITests/AppliedStudyUITests/testResearchBasedLearningGuideScreens",
         "AppliedInformationUITests/AppliedStudyUITests/testSubjectMapAddsSubcategorySelectionBeforeQuestions",
         "AppliedInformationUITests/AppliedStudyUITests/testNativeTextAndEssentialDiagram",
         "AppliedInformationUITests/AppliedStudyUITests/testDetailedExplanationAndIndividualChoiceReasons",

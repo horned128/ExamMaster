@@ -143,6 +143,7 @@ targets:
       adMobAppID: ca-app-pub-9785585722959806~8315066647
     settings:
       base:
+        CURRENT_PROJECT_VERSION: '2'
         CODE_SIGN_IDENTITY: iPhone Developer
         DEVELOPMENT_TEAM: QZH83KGFVX
     sources:

@@ -26,17 +26,35 @@ final class AppliedStudyUITests: XCTestCase {
         capture("APホーム・科目Aのみ")
     }
 
+    func testResearchBasedLearningGuideScreens() {
+        let app = launch()
+        app.buttons["記憶と復習のしくみ"].tap()
+        XCTAssertTrue(app.navigationBars["記憶と学習"].waitForExistence(timeout: 5))
+        capture("AP記憶と学習・研究を参考にした学び方")
+
+        let retrieval = app.staticTexts["guide-retrieval"]
+        for _ in 0..<6 where !retrieval.isHittable { app.swipeUp() }
+        XCTAssertTrue(retrieval.waitForExistence(timeout: 5))
+        capture("AP記憶と学習・想起練習")
+    }
+
     func testSubjectMapAddsSubcategorySelectionBeforeQuestions() {
         let app = launch()
         app.tabBars.buttons["分野別"].tap()
         app.buttons["subject-テクノロジ"].tap()
         let security = app.buttons["category-セキュリティ"]
         XCTAssertTrue(security.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["学びのマップ"].exists)
+        capture("AP分野マップ・テーマから選択")
         security.tap()
         let authentication = app.buttons["subcategory-認証・アクセス制御"]
         XCTAssertTrue(authentication.waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["subcategory-攻撃・脆弱性"].exists)
         XCTAssertTrue(app.buttons["topic-all-セキュリティ"].exists)
+        let lastSubcategory = app.buttons["subcategory-その他"]
+        app.swipeUp()
+        for _ in 0..<4 where !lastSubcategory.isHittable { app.swipeUp() }
+        XCTAssertTrue(lastSubcategory.isHittable)
         capture("AP分野マップ・サブカテゴリ一覧")
         authentication.tap()
         XCTAssertTrue(app.navigationBars["認証・アクセス制御"].waitForExistence(timeout: 5))

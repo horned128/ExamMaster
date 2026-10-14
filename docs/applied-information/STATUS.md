@@ -17,7 +17,7 @@
 
 ## アプリと本番設定
 
-- Scheme `AppliedInformation`、Bundle ID `jp.hino.piyotre.appliedinformation`、Version 1.0 / Build 1。
+- Scheme `AppliedInformation`、Bundle ID `jp.hino.piyotre.appliedinformation`、Version 1.0 / Build 2を準備中です。既存のBuild 1アーカイブは広告アプリIDを含まないため再利用せず、新しい番号で広告入りビルドを作成します。
 - ひよこ `#C5B1EF`、ニワトリ `#E5DEF7`、アクセント `#6554A4`。背景・カード・境界・補助文字もラベンダー系です。
 - 分野別はテーマからサブカテゴリへ二段階で絞れます。収録する全問題が詳細分類に含まれます。
 - 無料の160問は2025年度春期・秋期。IAP商品ID `jp.hino.piyotre.appliedinformation.unlock`、非消耗型、価格300円。App Store Connect商品を登録済みです（Apple ID `6822732714`）。

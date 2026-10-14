@@ -1,19 +1,19 @@
-# Design direction
+# Design direction and critique
 
 ## UI/UX Pro Max
 
-Generated a product design system for an educational exam-preparation app. Its recommendations favored a friendly, spacious educational style, high-contrast text, and a clear feature-led sequence. The palette results were treated as search guidance rather than copied: the live AP app already uses lavender, so the promotional surround uses warm cream, deep blue-green, muted leaf, and a small amber/rust accent. This keeps the app screen recognizable while giving this qualification a distinct listing identity.
+Generated a product design system for an educational exam-preparation app. The direction uses a spacious educational hierarchy, high-contrast text, and a feature-led story. Its palette suggestions were treated as search guidance: the live AP interface is lavender, so these promotional frames use cream, deep blue-green, leaf, and restrained amber/rust accents to distinguish the AP listing.
 
-## Screenshot composition
+## Screenshot Designer
 
-The Screenshot Designer workflow was followed: inspect genuine app captures, storyboard distinct claims, compose editable headlines around immutable UI images, then review the complete set.
+The six panels move from the learning approach to selecting and practicing a topic, then feedback and the purchase offer. Each uses one benefit headline, one factual supporting line, and an authentic screen. Japanese system sans-serif and generous space keep the top copy readable at App Store preview scale. The source screen is shown at one uniform scale, with no crop, retouch, recoloring, overlay, or text drawn over its UI.
 
-- Editorial poster layout: small product label, one benefit-led headline, one factual supporting line, then the full app screen.
-- Japanese system sans-serif for dependable local rendering and close alignment with iOS UI typography.
-- Spacious top hierarchy with restrained geometric rings, a sequence marker, and a consistent progress rule.
-- Each source image is displayed at one uniform scale with its complete 1320 × 2868 image visible. It has no color filter, crop, retouch, extra UI, or text placed over it.
-- Warm neutral backgrounds and blue-green ink set this AP series apart from the lavender UI and other qualification variants.
+Three first-party simulator captures were taken from the learning guide and subject-map UI tests on iPhone 17 Pro Max; the question, explanation, and unlock screens use the existing authentic simulator captures. Each original source is preserved in `assets/source/`.
 
 ## Impeccable critique pass
 
-No Impeccable skill entrypoint is installed in the local skill directories, so it was not invoked. The equivalent critique pass checked the same visible dimensions: headline clarity at listing scale, headline-to-screen hierarchy, repeated spacing, contrast, claim/source alignment, and unmodified source UI. The final QA report records the rendered checks.
+No Impeccable skill entrypoint is installed in the local skill directories, so it was not invoked. A manual critique checked hierarchy, headline length, sequence, contrast, screen fidelity, and alignment between the visual claim and the implementation. The learning headline names retrieval practice; supporting copy keeps the claim at the level of research-informed methods. The app itself makes clear that its own learning effect/pass-rate lift has not been demonstrated in a comparative experiment. The topic-map panel shows the actual tappable graph, followed by the real second-level subcategory screen.
+
+## Apple specification
+
+Apple's official App Store Connect specification accepts 1320 × 2868 portrait PNG screenshots for the large iPhone Dynamic Island display class. See [Apple's screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/).
