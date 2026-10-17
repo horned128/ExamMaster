@@ -97,13 +97,20 @@ enum SessionPlanner {
         let correctIDs = Set(answers.filter(\.correct).map(\.questionID))
         let subjectScores = bySubject.mapValues { $0.filter { correctIDs.contains($0.id) }.count }
         let score = questions.filter { correctIDs.contains($0.id) }.count
-        let overall = questions.isEmpty ? 0 : score * 100 / questions.count
+        let weighted = questions.contains { $0.points != nil }
+        let possiblePoints = questions.reduce(0) { $0 + ($1.points ?? 1) }
+        let earnedPoints = questions.filter { correctIDs.contains($0.id) }.reduce(0) { $0 + ($1.points ?? 1) }
+        let overall = possiblePoints == 0 ? 0 : earnedPoints * 100 / possiblePoints
         let subjectPass = bySubject.allSatisfy { subject, items in
-            (subjectScores[subject] ?? 0) * 100 >= qualification.minimumSubjectPercent * items.count
+            let possible = items.reduce(0) { $0 + ($1.points ?? 1) }
+            let earned = items.filter { correctIDs.contains($0.id) }.reduce(0) { $0 + ($1.points ?? 1) }
+            return earned * 100 >= qualification.minimumSubjectPercent * possible
         }
         return MockResult(date: date, score: score, total: questions.count,
                           passed: !questions.isEmpty && overall >= qualification.passingPercent && subjectPass,
-                           subjectScores: subjectScores)
+                           subjectScores: subjectScores,
+                           earnedPoints: weighted ? earnedPoints : nil,
+                           possiblePoints: weighted ? possiblePoints : nil)
     }
 
     /// A tied or untested subject must not become an arbitrary diagnostic ranking.

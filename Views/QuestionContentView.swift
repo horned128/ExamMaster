@@ -5,7 +5,9 @@ struct QuestionBodyView: View {
     let question: Question
     var largeText = false
     var body: some View {
-        if let blocks = question.bodyBlocks {
+        if question.subject == "科目B" {
+            LongQuestionBodyView(question: question, largeText: largeText)
+        } else if let blocks = question.bodyBlocks {
             RichContentView(blocks: blocks).font(largeText ? .title3 : .body)
         } else {
             Text(question.stem).font(largeText ? .title2.weight(.semibold) : .title3.weight(.semibold))
@@ -19,6 +21,7 @@ struct QuestionBodyView: View {
 
 struct RichContentView: View {
     let blocks: [ContentBlock]
+    var wrapsTables = false
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             ForEach(blocks.indices, id: \.self) { index in
@@ -44,11 +47,45 @@ struct RichContentView: View {
                     QuestionFigureView(image: block.assetName.flatMap { ContentAsset.url(name: $0) }.flatMap { UIImage(contentsOfFile: $0.path) },
                                        altText: block.altText ?? "図版", caption: block.caption)
                 case .table:
-                    ContentTableView(headers: block.headers ?? [], rows: block.rows ?? [])
+                    if wrapsTables, let rows = block.rows,
+                       rows.contains(where: { $0.contains { $0.count > 18 } }) {
+                        ContentRecordTableView(headers: block.headers ?? [], rows: rows)
+                    } else {
+                        ContentTableView(headers: block.headers ?? [], rows: block.rows ?? [])
+                    }
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// Long sentences read vertically, with the original column names on each item.
+struct ContentRecordTableView: View {
+    let headers: [String]
+    let rows: [[String]]
+    var largeText = false
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(rows.indices, id: \.self) { row in
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(rows[row].indices, id: \.self) { column in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(headers.indices.contains(column) ? headers[column] : "項目\(column + 1)")
+                                .font(.caption.bold()).foregroundStyle(Palette.muted)
+                            Text(rows[row][column])
+                                .font(largeText ? .title3 : .body).lineSpacing(7)
+                                .fixedSize(horizontal: false, vertical: true).textSelection(.enabled)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading).padding(16)
+                .background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Palette.border, lineWidth: 1))
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("readableCaseTable")
     }
 }
 
@@ -216,7 +253,7 @@ struct QuestionExplanationView: View {
                     }
                 }
             }
-            if let blocks = question.explanationBlocks { RichContentView(blocks: blocks) }
+            if let blocks = question.explanationBlocks { RichContentView(blocks: blocks, wrapsTables: question.subject == "科目B") }
             DisclosureGroup("出典") { Text(qualification.displaySource(question.source)).font(.caption).foregroundStyle(Palette.muted) }
         }
     }

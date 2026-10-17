@@ -35,9 +35,9 @@ struct DashboardView: View {
                         header(retention: retention, dueCount: outlook.dueCount)
                         MemoryBreakdown(summary: retention, identifier: "homeMemory", compact: true)
                     }
-                    if catalog.qualification.id == "applied-information" {
+                    if ["applied-information", "fundamental-information"].contains(catalog.qualification.id) {
                         Surface(inset: 14, spacing: 12) {
-                            Label("科目A・3分野のバランス", systemImage: "chart.bar.doc.horizontal").font(.headline)
+                            Label(catalog.qualification.id == "fundamental-information" ? "科目A・科目Bの学習状況" : "科目A・3分野のバランス", systemImage: "chart.bar.doc.horizontal").font(.headline)
                             ForEach(catalog.qualification.subjects, id: \.self) { subject in
                                 let items = available.filter { $0.subject == subject }
                                 SubjectProgress(subject: subject, score: RetentionSummary(questions: items, data: store.data, now: timeline.date).percent)

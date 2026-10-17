@@ -4,6 +4,42 @@ enum ReviewStatus: String, Hashable {
     case stable, due, risk, new, misconception
 }
 
+/// Narrows a practice pool without changing its source order or learning history.
+enum PracticeQuestionFilter: String, CaseIterable, Identifiable {
+    case all, unlearned, answered, incorrect, needsReview, mastered
+
+    var id: Self { self }
+    var title: String {
+        switch self {
+        case .all: "すべて"
+        case .unlearned: "未学習"
+        case .answered: "学習済み"
+        case .incorrect: "前回不正解"
+        case .needsReview: "要復習"
+        case .mastered: "定着済み"
+        }
+    }
+
+    func questions(in pool: [Question], data: StudyData, now: Date = .now) -> [Question] {
+        pool.filter { question in
+            if self == .all { return true }
+            guard let state = data.mastery[question.id], state.attempts > 0 else {
+                return self == .unlearned
+            }
+            switch self {
+            case .all, .answered: return true
+            case .unlearned: return false
+            case .incorrect: return !state.lastCorrect
+            case .needsReview:
+                return !state.lastCorrect || state.misconception ||
+                    (state.dueAt.map { $0 <= now } ?? false) ||
+                    (!MasteryEngine.isMastered(state, now: now) && MasteryEngine.retention(state, now: now) < 0.8)
+            case .mastered: return MasteryEngine.isMastered(state, now: now)
+            }
+        }
+    }
+}
+
 enum QuestionCollectionRoute: Hashable {
     case all, year(Int), mockSet(String), subject(String), category(String), subjectCategory(String, String), subjectTopic(String, String), subjectSubtopic(String, String, String), status(ReviewStatus), incorrect, favorites
 
@@ -155,6 +191,17 @@ struct StudyTopic: Identifiable {
     private static func theme(subject: String, category: String) -> String {
         let rules: [(String, [String])]
         switch subject {
+        case "科目A":
+            if category.hasPrefix("マネジメント") { return "マネジメント" }
+            if category.hasPrefix("ストラテジ") { return "ストラテジ" }
+            return "テクノロジ"
+        case "科目B": rules = [
+            ("情報セキュリティ", ["セキュリティ"]),
+            ("探索・整列", ["探索", "整列", "ソート", "ハッシュ"]),
+            ("データ構造・グラフ", ["データ構造", "スタック", "キュー", "リスト", "木", "グラフ"]),
+            ("再帰・計算量", ["再帰", "計算量"]),
+            ("文字列・データ処理", ["文字", "データ処理", "配列"])
+        ]
         case "テクノロジ": rules = [
             ("理論・アルゴリズム", ["基礎", "アルゴリズム", "データ構造"]),
             ("システム・クラウド", ["コンピュータ", "システム構成", "OS", "クラウド"]),
@@ -201,6 +248,7 @@ struct StudyTopic: Identifiable {
         }
         for (title, words) in rules where words.contains(where: { category.localizedCaseInsensitiveContains($0) }) { return title }
         switch subject {
+        case "科目B": return "アルゴリズムの基礎・追跡"
         case "テクノロジ": return "開発・データ分析"
         case "マネジメント": return "プロジェクト管理"
         case "ストラテジ": return "経営戦略・企業活動"
@@ -227,6 +275,12 @@ struct StudySubtopic: Identifiable {
     static let unreviewedTitle = "2015年以前・詳細分類なし"
 
     static func grouped(topic: StudyTopic) -> [Self] {
+        if topic.questions.allSatisfy({ ["科目A", "科目B"].contains($0.subject) }) {
+            let groups = Dictionary(grouping: topic.questions) { question in
+                question.category.components(separatedBy: "／").last ?? question.category
+            }
+            return groups.keys.sorted().map { Self(title: $0, questions: groups[$0] ?? []) }
+        }
         let rules = rulesByTopic[topic.title] ?? []
         var grouped: [String: [Question]] = [:]
         for question in topic.questions {

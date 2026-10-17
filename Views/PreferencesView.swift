@@ -64,7 +64,10 @@ struct PreferencesView: View {
                     .disabled(purchase.purchasing)
                 if let error = purchase.error {
                     Text(error).font(.footnote).foregroundStyle(.secondary)
-                    Button("商品情報を再取得") { Task { await purchase.refresh() } }
+                    if purchase.productLoadFailure != nil {
+                        Button("商品情報を再取得") { Task { await purchase.refresh() } }
+                            .disabled(purchase.loading || purchase.purchasing)
+                    }
                 }
             } header: {
                 Text("全問題の解放")
@@ -141,8 +144,10 @@ struct PaywallView: View {
                         .disabled(purchase.purchasing)
                     if let error = purchase.error {
                         Text(error).font(.footnote).foregroundStyle(.secondary)
-                        Button("再試行") { Task { await purchase.refresh() } }
-                            .disabled(purchase.loading || purchase.purchasing)
+                        if purchase.productLoadFailure != nil {
+                            Button("再試行") { Task { await purchase.refresh() } }
+                                .disabled(purchase.loading || purchase.purchasing)
+                        }
                     }
                     Text("定期購入なし。Apple Accountで購入。")
                         .font(.footnote).foregroundStyle(Palette.muted)

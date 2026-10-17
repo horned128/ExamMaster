@@ -13,6 +13,8 @@ struct QuestionCollectionView: View {
 
     @State private var showPracticeOptions = false
     @State private var pendingPracticeSession: StudySession?
+    @State private var practiceFilter: PracticeQuestionFilter = .all
+    @State private var electiveQuestionNumber = 17
 
     private var candidates: [Question] {
         QuestionCollections.questions(for: route, catalog: catalog, data: store.data)
@@ -44,7 +46,15 @@ struct QuestionCollectionView: View {
         return [("問題リスト", accessible)]
     }
     private var orderedQuestions: [Question] { groups.flatMap(\.questions) }
+    private var practiceQuestions: [Question] { practiceFilter.questions(in: accessible, data: store.data) }
     private var lockedCount: Int { candidates.filter { !purchase.unlocked && !catalog.qualification.freeQuestionIDs.contains($0.id) }.count }
+    private var isPublicExcerpt: Bool {
+        catalog.qualification.id == "fundamental-information" && candidates.allSatisfy { $0.kind == .past }
+    }
+    private var hasElectricalElectives: Bool {
+        catalog.qualification.id == "denken3" && Set(candidates.map(\.subject)).count == 1 &&
+        candidates.contains { $0.questionNumber == 18 }
+    }
 
     var body: some View {
         List {
@@ -56,25 +66,12 @@ struct QuestionCollectionView: View {
                         StudyBadge(title: "\(lockedCount)問はロック中", symbol: "lock")
                     }
                 }
-                if isYear {
-                    Button {
-                        let pool = candidates.filter { purchase.unlocked || catalog.qualification.freeQuestionIDs.contains($0.id) }
-                        let ids = Set(pool.map(\.id))
-                        if let set = catalog.mockSets.first(where: { Set($0.questionIDs) == ids }),
-                           let session = MockExam.session(set: set, catalog: catalog, unlocked: purchase.unlocked) {
-                            launch(session)
-                        } else {
-                            launch(StudySession(title: "\(title) · 模擬試験", mode: .mock, questions: pool, timed: true))
-                        }
-                    } label: { Label("模擬試験", systemImage: "timer") }
-                    .disabled(accessible.isEmpty)
-                    Text("問題を選んで練習、または時間を測って模擬試験。")
-                        .font(.caption).foregroundStyle(Palette.muted)
-                } else {
-                    Button { showPracticeOptions = true } label: { Label("問題を解く", systemImage: "play.fill") }
-                        .accessibilityIdentifier("solveQuestions")
-                        .disabled(accessible.isEmpty)
-                }
+                Button {
+                    practiceFilter = .all
+                    showPracticeOptions = true
+                } label: { Label("問題を解く", systemImage: "play.fill") }
+                .accessibilityIdentifier("solveQuestions")
+                .disabled(accessible.isEmpty)
                 if lockedCount > 0 { Button("有料問題を解放する", action: paywall) }
 
             }
@@ -134,10 +131,48 @@ struct QuestionCollectionView: View {
         }) {
             NavigationStack {
                 List {
+                    if isYear {
+                        Section {
+                            if hasElectricalElectives {
+                                Picker("選択問題", selection: $electiveQuestionNumber) {
+                                    Text("問17").tag(17)
+                                    Text("問18").tag(18)
+                                }.pickerStyle(.segmented).accessibilityIdentifier("electricalElectivePicker")
+                            }
+                            Button {
+                                pendingPracticeSession = mockSession()
+                                showPracticeOptions = false
+                            } label: {
+                                Label(isPublicExcerpt ? "時間を測って演習" : "模擬試験", systemImage: "timer")
+                                    .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                            }
+                            .accessibilityIdentifier("practiceMock")
+                        } footer: {
+                            Text(catalog.qualification.id == "denken3" ?
+                                 "科目ごとに100点満点で採点します。\(hasElectricalElectives ? "問17・問18は選んだ一方の(a)(b)を出題します。" : "")法規は65分、他の科目は90分です。" :
+                                 isPublicExcerpt ? "公開問題の抜粋を使う時間制限付き演習です。学習状態による絞り込みは適用しません。" : "全\(accessible.count)問を本番形式で出題します。学習状態による絞り込みは適用しません。")
+                        }
+                    }
+                    Section {
+                        Picker("学習状態", selection: $practiceFilter) {
+                            ForEach(PracticeQuestionFilter.allCases) { filter in
+                                Text("\(filter.title)（\(filter.questions(in: accessible, data: store.data).count)問）").tag(filter)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .accessibilityIdentifier("practiceQuestionState")
+                    } header: { Text("練習する問題を選ぶ") }
                     Section {
                         practiceOption("順番に解く", symbol: "list.number", random: false)
                         practiceOption("ランダムに解く", symbol: "shuffle", random: true)
-                    } header: { Text("\(accessible.count)問の解き方を選ぶ") }
+                    } header: {
+                        Text("\(practiceQuestions.count)問を出題")
+                            .accessibilityIdentifier("practiceQuestionCount")
+                    } footer: {
+                        if practiceQuestions.isEmpty {
+                            Text("この学習状態の問題はありません。学習状態を変更してください。")
+                        }
+                    }
                 }
                 .scrollContentBackground(.hidden).background(Palette.background)
                 .navigationTitle("問題を解く")
@@ -146,7 +181,7 @@ struct QuestionCollectionView: View {
                     ToolbarItem(placement: .topBarTrailing) { Button("閉じる") { showPracticeOptions = false } }
                 }
             }
-            .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
+            .presentationDetents(dynamicTypeSize.isAccessibilitySize || isYear ? [.large] : [.medium, .large])
         }
     }
 
@@ -154,12 +189,25 @@ struct QuestionCollectionView: View {
         Button {
             pendingPracticeSession = StudySession(title: title + (random ? " · ランダム" : ""),
                                                  mode: random ? .random : route.studyMode,
-                                                 questions: random ? orderedQuestions.shuffled() : orderedQuestions, timed: false,
+                                                 questions: random ? practiceQuestions.shuffled() : practiceQuestions, timed: false,
                                                  returnsToQuestionList: true)
             showPracticeOptions = false
         } label: {
             Label(optionTitle, systemImage: symbol).frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
         }
+        .accessibilityIdentifier(random ? "practiceRandom" : "practiceSequential")
+        .disabled(practiceQuestions.isEmpty)
+    }
+
+    private func mockSession() -> StudySession {
+        let ids = Set(accessible.map(\.id))
+        if let set = catalog.mockSets.first(where: { Set($0.questionIDs) == ids }),
+           let session = MockExam.session(set: set, catalog: catalog, unlocked: purchase.unlocked,
+                                          electiveQuestionNumber: electiveQuestionNumber) {
+            return session
+        }
+        return StudySession(title: "\(title) · \(isPublicExcerpt ? "時間制限付き演習" : "模擬試験")",
+                            mode: .mock, questions: accessible, timed: true)
     }
 
     private var showAds: Bool { !purchase.unlocked && !purchase.purchasing && ads.canShowBanner }

@@ -28,6 +28,7 @@ struct ContentView: View {
 }
 
 struct StudyAppView: View {
+    @Environment(\.scenePhase) private var scenePhase
     private enum MainTab: Hashable { case home, years, subjects, incorrect, bookmarks }
     let catalog: Catalog
     @State private var store: StudyStore
@@ -154,6 +155,9 @@ struct StudyAppView: View {
         .tint(Palette.linkAccent(catalog.qualification.accentHex))
         .environment(\.mascotBaseColor, Palette.accent(catalog.qualification.mascotColorHex))
         .environment(\.mascotChickColor, catalog.qualification.chickBaseHex.map(Palette.accent))
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { Task { await purchase.refreshIfNeeded() } }
+        }
     }
 
     private func start(_ newSession: StudySession) {
@@ -194,7 +198,11 @@ struct StudyAppView: View {
     }
 
     @ViewBuilder private func collection(_ route: QuestionCollectionRoute) -> some View {
-        if case .year(let year) = route,
+        if case .year(let year) = route, catalog.qualification.id == "denken3" {
+            ElectricalSetLibraryView(year: year, catalog: catalog, store: store, purchase: purchase, paywall: openPaywall)
+        } else if case .year(let year) = route, catalog.qualification.id == "fundamental-information" {
+            FundamentalSetLibraryView(year: year, catalog: catalog, store: store, purchase: purchase, paywall: openPaywall)
+        } else if case .year(let year) = route,
            catalog.mockSets.filter({ set in set.kind == .prediction && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id } }).count > 1 {
             PredictionLibraryView(year: year, catalog: catalog, store: store, purchase: purchase, paywall: openPaywall)
         } else if case .year(let year) = route,

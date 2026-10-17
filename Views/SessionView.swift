@@ -27,6 +27,7 @@ struct SessionView: View {
     @State private var answers: [Answer] = []
     @State private var confirmExit = false
     @State private var largeText = false
+    @State private var choicesJump = 0
     @State private var deadline: Date
     @State private var remaining: TimeInterval
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -133,7 +134,8 @@ struct SessionView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("\(index + 1) / \(session.questions.count)問").font(.subheadline.bold().monospacedDigit())
-                        Text("\(question.year.formatted(.number.grouping(.never))) · \(question.subject)")
+                        Text("\(question.year.formatted(.number.grouping(.never))) · \(question.subject)" +
+                             (question.questionNumber.map { " · 問\($0)" } ?? ""))
                             .font(.caption).foregroundStyle(Palette.muted)
                     }
                     .id("questionTop")
@@ -150,9 +152,10 @@ struct SessionView: View {
                         VStack(spacing: 10) {
                             ForEach(question.choices.indices, id: \.self) { choice in
                                 choiceButton(choice)
-                                if let blocks = question.choiceBlocks { RichContentView(blocks: blocks[choice]) }
+                                if let blocks = question.choiceBlocks { RichContentView(blocks: blocks[choice], wrapsTables: question.subject == "科目B") }
                             }
                         }
+                        .id("answerChoices")
                         if !submitted && !session.timed { confidencePicker }
                         if submitted && !session.timed { feedback.id("feedback") }
                     }
@@ -163,6 +166,7 @@ struct SessionView: View {
               }
               .accessibilityIdentifier("studyQuestionScroll")
               .onChange(of: index) { _, _ in proxy.scrollTo("questionTop", anchor: .top) }
+              .onChange(of: choicesJump) { _, _ in proxy.scrollTo("answerChoices", anchor: .top) }
               .onChange(of: submitted) { _, value in
                   if value {
                       withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
@@ -171,6 +175,14 @@ struct SessionView: View {
                       feedbackFocused = true
                   }
               }
+            }
+        }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if question.subject == "科目B" {
+                LongQuestionQuickActions(question: question, largeText: largeText) {
+                    revealed = true
+                    choicesJump += 1
+                }.id(question.id)
             }
         }
         .safeAreaInset(edge: .bottom, spacing: 0) {

@@ -92,6 +92,8 @@ struct Question: Codable, Identifiable, Hashable {
     var choiceBlocks: [[ContentBlock]]? = nil
     var explanationBlocks: [ContentBlock]? = nil
     var choiceExplanations: [String]? = nil
+    /// Official points for exams whose answer fields carry unequal weights.
+    var points: Int? = nil
 
     var searchText: String { ([stem, explanation, source, subject, category] + choices + tags + concepts +
         (bodyBlocks ?? []).map(\.searchText)).joined(separator: " ") }
@@ -148,7 +150,7 @@ struct Catalog {
               !qualification.subjects.isEmpty, Set(qualification.subjects).count == qualification.subjects.count,
               !qualification.productID.isEmpty, qualification.ads.isValid,
               qualification.choiceLabels.map({ labels in
-                  (2...6).contains(labels.count) && Set(labels).count == labels.count && labels.allSatisfy { !$0.isBlank }
+                  (2...16).contains(labels.count) && Set(labels).count == labels.count && labels.allSatisfy { !$0.isBlank }
               }) ?? true,
               qualification.privacyPolicyURL.map({ URL(string: $0)?.scheme == "https" }) ?? true else {
             throw CatalogError.invalid("資格設定・広告設定・プライバシーポリシーURL")
@@ -163,8 +165,9 @@ struct Catalog {
               bank.questions.allSatisfy({ q in
                   !q.id.isBlank && !q.stem.isBlank && !q.explanation.isBlank && !q.source.isBlank &&
                   qualification.subjects.contains(q.subject) && !q.category.isEmpty &&
-                  (1...5).contains(q.difficulty) && (2...6).contains(q.choices.count) &&
+                  (1...5).contains(q.difficulty) && (2...16).contains(q.choices.count) &&
                   q.choices.indices.contains(q.correctIndex) && Set(q.choices).count == q.choices.count && q.choices.allSatisfy { !$0.isBlank } &&
+                  (q.points.map { (1...100).contains($0) } ?? true) &&
                   (q.steps == nil || (!(q.steps?.isEmpty ?? true) && q.steps!.allSatisfy { !$0.isBlank })) &&
                   (qualification.choiceLabels.map { $0.count >= q.choices.count } ?? true) && q.validContent
               }) else { throw CatalogError.invalid("問題ID・科目・正答・無料範囲") }
@@ -288,7 +291,12 @@ struct MockResult: Codable, Identifiable {
     var startedAt: Date? = nil
     var duration: TimeInterval? = nil
     var questionResults: [MockQuestionResult]? = nil
-    var percent: Int { total == 0 ? 0 : score * 100 / total }
+    var earnedPoints: Int? = nil
+    var possiblePoints: Int? = nil
+    var percent: Int {
+        if let earnedPoints, let possiblePoints, possiblePoints > 0 { return earnedPoints * 100 / possiblePoints }
+        return total == 0 ? 0 : score * 100 / total
+    }
 }
 
 struct Mastery: Codable {

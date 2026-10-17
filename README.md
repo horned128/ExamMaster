@@ -11,12 +11,15 @@
 | `ExamMaster` | 設備安全管理士（架空） | `jp.example.exammaster.demo` | 32 / 12 |
 | `NetworkSpecialist` | ネットワークスペシャリスト | `jp.hino.piyotre.networkspecialist` | 375 / 75 |
 | `AppliedInformation` | 応用情報技術者 | `jp.hino.piyotre.appliedinformation` | 1,760 / 160 |
+| `FundamentalInformation` | 基本情報技術者 | `jp.hino.piyotre.fundamentalinformation` | 1,004 / 184 |
+
+基本情報版は科目A・科目Bに対応します。2023〜2026年度のIPA公開問題104問と、現行シラバスVer.9.2を基準にしたオリジナル練習900問を収録。科目Aは60問・90分×11回、科目Bは20問・100分×12回のオリジナル模試です。公開問題は各年A20問・B6問の抜粋として扱い、本番の完全セットと区別しています。科目Bは段落・コード・図表の区切り、本文を別表示する読解画面、本文内の移動、選択肢へのジャンプに対応。アプリコット系の配色と専用アイコンを使います。公開問題104問とオリジナル第1回A・Bの80問は無料です。[構成・出典・検証状況](docs/fundamental-information/STATUS.md)を参照してください。
 
 応用情報版は科目A専用で、指定範囲の2016年春期〜2025年秋期の公式過去問19回1,520問と、2026年オリジナル予想問題3セット240問を収録します。過去問は全1,520問を制作内AIで個別校閲し、本文・選択肢はテキスト、表はUI、必要な図だけ画像にしています。2016年春期より前の1,120問はこの配信版に含めません。科目Bの機能・教材は除外し、分野別はテーマからサブカテゴリへ二段階で絞れます。配色はラベンダー系、各模試80問・150分。買い切り商品は300円の開発設定済みで、App Store Connectへの登録・提出を準備中です。[制作状況と検証](docs/applied-information/STATUS.md)を参照してください。
 
-**設備安全管理士は架空の教材です。NWは375問（無料75・有料300）の教材を収録し、公開準備中です。** 対象は2013〜2025年の過去問300問（2020年は対象公開なし）と、オリジナル2026年予想問題の第1〜3回・計75問。全12年度と予想3回は各25問・40分の固定模試です。2010年問23はアプリから外し、制作資料をarchiveへ保管しました。回答済みの履歴は保持します。
+**設備安全管理士は架空の教材です。NWは375問（無料75・有料300）を収録し、App Storeで配信中です。** [ピヨトレ！ネットワークスペシャリストを入手](https://apps.apple.com/jp/app/ピヨトレ-ネットワークスペシャリスト/id6821629759)。対象は2013〜2025年の過去問300問（2020年は対象試験なし）と、オリジナル2026年予想問題の第1〜3回・計75問。全12年度と予想3回は各25問・40分の固定模試です。2010年問23はアプリから外し、制作資料をarchiveへ保管しました。回答済みの履歴は保持します。
 
-2015問9・2018問17・2024問22は、利用者指定に従い当時のIPA公式正答で採点し、仕様上の注意を回答後の解説に常時表示します。原問の技術的一意性の解決やIPAの訂正を意味しません。[採点と解説の方針](docs/network-specialist/review-notes/historical-answer-policy.md)、[制作状況](docs/network-specialist/STATUS.md)、[収録表](docs/network-specialist/COVERAGE.md)、[旧調査履歴](docs/network-specialist/HELD.md)、予想のレビュー[第1回](docs/network-specialist/review-notes/2026-pred-01.md)・[第2回](docs/network-specialist/review-notes/2026-pred-02.md)・[第3回](docs/network-specialist/review-notes/2026-pred-03.md)を参照。教材の完成版検証は通過済み。制作内AIレビューを独立専門家校閲とは称しません。本番設定と審査提出は実施済み。初回ビルドのITMS-91064は修正済み。1.0（2）は課金商品を取得できず2.1(b)で却下されました。有料アプリ契約・銀行・税務情報の有効化を確認し、買い切り価格を300円に変更。商品再取得を改善したビルド3はアップロード・Apple処理完了・内部TestFlight配布済みです。利用者からTestFlightの購入確認完了を受領し、2026-10-14 10:27 JSTにビルド3と300円の買い切り商品を再提出。Apple受付済みで両方審査待ち（提出ID：01fd5a77-32b6-4c9c-ad66-52d2a43a2e38）。[最新申請状態](docs/release/submission-status.json)を参照。ストア公開はApple審査後に手動で行います。返金・VoiceOver・一部の実機検証は未完了です。
+2015問9・2018問17・2024問22は、利用者指定に従い当時のIPA公式正答で採点し、仕様上の注意を回答後の解説に常時表示します。原問の技術的一意性の解決やIPAの訂正を意味しません。[採点と解説の方針](docs/network-specialist/review-notes/historical-answer-policy.md)、[制作状況](docs/network-specialist/STATUS.md)、[収録表](docs/network-specialist/COVERAGE.md)、[旧調査履歴](docs/network-specialist/HELD.md)、予想のレビュー[第1回](docs/network-specialist/review-notes/2026-pred-01.md)・[第2回](docs/network-specialist/review-notes/2026-pred-02.md)・[第3回](docs/network-specialist/review-notes/2026-pred-03.md)を参照。教材の完成版検証は通過済み。制作内AIレビューを独立専門家校閲とは称しません。本番設定と審査提出を実施済みで、初回ビルドのITMS-91064は修正済み。課金商品を取得できなかった1.0（2）の却下後、300円の買い切り価格・有料アプリ契約・銀行・税務情報を整え、購入再取得を改善したビルド3と同商品を再提出しました。ビルド3は審査を通過し、利用者が手動公開。2026-10-15にApp Store掲載を確認しました。AdMobへのストア連携は完了しましたが、Googleのアプリ確認がapp-ads.txtの照合で止まり、広告配信は制限中です。[公開・申請状態](docs/release/submission-status.json)。返金・VoiceOver・一部の実機検証は未確認です。
 
 ## 体験と技術選定
 
@@ -194,7 +197,7 @@ Google Mobile Ads 13.11.0（AdMob）とGoogle User Messaging Platform（UMP）3.
 }
 ```
 
-選択肢は2〜6件、`correctIndex`は**0始まり**、難易度は1〜5。旧形式の画像はアセットカタログの名前を`imageName`に指定、不要なら`null`。`steps`は答え合わせ後に全手順を表示する解説で、不要なら`null`。`questionNumber`は年度別リストの本来の問番号（任意、既存サンプルは`source`の「問1」等から補完）。`concepts`は問題の概念を表します。`tags`と`category`は分類・演習用です。問題IDは更新後も維持し、削除・再利用すると既存履歴との関連が失われるため、履歴移行を伴う変更として扱います。
+選択肢は2〜16件（基本情報の科目Bには10肢の原問あり）、`correctIndex`は**0始まり**、難易度は1〜5。`choiceLabels`を指定する場合は最大の選択肢数以上のラベルを設定します。旧形式の画像はアセットカタログの名前を`imageName`に指定、不要なら`null`。`steps`は答え合わせ後に全手順を表示する解説で、不要なら`null`。`questionNumber`は年度別リストの本来の問番号（任意、既存サンプルは`source`の「問1」等から補完）。`concepts`は問題の概念を表します。`tags`と`category`は分類・演習用です。問題IDは更新後も維持し、削除・再利用すると既存履歴との関連が失われるため、履歴移行を伴う変更として扱います。
 
 ### version 2の構造化表示と固定模試
 

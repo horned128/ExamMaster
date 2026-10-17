@@ -1,6 +1,12 @@
 import Foundation
 import Observation
 import StoreKit
+import OSLog
+
+enum ProductLoadFailure: Equatable {
+    case unavailable
+    case storeError(domain: String, code: Int)
+}
 
 struct PurchaseEntitlement {
     let productID: String
@@ -23,10 +29,16 @@ enum PurchasePolicy {
     private(set) var loading = true
     private(set) var entitlementResolved = false
     private(set) var purchasing = false
-    var error: String?
+    private var productError: String?
+    private var operationError: String?
+    var error: String? { operationError ?? (unlocked ? nil : productError) }
+    private(set) var productLoadFailure: ProductLoadFailure?
+    private(set) var storefrontCountryCode: String?
     let productID: String
     @ObservationIgnored private var updates: Task<Void, Never>?
     @ObservationIgnored private var refreshTask: Task<Void, Never>?
+    @ObservationIgnored private var storefrontUpdates: Task<Void, Never>?
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ExamMaster", category: "Purchases")
 
     init(productID: String) {
         self.productID = productID
@@ -37,10 +49,33 @@ enum PurchasePolicy {
                 await self.refreshEntitlement()
             }
         }
+        storefrontUpdates = Task { [weak self] in
+            for await _ in Storefront.updates {
+                guard let self else { return }
+                await self.refreshForStorefrontChange()
+            }
+        }
         Task { await refresh() }
     }
 
-    deinit { updates?.cancel() }
+    deinit {
+        updates?.cancel()
+        storefrontUpdates?.cancel()
+    }
+
+    func refreshIfNeeded() async {
+        await refreshEntitlement()
+        if product == nil && !unlocked && !purchasing { await refresh() }
+    }
+
+    func refreshForStorefrontChange() async {
+        // A request already running may have started against the old storefront.
+        // Let it finish, then make a fresh request instead of coalescing with it.
+        product = nil
+        if let refreshTask { await refreshTask.value }
+        product = nil
+        await refresh()
+    }
 
     func refresh() async {
         if let refreshTask {
@@ -48,31 +83,39 @@ enum PurchasePolicy {
             return
         }
         loading = true
-        error = nil
-        let task = Task { await self.loadProductAndEntitlement() }
+        productError = nil
+        productLoadFailure = nil
+        let task = Task {
+            defer { self.refreshTask = nil }
+            await self.loadProductAndEntitlement()
+        }
         refreshTask = task
         await task.value
-        refreshTask = nil
     }
 
     private func loadProductAndEntitlement() async {
         defer { loading = false }
         await refreshEntitlement()
+        storefrontCountryCode = await Storefront.current?.countryCode
         // A transient StoreKit failure must not persist for the whole app session.
         // Bounded retries also cover an empty response, without inventing a price.
         for attempt in 0..<3 {
             do {
                 let products = try await Product.products(for: [productID])
+                Self.logger.info("Product lookup id=\(self.productID, privacy: .public) storefront=\(self.storefrontCountryCode ?? "unknown", privacy: .public) attempt=\(attempt + 1) count=\(products.count)")
                 if let available = products.first(where: { $0.id == productID && $0.type == .nonConsumable }) {
                     product = available
-                    error = nil
+                    productError = nil
+                    productLoadFailure = nil
                     return
                 }
+                productLoadFailure = .unavailable
             } catch is CancellationError {
                 return
             } catch {
-                // Retry the real StoreKit request; purchase access still requires
-                // a verified transaction even when product metadata is unavailable.
+                let storeError = error as NSError
+                productLoadFailure = .storeError(domain: storeError.domain, code: storeError.code)
+                Self.logger.error("Product lookup failed id=\(self.productID, privacy: .public) storefront=\(self.storefrontCountryCode ?? "unknown", privacy: .public) domain=\(storeError.domain, privacy: .public) code=\(storeError.code)")
             }
             if attempt < 2 {
                 do { try await Task.sleep(for: .milliseconds(500 * (attempt + 1))) }
@@ -81,7 +124,7 @@ enum PurchasePolicy {
         }
         product = nil
         if !unlocked {
-            error = "購入情報を読み込めませんでした。時間をおいて再試行してください。無料の問題は引き続き利用できます。"
+            productError = "購入情報を読み込めませんでした。時間をおいて再試行してください。無料の問題は引き続き利用できます。"
         }
     }
 
@@ -96,12 +139,13 @@ enum PurchasePolicy {
         }
         unlocked = PurchasePolicy.isUnlocked(productID: productID, entitlements: entitlements)
         entitlementResolved = true
-        if unlocked { error = nil }
+        if unlocked { operationError = nil }
     }
 
     func buy() async {
         guard let product, !purchasing else { return }
         purchasing = true
+        operationError = nil
         defer { purchasing = false }
         do {
             switch try await product.purchase() {
@@ -109,22 +153,23 @@ enum PurchasePolicy {
                 await transaction.finish()
                 await refreshEntitlement()
             case .success(.unverified):
-                error = "購入を確認できませんでした。購入を復元して再確認してください。"
+                operationError = "購入を確認できませんでした。購入を復元して再確認してください。"
             case .pending:
-                error = "購入は承認待ちです。承認後に自動で反映されます。"
+                operationError = "購入は承認待ちです。承認後に自動で反映されます。"
             case .userCancelled: break
             @unknown default: break
             }
-        } catch { self.error = "購入に失敗しました: \(error.localizedDescription)" }
+        } catch { operationError = "購入に失敗しました: \(error.localizedDescription)" }
     }
 
     func restore() async {
         purchasing = true
+        operationError = nil
         defer { purchasing = false }
         do {
             try await AppStore.sync()
             await refreshEntitlement()
-            if !unlocked { error = "復元できる購入が見つかりませんでした。購入時のApple Accountをご確認ください。" }
-        } catch { self.error = "復元に失敗しました: \(error.localizedDescription)" }
+            if !unlocked { operationError = "復元できる購入が見つかりませんでした。購入時のApple Accountをご確認ください。" }
+        } catch { operationError = "復元に失敗しました: \(error.localizedDescription)" }
     }
 }

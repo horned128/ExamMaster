@@ -84,6 +84,10 @@ struct LibraryView: View {
     }
 
     private func yearTitle(_ year: Int) -> String {
+        if catalog.qualification.id == "fundamental-information" {
+            return year.formatted(.number.grouping(.never)) +
+                (catalog.questions.contains { $0.year == year && $0.kind == .prediction } ? "年 過去問・練習" : "年 公開過去問")
+        }
         let suffix = catalog.questions.contains { $0.year == year && $0.kind == .prediction } ? "年予想問題" : "年"
         return year.formatted(.number.grouping(.never)) + suffix
     }
@@ -235,7 +239,7 @@ struct SubjectLibraryView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("学びのマップ").font(.headline)
-                        Text(catalog.qualification.id == "applied-information" ? "テーマをタップして、さらに絞り込む" : "テーマをタップして問題へ")
+                        Text(["applied-information", "fundamental-information"].contains(catalog.qualification.id) ? "テーマをタップして、さらに絞り込む" : "テーマをタップして問題へ")
                             .font(.caption).foregroundStyle(Palette.muted)
                     }
                     Spacer()
@@ -319,7 +323,7 @@ struct SubjectLibraryView: View {
     }
 
     @ViewBuilder private func topicLink(_ topic: StudyTopic) -> some View {
-        if catalog.qualification.id == "applied-information" {
+        if ["applied-information", "fundamental-information"].contains(catalog.qualification.id) {
             NavigationLink(value: StudyDestination.topicSubcategories(subject, topic.title)) {
                 topicCard(topic)
             }

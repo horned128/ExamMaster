@@ -46,10 +46,20 @@ struct MockQuestionResult: Codable, Identifiable {
 }
 
 enum MockExam {
-    static func session(set: MockSet, catalog: Catalog, unlocked: Bool) -> StudySession? {
+    static func session(set: MockSet, catalog: Catalog, unlocked: Bool, electiveQuestionNumber: Int = 17) -> StudySession? {
         let available = Dictionary(uniqueKeysWithValues: SessionPlanner.available(catalog, unlocked: unlocked).map { ($0.id, $0) })
         let questions = set.questionIDs.compactMap { available[$0] }
         guard questions.count == set.questionCount else { return nil }
+        if catalog.qualification.id == "denken3" {
+            guard [17, 18].contains(electiveQuestionNumber), Set(questions.map(\.subject)).count == 1 else { return nil }
+            let hasElectives = ["理論", "機械"].contains(questions.first?.subject ?? "")
+            let selected = hasElectives ? questions.filter {
+                ($0.questionNumber ?? 0) < 17 || $0.questionNumber == electiveQuestionNumber
+            } : questions
+            guard selected.reduce(0, { $0 + ($1.points ?? 0) }) == 100 else { return nil }
+            return StudySession(title: set.title + (hasElectives ? " · 問\(electiveQuestionNumber)選択" : ""),
+                                mode: .mock, questions: selected, timed: true, mockSetID: set.id)
+        }
         return StudySession(title: set.title, mode: .mock, questions: questions, timed: true, mockSetID: set.id)
     }
 
