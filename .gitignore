@@ -1,21 +1,69 @@
+# ==========================================
+# macOS
+# ==========================================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# ==========================================
+# Xcode / Swift
+# ==========================================
+build/
 DerivedData/
 *.xcuserstate
 *.xcuserdatad/
-.build
-.opencode
-.agents/
-skills-lock.json
-docs/network-specialist/evidence/
-.venv-network/
-tools/network-specialist/__pycache__/
-tools/release/__pycache__/
-release-artifacts/
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+.build/
+.swiftpm/
+
+# ==========================================
+# Python
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+.venv*/
+venv/
+env/
+
+# ==========================================
+# Keys, Secrets & Private Credentials
+# ==========================================
 *.p8
 *.p12
 *.mobileprovision
-docs/applied-information/evidence/
-tools/applied-information/__pycache__/
+*.private.json
 
-# 共通リリースCLIのローカル操作記録
+# ==========================================
+# IDEs & Editors
+# ==========================================
+.vscode/
+.idea/
+
+# ==========================================
+# Agent & Tool Workspaces
+# ==========================================
+.opencode/
+.agents/
+skills-lock.json
 .submitdock/
+
+# ==========================================
+# Artifacts, Evidences & Temporary Files
+# ==========================================
+release-artifacts/
+docs/*/evidence/
+*.tmp
+*.temp
+
