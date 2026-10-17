@@ -1,0 +1,24 @@
+{
+  "checkedOn": "2026-10-15",
+  "basis": {
+    "title": "基本情報技術者試験（レベル2）シラバス Ver.9.2",
+    "url": "https://www.ipa.go.jp/shiken/syllabus/omgdg50000005kpe-att/syllabus_fe_ver9_2.pdf",
+    "publishedOn": "2026-01-08",
+    "sha256": "affe22cc678c29d3294ab65c169f09939026dcf0ab1d69e3fd5f46d2415527b4"
+  },
+  "examOverview": "https://www.ipa.go.jp/shiken/kubun/fe.html",
+  "scope": {
+    "科目A": {
+      "questions": 60,
+      "minutes": 90
+    },
+    "科目B": {
+      "questions": 20,
+      "minutes": 100,
+      "algorithmRatio": 0.8,
+      "securityRatio": 0.2
+    }
+  },
+  "scoring": "本試験はIRT評価で科目A・B各600点以上。アプリの正答率60%は練習目安。",
+  "futureDraftPolicy": "2026-09-30公開の2027年度向けシラバス案は現行確定シラバスへ混入しない。"
+}

@@ -1,0 +1,303 @@
+{
+  "checkedOn": "2026-10-15",
+  "indexURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/index.html",
+  "usage": "IPA states its public exam questions may be used without permission or fee, subject to its stated usage notes.",
+  "years": [
+    {
+      "year": 2026,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/2026r08.html",
+      "documents": [
+        {
+          "file": "2026r08_fe_kamoku_a_ans.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/rcu1hd0000012qj6-att/2026r08_fe_kamoku_a_ans.pdf",
+          "sha256": "02976cdb5d2c14ec3c5304a1dc89d1db77ca04f0d62fe78fc4c2448dcf0ea6a7",
+          "bytes": 31293,
+          "subject": "科目A",
+          "role": "answer-key"
+        },
+        {
+          "file": "2026r08_fe_kamoku_a_qs.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/rcu1hd0000012qj6-att/2026r08_fe_kamoku_a_qs.pdf",
+          "sha256": "7fb3984bb494cad928232823e224b7e58f3eaef59ea523deaa4bae2085c8fba3",
+          "bytes": 365959,
+          "subject": "科目A",
+          "role": "question-booklet"
+        },
+        {
+          "file": "2026r08_fe_kamoku_b_ans.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/rcu1hd0000012qj6-att/2026r08_fe_kamoku_b_ans.pdf",
+          "sha256": "ca47fecabfcb67745b339522f75f907a3d29217a63e0c1efb38cff4c7aaac2af",
+          "bytes": 34783,
+          "subject": "科目B",
+          "role": "answer-key"
+        },
+        {
+          "file": "2026r08_fe_kamoku_b_qs.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/rcu1hd0000012qj6-att/2026r08_fe_kamoku_b_qs.pdf",
+          "sha256": "3995e35d9ca102e9363ac049303e65b936a860ef6377ffbbcbc0620484a6bbb2",
+          "bytes": 574936,
+          "subject": "科目B",
+          "role": "question-booklet"
+        }
+      ],
+      "publishedQuestions": {
+        "科目A": 20,
+        "科目B": 6
+      },
+      "officialAnswerKeys": {
+        "科目A": [
+          "イ",
+          "ウ",
+          "イ",
+          "イ",
+          "イ",
+          "イ",
+          "エ",
+          "ア",
+          "ウ",
+          "ウ",
+          "ア",
+          "ウ",
+          "ア",
+          "エ",
+          "ウ",
+          "ア",
+          "イ",
+          "ア",
+          "ア",
+          "イ"
+        ],
+        "科目B": [
+          "エ",
+          "カ",
+          "ア",
+          "エ",
+          "イ",
+          "ケ"
+        ]
+      }
+    },
+    {
+      "year": 2025,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/2025r07.html",
+      "documents": [
+        {
+          "file": "2025r07_fe_kamoku_a_ans.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/tbl5kb0000005r9r-att/2025r07_fe_kamoku_a_ans.pdf",
+          "sha256": "6d6a14e7c346fe82c1848d2922ef0ea1325bcc3ff5f2224108baa1fe8f8912eb",
+          "bytes": 31157,
+          "subject": "科目A",
+          "role": "answer-key"
+        },
+        {
+          "file": "2025r07_fe_kamoku_a_qs.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/tbl5kb0000005r9r-att/2025r07_fe_kamoku_a_qs.pdf",
+          "sha256": "3c33fb495bfea51851d2202fca17adb325ce9cb2c216464a5f931725618dfadc",
+          "bytes": 269374,
+          "subject": "科目A",
+          "role": "question-booklet"
+        },
+        {
+          "file": "2025r07_fe_kamoku_b_ans.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/tbl5kb0000005r9r-att/2025r07_fe_kamoku_b_ans.pdf",
+          "sha256": "d2683dc460dffde9ca7817483edbd207c9696c061362281710ebc9d89ff6c2fe",
+          "bytes": 30050,
+          "subject": "科目B",
+          "role": "answer-key"
+        },
+        {
+          "file": "2025r07_fe_kamoku_b_qs.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/tbl5kb0000005r9r-att/2025r07_fe_kamoku_b_qs.pdf",
+          "sha256": "18c43738820a136adf48a1990aaf571fa4203e1f1a162d51322d29d319da67d9",
+          "bytes": 622774,
+          "subject": "科目B",
+          "role": "question-booklet"
+        }
+      ],
+      "publishedQuestions": {
+        "科目A": 20,
+        "科目B": 6
+      },
+      "officialAnswerKeys": {
+        "科目A": [
+          "エ",
+          "イ",
+          "イ",
+          "ウ",
+          "ア",
+          "ウ",
+          "エ",
+          "エ",
+          "ウ",
+          "ア",
+          "ウ",
+          "エ",
+          "エ",
+          "エ",
+          "ウ",
+          "エ",
+          "イ",
+          "エ",
+          "エ",
+          "イ"
+        ],
+        "科目B": [
+          "カ",
+          "ア",
+          "イ",
+          "ク",
+          "オ",
+          "ク"
+        ]
+      }
+    },
+    {
+      "year": 2024,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/2024r06.html",
+      "documents": [
+        {
+          "file": "2024r06_fe_kamoku_a_ans.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/eid2eo0000007g1d-att/2024r06_fe_kamoku_a_ans.pdf",
+          "sha256": "2f72e5e6ef0dafc14bbe8c52a174979b506c560ee26e67af223c1aabae70778e",
+          "bytes": 65481,
+          "subject": "科目A",
+          "role": "answer-key"
+        },
+        {
+          "file": "2024r06_fe_kamoku_a_qs.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/eid2eo0000007g1d-att/2024r06_fe_kamoku_a_qs.pdf",
+          "sha256": "c8a462741a1111950f7376e3ebd9bd0b2eff75d32fa9cfa3e39e97b7bf979789",
+          "bytes": 320465,
+          "subject": "科目A",
+          "role": "question-booklet"
+        },
+        {
+          "file": "2024r06_fe_kamoku_b_ans.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/eid2eo0000007g1d-att/2024r06_fe_kamoku_b_ans.pdf",
+          "sha256": "ca5fbc5c32a987c78972ea1c9a25686f1f5668dcd45b6d36a3dcb316026144e6",
+          "bytes": 46510,
+          "subject": "科目B",
+          "role": "answer-key"
+        },
+        {
+          "file": "2024r06_fe_kamoku_b_qs.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/eid2eo0000007g1d-att/2024r06_fe_kamoku_b_qs.pdf",
+          "sha256": "c82b9e6a84707d163b15a0073533bf615e6eaed36e65123ed13a4ff80a1cddd4",
+          "bytes": 583284,
+          "subject": "科目B",
+          "role": "question-booklet"
+        }
+      ],
+      "publishedQuestions": {
+        "科目A": 20,
+        "科目B": 6
+      },
+      "officialAnswerKeys": {
+        "科目A": [
+          "ウ",
+          "エ",
+          "イ",
+          "エ",
+          "ウ",
+          "ア",
+          "ウ",
+          "ウ",
+          "ウ",
+          "エ",
+          "ウ",
+          "エ",
+          "ウ",
+          "ウ",
+          "エ",
+          "エ",
+          "ア",
+          "エ",
+          "エ",
+          "ア"
+        ],
+        "科目B": [
+          "イ",
+          "エ",
+          "エ",
+          "イ",
+          "オ",
+          "ウ"
+        ]
+      }
+    },
+    {
+      "year": 2023,
+      "pageURL": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/2023r05.html",
+      "documents": [
+        {
+          "file": "2023r05_fe_kamoku_a_ans.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/t6hhco0000003zx0-att/2023r05_fe_kamoku_a_ans.pdf",
+          "sha256": "6a4c8b5a4852dd71dd641a8ab8824d54a4995e211e6660d7d14298bae8e2d473",
+          "bytes": 71552,
+          "subject": "科目A",
+          "role": "answer-key"
+        },
+        {
+          "file": "2023r05_fe_kamoku_a_qs.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/t6hhco0000003zx0-att/2023r05_fe_kamoku_a_qs.pdf",
+          "sha256": "a381b2d4e1d1297b24adde48ca29dc9b5e9da533b831963cbf0756191f400181",
+          "bytes": 355482,
+          "subject": "科目A",
+          "role": "question-booklet"
+        },
+        {
+          "file": "2023r05_fe_kamoku_b_ans.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/t6hhco0000003zx0-att/2023r05_fe_kamoku_b_ans.pdf",
+          "sha256": "416572bcae9a3fdcdf21a6b0bde3717c31b66591fca1d58e27dcc750f438e6e6",
+          "bytes": 50375,
+          "subject": "科目B",
+          "role": "answer-key"
+        },
+        {
+          "file": "2023r05_fe_kamoku_b_qs.pdf",
+          "url": "https://www.ipa.go.jp/shiken/mondai-kaiotu/sg_fe/koukai/t6hhco0000003zx0-att/2023r05_fe_kamoku_b_qs.pdf",
+          "sha256": "04fc7d8dbeed2f29bb7082d24ecdc8712c78b39012de0813c6a11cd1c5eea25a",
+          "bytes": 559157,
+          "subject": "科目B",
+          "role": "question-booklet"
+        }
+      ],
+      "publishedQuestions": {
+        "科目A": 20,
+        "科目B": 6
+      },
+      "officialAnswerKeys": {
+        "科目A": [
+          "ウ",
+          "ウ",
+          "エ",
+          "エ",
+          "イ",
+          "ウ",
+          "イ",
+          "エ",
+          "ウ",
+          "ウ",
+          "エ",
+          "ウ",
+          "エ",
+          "ウ",
+          "エ",
+          "イ",
+          "ウ",
+          "ウ",
+          "エ",
+          "ア"
+        ],
+        "科目B": [
+          "ア",
+          "ク",
+          "エ",
+          "エ",
+          "エ",
+          "ア"
+        ]
+      }
+    }
+  ]
+}

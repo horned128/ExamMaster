@@ -131,6 +131,50 @@ targetTemplates:
         PRODUCT_NAME: ${target_name}
         ENABLE_USER_SCRIPT_SANDBOXING: NO
 targets:
+  FundamentalInformation:
+    templates: [QualificationApp]
+    templateAttributes:
+      qualificationID: fundamental-information
+      privacyPolicyPath: Qualifications/fundamental-information/PrivacyPolicy.txt
+      privacyManifestPath: Qualifications/fundamental-information/PrivacyInfo.xcprivacy
+      displayName: ピヨトレ！基本情報技術者
+      bundleID: jp.hino.piyotre.fundamentalinformation
+      iconName: FundamentalInformationIcon
+      adMobAppID: ca-app-pub-9785585722959806~7250744489
+    settings:
+      base:
+        CODE_SIGN_IDENTITY: iPhone Developer
+        DEVELOPMENT_TEAM: QZH83KGFVX
+    sources:
+      - path: Qualifications/fundamental-information/Figures
+        type: folder
+        buildPhase: resources
+    scheme:
+      testTargets: [FundamentalInformationTests, FundamentalInformationUITests]
+      storeKitConfiguration: Qualifications/fundamental-information/products.storekit
+  FundamentalInformationTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: FundamentalTests
+      - path: ReleaseTests
+      - path: Qualifications/fundamental-information/products.storekit
+    dependencies:
+      - target: FundamentalInformation
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.hino.piyotre.fundamentalinformation.tests
+  FundamentalInformationUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: FundamentalUITests
+      - path: Qualifications/fundamental-information/products.storekit
+    dependencies:
+      - target: FundamentalInformation
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.hino.piyotre.fundamentalinformation.uitests
   AppliedInformation:
     templates: [QualificationApp]
     templateAttributes:
@@ -158,6 +202,7 @@ targets:
     platform: iOS
     sources:
       - path: AppliedTests
+      - path: ReleaseTests
       - path: Qualifications/applied-information/products.storekit
     dependencies:
       - target: AppliedInformation
@@ -215,7 +260,8 @@ targets:
       adMobAppID: ca-app-pub-9785585722959806~8954413240
     settings:
       base:
-        CURRENT_PROJECT_VERSION: '3'
+        MARKETING_VERSION: '1.0.1'
+        CURRENT_PROJECT_VERSION: '4'
         CODE_SIGN_IDENTITY: iPhone Developer
         DEVELOPMENT_TEAM: QZH83KGFVX
     sources:
@@ -230,6 +276,7 @@ targets:
     platform: iOS
     sources:
       - path: NetworkTests
+      - path: ReleaseTests
       - path: Qualifications/network-specialist/products.storekit
     dependencies:
       - target: NetworkSpecialist

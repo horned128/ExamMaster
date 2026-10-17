@@ -1,0 +1,20 @@
+{
+  "checkedOn": "2026-10-15",
+  "device": "iPhone 17 Pro / iOS 26.2 Simulator",
+  "unitTests": {
+    "passed": 5,
+    "failed": 0
+  },
+  "uiTests": {
+    "passed": 7,
+    "failed": 0
+  },
+  "results": [
+    "Test-FundamentalInformation-2026.10.15_15-45-01-+0900.xcresult",
+    "Test-FundamentalInformation-2026.10.15_15-49-27-+0900.xcresult"
+  ],
+  "officialKeyChecks": 104,
+  "independentCalculationChecks": 23,
+  "contentQuestions": 1004,
+  "gitDiffCheck": "passed"
+}

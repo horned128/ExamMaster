@@ -1,0 +1,98 @@
+{
+  "appID": "6823176672",
+  "bundleID": "jp.hino.piyotre.fundamentalinformation",
+  "version": "1.0",
+  "build": "2",
+  "observedAt": "2026-10-16T10:13:28.508202+00:00",
+  "source": "App Store Connect / Apple Developer web UI and xcodebuild upload log",
+  "releaseMethod": "MANUAL",
+  "appState": "WAITING_FOR_REVIEW",
+  "completed": [
+    "Explicit App ID registered",
+    "App Store record created",
+    "ja description, keywords, support URL, copyright, review notes saved",
+    "No sign-in required selected",
+    "Manual release saved",
+    "ja screenshots: 6 medium + 6 large, ordered 01-06",
+    "Subtitle, EDUCATION category and authorized third-party content rights saved",
+    "Age rating 4+ saved, ads present, no children category",
+    "Non-consumable IAP Apple ID 6823180216 created",
+    "IAP JPN-only availability saved",
+    "IAP initial base JPN 300 JPY selected and confirmed",
+    "IAP Japanese name/description, raw review screenshot and review notes saved",
+    "IAP added to one-item draft submission; Ready for Review",
+    "Xcode Organizer verified FundamentalInformation 1.0(1) Uploaded to Apple",
+    "User-selected processed build 1.0(2) verified on FE version page",
+    "App price 0 JPY saved; base JPN",
+    "Japan only: Available on App Release verified in availability management",
+    "Mac / Vision Pro distribution disabled; verified iPhone release scope",
+    "Apple review contact 4 fields saved from private local file; values omitted",
+    "App Privacy seven SDK data types published after user consent",
+    "App 1.0(2) and IAP 6823180216 included in same draft; two items ready",
+    "Apple Business free / paid agreements, bank and tax forms observed Active",
+    "AdMob FE-specific European consent message published; ja default + en; FE privacy URL; decline available in all regions",
+    "app-ads.txt publisher DIRECT line verified on public page",
+    "Public support and privacy pages verified against app behavior and 300 JPY unlock",
+    "Marketing URL saved on app version to same app-ads.txt domain",
+    "Submitted once; submission detail verifies both app 1.0(2) and first IAP Waiting for Review"
+  ],
+  "upload": {
+    "state": "UPLOADED_TO_APPLE",
+    "source": "Xcode Organizer native UI verified app + bundle + version/build",
+    "observedAt": "2026-10-15T12:43:50.196931+00:00",
+    "warnings": [
+      "Missing GoogleMobileAds.framework dSYM",
+      "Missing UserMessagingPlatform.framework dSYM"
+    ],
+    "processingVerificationPending": true
+  },
+  "pending": [
+    "Apple review outcome; manual publication after approval",
+    "After public App Store availability: link public Store ID in AdMob and verify Google readiness review"
+  ],
+  "selectedBuild": {
+    "version": "1.0",
+    "build": "2",
+    "id": "51dfcf09-c259-4e84-8e31-2c5552aafb9a",
+    "source": "App Store Connect app version page, user selected build",
+    "verifiedProductionArchive": "/Users/hino/Library/Developer/Xcode/Archives/2026-10-16/FundamentalInformation 2026-10-16, 18.49.xcarchive",
+    "note": "Local archive build 1; Xcode distribution managed upload build number. Production AdMob IDs, tracking domain, privacy URL verified in supplied app archive."
+  },
+  "privacyPublicationConsent": {
+    "received": true,
+    "source": "User reply: 同意して公開する",
+    "scope": "Apple App Privacy publication, seven SDK data types, device ID tracking"
+  },
+  "submission": {
+    "state": "WAITING_FOR_REVIEW",
+    "source": "App Store Connect web UI; verified submission detail",
+    "checkedAt": "2026-10-16T10:13:28.508202+00:00",
+    "version": "1.0",
+    "build": "2",
+    "submissionID": "c52939f7-4bf9-4723-b155-c077b19cd8ed",
+    "submissionURL": "https://appstoreconnect.apple.com/apps/6823176672/distribution/reviewsubmissions/details/c52939f7-4bf9-4723-b155-c077b19cd8ed",
+    "releaseMethod": "MANUAL",
+    "items": [
+      {
+        "type": "APP_STORE_VERSION",
+        "version": "1.0",
+        "build": "2",
+        "state": "WAITING_FOR_REVIEW"
+      },
+      {
+        "type": "IN_APP_PURCHASE",
+        "id": "6823180216",
+        "productID": "jp.hino.piyotre.fundamentalinformation.unlock",
+        "state": "WAITING_FOR_REVIEW"
+      }
+    ]
+  },
+  "cloudRegistrySync": {
+    "state": "REAUTHENTICATION_REQUIRED",
+    "observedAt": "2026-10-16T10:14:46.865395+00:00",
+    "source": "SubmitDock admin login page",
+    "localManifestUpdated": true,
+    "preparedImport": ".submitdock/piyotre-fundamental-information/manifest-submitted.json",
+    "publicPagesAlreadyPublishedAndVerified": true
+  }
+}

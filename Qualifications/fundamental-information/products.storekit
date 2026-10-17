@@ -1,0 +1,42 @@
+{
+  "appPolicies": {
+    "eula": "",
+    "policies": [
+      {
+        "locale": "ja_JP",
+        "policyText": "",
+        "policyURL": ""
+      }
+    ]
+  },
+  "identifier": "FE2026AB",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "300",
+      "familyShareable": false,
+      "internalID": "FEUNLOCK",
+      "localizations": [
+        {
+          "description": "収録済みの全教材を期限なく利用でき，広告を非表示にします。",
+          "displayName": "基本情報技術者 全問題解放",
+          "locale": "ja_JP"
+        }
+      ],
+      "productID": "jp.hino.piyotre.fundamentalinformation.unlock",
+      "referenceName": "基本情報技術者 全問題解放",
+      "type": "NonConsumable"
+    }
+  ],
+  "settings": {
+    "_failTransactionsEnabled": false,
+    "_locale": "ja_JP",
+    "_storefront": "JPN",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [],
+  "version": {
+    "major": 4,
+    "minor": 0
+  }
+}

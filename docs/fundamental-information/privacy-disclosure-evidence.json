@@ -1,0 +1,97 @@
+{
+  "observedAt": "2026-10-16T10:01:57.843280+00:00",
+  "source": "Selected build source archive embedded GoogleMobileAds / UMP PrivacyInfo.xcprivacy",
+  "dataTypes": {
+    "NSPrivacyCollectedDataTypeOtherDiagnosticData": {
+      "linked": false,
+      "tracking": false,
+      "purposes": [
+        "NSPrivacyCollectedDataTypePurposeAnalytics",
+        "NSPrivacyCollectedDataTypePurposeDeveloperAdvertising",
+        "NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising"
+      ],
+      "sources": [
+        "GoogleMobileAds.framework"
+      ]
+    },
+    "NSPrivacyCollectedDataTypeCoarseLocation": {
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "NSPrivacyCollectedDataTypePurposeAnalytics",
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality",
+        "NSPrivacyCollectedDataTypePurposeDeveloperAdvertising",
+        "NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising"
+      ],
+      "sources": [
+        "GoogleMobileAds.framework",
+        "UserMessagingPlatform.framework"
+      ]
+    },
+    "NSPrivacyCollectedDataTypePerformanceData": {
+      "linked": false,
+      "tracking": false,
+      "purposes": [
+        "NSPrivacyCollectedDataTypePurposeAnalytics",
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality",
+        "NSPrivacyCollectedDataTypePurposeDeveloperAdvertising",
+        "NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising"
+      ],
+      "sources": [
+        "GoogleMobileAds.framework",
+        "UserMessagingPlatform.framework"
+      ]
+    },
+    "NSPrivacyCollectedDataTypeCrashData": {
+      "linked": false,
+      "tracking": false,
+      "purposes": [
+        "NSPrivacyCollectedDataTypePurposeAnalytics"
+      ],
+      "sources": [
+        "GoogleMobileAds.framework"
+      ]
+    },
+    "NSPrivacyCollectedDataTypeAdvertisingData": {
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "NSPrivacyCollectedDataTypePurposeAnalytics",
+        "NSPrivacyCollectedDataTypePurposeDeveloperAdvertising",
+        "NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising"
+      ],
+      "sources": [
+        "GoogleMobileAds.framework"
+      ]
+    },
+    "NSPrivacyCollectedDataTypeProductInteraction": {
+      "linked": true,
+      "tracking": false,
+      "purposes": [
+        "NSPrivacyCollectedDataTypePurposeAnalytics",
+        "NSPrivacyCollectedDataTypePurposeAppFunctionality",
+        "NSPrivacyCollectedDataTypePurposeDeveloperAdvertising",
+        "NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising"
+      ],
+      "sources": [
+        "GoogleMobileAds.framework",
+        "UserMessagingPlatform.framework"
+      ]
+    },
+    "NSPrivacyCollectedDataTypeDeviceID": {
+      "linked": true,
+      "tracking": true,
+      "purposes": [
+        "NSPrivacyCollectedDataTypePurposeAnalytics",
+        "NSPrivacyCollectedDataTypePurposeDeveloperAdvertising",
+        "NSPrivacyCollectedDataTypePurposeThirdPartyAdvertising"
+      ],
+      "sources": [
+        "GoogleMobileAds.framework"
+      ]
+    }
+  },
+  "appStudyData": "Stored locally; no developer study server",
+  "appleWeb": "All 7 data types configured and published after explicit user consent; only DeviceID tracking",
+  "publishedAt": "2026-10-16T10:06:02.131644+00:00"
+}

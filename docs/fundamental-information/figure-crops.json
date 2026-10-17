@@ -1,0 +1,62 @@
+{
+  "renderer": "tools/fundamental-information/past_figures.swift",
+  "coordinateSpace": "PDFKit thumbnail rendered at 1770x2500 pixels; crop origin is top-left",
+  "figures": [
+    {
+      "asset": "fe-2026-a-q06.png",
+      "source": "2026r08_fe_kamoku_a_qs.pdf",
+      "pageIndex": 5,
+      "crop": { "x": 200, "y": 925, "width": 1410, "height": 1220 },
+      "description": "NAND circuit and all four labeled A/B/Y timing-chart options."
+    },
+    {
+      "asset": "fe-2025-a-q03.png",
+      "source": "2025r07_fe_kamoku_a_qs.pdf",
+      "pageIndex": 2,
+      "crop": { "x": 500, "y": 390, "width": 800, "height": 650 },
+      "description": "Binary-search-tree diagram; includes whitespace above root node a."
+    },
+    {
+      "asset": "fe-2025-a-q14.png",
+      "source": "2025r07_fe_kamoku_a_qs.pdf",
+      "pageIndex": 7,
+      "crop": { "x": 260, "y": 400, "width": 1280, "height": 720 },
+      "description": "Complete project network diagram and legend, including start and end nodes."
+    },
+    {
+      "asset": "fe-2024-a-q13.png",
+      "source": "2024r06_fe_kamoku_a_qs.pdf",
+      "pageIndex": 5,
+      "crop": { "x": 350, "y": 1450, "width": 1070, "height": 450 },
+      "description": "Arrow diagram with dummy activity and legend, without question text."
+    },
+    {
+      "asset": "fe-2024-a-q19.png",
+      "source": "2024r06_fe_kamoku_a_qs.pdf",
+      "pageIndex": 8,
+      "crop": { "x": 700, "y": 395, "width": 480, "height": 390 },
+      "description": "Scatter plot with y-axis label and complete left arrow/origin."
+    },
+    {
+      "asset": "fe-2023-a-q10.png",
+      "source": "2023r05_fe_kamoku_a_qs.pdf",
+      "pageIndex": 5,
+      "crop": { "x": 650, "y": 465, "width": 500, "height": 850 },
+      "description": "Network placement diagram with candidate positions a through d."
+    },
+    {
+      "asset": "fe-2023-a-q11.png",
+      "source": "2023r05_fe_kamoku_a_qs.pdf",
+      "pageIndex": 6,
+      "crop": { "x": 260, "y": 500, "width": 1260, "height": 800 },
+      "description": "Complete flowchart with its labels and entry/exit paths."
+    },
+    {
+      "asset": "fe-2023-a-q13.png",
+      "source": "2023r05_fe_kamoku_a_qs.pdf",
+      "pageIndex": 7,
+      "crop": { "x": 250, "y": 500, "width": 960, "height": 470 },
+      "description": "Complete project activity network diagram, excluding adjacent cost table."
+    }
+  ]
+}

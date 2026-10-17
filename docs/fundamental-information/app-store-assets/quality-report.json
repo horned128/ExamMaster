@@ -1,0 +1,183 @@
+{
+  "checkedOn": "2026-10-15",
+  "panels": 6,
+  "exports": 12,
+  "format": "opaque PNG",
+  "geometry": "passed by HTML renderer",
+  "sourceScreenshotsPreserved": [
+    {
+      "path": "assets/choices.png",
+      "sha256": "86eb752f86063deb4f5ca67deda8a0ae88415f4ef4c3a95aceba4a2077a217d3"
+    },
+    {
+      "path": "assets/code.png",
+      "sha256": "558669c15ebaccb87c9eb61639e9f61432823ddb2c23a0e898437c7f9944bbc3"
+    },
+    {
+      "path": "assets/home.png",
+      "sha256": "90ca92d2b571da78d06a1f8c32d0f2e0e9ea2a8fbcf4bb6fc74fd7afbed10792"
+    },
+    {
+      "path": "assets/table.png",
+      "sha256": "99e1a4385bbcfc3e6d4f815936c5dc9253e182af49e11011fe931ee810c30e20"
+    },
+    {
+      "path": "assets/unlock.png",
+      "sha256": "26a4e79a5436f5f822a69cabada96f2acc57e3ce26721c604afb3f7817850c0c"
+    },
+    {
+      "path": "assets/years.png",
+      "sha256": "687e9c2110327e839e00a186f09dbeef530e6569b655ce1171cee6ed7ee29843"
+    }
+  ],
+  "exportsVerified": [
+    {
+      "path": "png/1320x2868/01.png",
+      "size": [
+        1320,
+        2868
+      ],
+      "sha256": "d1b0c4c7bfa5bc452a95b8c44fb13d1f411274c78b4147359953ee663d4aa154"
+    },
+    {
+      "path": "png/1320x2868/02.png",
+      "size": [
+        1320,
+        2868
+      ],
+      "sha256": "c70207236a2ff90ddb4a7aafe1cbd2f567d99da2ab2017705a269cad7a9d6dea"
+    },
+    {
+      "path": "png/1320x2868/03.png",
+      "size": [
+        1320,
+        2868
+      ],
+      "sha256": "4266f935cb868251801968a9b865302e4be60d98731069f0e163e8aad94bf306"
+    },
+    {
+      "path": "png/1320x2868/04.png",
+      "size": [
+        1320,
+        2868
+      ],
+      "sha256": "7a927e8073f8a09f216532700ab9ae6d63300055ad30a46a8950af8d9fa970ea"
+    },
+    {
+      "path": "png/1320x2868/05.png",
+      "size": [
+        1320,
+        2868
+      ],
+      "sha256": "af2886657a7ce5e9e6ad73cc408a62ebc5f6197d3d7ac037fe429ba64dc394a8"
+    },
+    {
+      "path": "png/1320x2868/06.png",
+      "size": [
+        1320,
+        2868
+      ],
+      "sha256": "83d2f9b4628b6b9c7c867ff3c5747f587132f7603784f450bd6ba4c9afcc5b1b"
+    },
+    {
+      "path": "png/1206x2622/01.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "sha256": "b32b0a4b521a1a30bdee1d60fdc70fb3ab9e12a1f8095450b2260f8811a30f89"
+    },
+    {
+      "path": "png/1206x2622/02.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "sha256": "2df882cf3e7b71d7e3d9c1de3bb8858e86688524e84070713b240b4dcd3c1731"
+    },
+    {
+      "path": "png/1206x2622/03.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "sha256": "ec8f419bc80c366d1620afea4949573e07ba6a1ecf77e05b423badbdc3c85023"
+    },
+    {
+      "path": "png/1206x2622/04.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "sha256": "b8d86fd783e7ec2a3066cea8fa6cf6bb0eacf59e7e0ac8f6aad41758a5cb7c9a"
+    },
+    {
+      "path": "png/1206x2622/05.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "sha256": "88ed18252afe4c10a1c4b3fc7e2ac44933faaf7a4f36f229f195c22d17758260"
+    },
+    {
+      "path": "png/1206x2622/06.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "sha256": "243546216bbba22c8342fb40551d0faaa1bff8b98b654a921cd81d31fa79b96c"
+    }
+  ],
+  "appleUpload": {
+    "state": "VERIFIED",
+    "observedAt": "2026-10-15T21:32:25.741377+09:00",
+    "source": "App Store Connect media manager web UI",
+    "appID": "6823176672",
+    "locale": "ja",
+    "sets": [
+      {
+        "display": "Dynamic Island medium",
+        "size": [
+          1206,
+          2622
+        ],
+        "count": 6,
+        "order": [
+          "01.png",
+          "02.png",
+          "03.png",
+          "04.png",
+          "05.png",
+          "06.png"
+        ]
+      },
+      {
+        "display": "Dynamic Island large",
+        "size": [
+          1320,
+          2868
+        ],
+        "count": 6,
+        "order": [
+          "01.png",
+          "02.png",
+          "03.png",
+          "04.png",
+          "05.png",
+          "06.png"
+        ]
+      }
+    ]
+  },
+  "applePriceVerification": "pending",
+  "designSkills": {
+    "ui-ux-pro-max": "existing brand guidance applied",
+    "impeccable": "not installed; manual critique performed"
+  },
+  "storePriceVerification": {
+    "state": "VERIFIED",
+    "priceJPY": 300,
+    "source": "App Store Connect IAP pricing setup confirmed Japan 300 JPY, saved and submitted with app",
+    "productID": "jp.hino.piyotre.fundamentalinformation.unlock"
+  }
+}

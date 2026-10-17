@@ -1,0 +1,62 @@
+{
+  "observedAt": "2026-10-16T10:13:28.508202+00:00",
+  "source": "App Store Connect / AdMob web UI",
+  "apple": {
+    "state": "WAITING_FOR_REVIEW",
+    "source": "App Store Connect web UI; verified submission detail",
+    "checkedAt": "2026-10-16T10:13:28.508202+00:00",
+    "version": "1.0",
+    "build": "2",
+    "submissionID": "c52939f7-4bf9-4723-b155-c077b19cd8ed",
+    "submissionURL": "https://appstoreconnect.apple.com/apps/6823176672/distribution/reviewsubmissions/details/c52939f7-4bf9-4723-b155-c077b19cd8ed",
+    "releaseMethod": "MANUAL",
+    "items": [
+      {
+        "type": "APP_STORE_VERSION",
+        "version": "1.0",
+        "build": "2",
+        "state": "WAITING_FOR_REVIEW"
+      },
+      {
+        "type": "IN_APP_PURCHASE",
+        "id": "6823180216",
+        "productID": "jp.hino.piyotre.fundamentalinformation.unlock",
+        "state": "WAITING_FOR_REVIEW"
+      }
+    ]
+  },
+  "admob": {
+    "state": "CREATED_UNPUBLISHED",
+    "source": "AdMob web UI; FE app and production units created, European consent message published; Store link pending public listing",
+    "checkedAt": "2026-10-16T10:13:28.508202+00:00"
+  },
+  "storePublic": false,
+  "publicPages": {
+    "id": "rls-075c641f9016f2cc33c9fb34",
+    "support": "https://submitdock-ios-pages.netlify.app/support/rls-075c641f9016f2cc33c9fb34",
+    "privacy": "https://submitdock-ios-pages.netlify.app/privacy/rls-075c641f9016f2cc33c9fb34"
+  },
+  "ads": {
+    "productionIDsConfigured": true,
+    "europeanConsentMessage": "ピヨトレ！基本情報・欧州同意",
+    "messagePublished": true,
+    "defaultLanguage": "ja",
+    "additionalLanguage": "en",
+    "declineInAllRegions": true,
+    "appAdsPublished": true
+  },
+  "iap": {
+    "id": "6823180216",
+    "type": "NON_CONSUMABLE",
+    "productID": "jp.hino.piyotre.fundamentalinformation.unlock",
+    "priceJPY": 300,
+    "territories": [
+      "JPN"
+    ],
+    "state": "WAITING_FOR_REVIEW"
+  },
+  "releaseMethod": "MANUAL",
+  "warnings": [
+    "GoogleMobileAds / UMP dSYM missing; upload completed successfully. SDK crash symbolication may be limited."
+  ]
+}
