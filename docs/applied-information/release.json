@@ -126,8 +126,8 @@
   },
   "status": {
     "apple": {
-      "state": "APP_CREATED",
-      "source": "App Store Connect web (2026-10-14)"
+      "state": "REJECTED",
+      "source": "App Store Connect Safari, 2026-10-16 JST; submission 285ecb51-e240-4733-a1ff-33134d09eeae. Reviewed 1.0 (2); current selection 1.0 (4), not resubmitted."
     },
     "admob": {
       "state": "CREATED_UNPUBLISHED",
@@ -175,6 +175,19 @@
         }
       ]
     },
-    "reviewContactFile": "../../release-artifacts/review-contact.private.json"
+    "reviewContactFile": "../../release-artifacts/review-contact.private.json",
+    "iapValidationInputs": [
+      "MyApp.swift",
+      "ContentView.swift",
+      "Core",
+      "Views",
+      "Ads",
+      "Config/AppliedInformation-Info.plist",
+      "Qualifications/applied-information",
+      "ReleaseTests",
+      "project.yml",
+      "ExamMaster.xcodeproj/project.pbxproj",
+      "ExamMaster.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+    ]
   }
 }

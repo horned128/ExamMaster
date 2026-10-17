@@ -1,0 +1,9 @@
+Thank you for reviewing our app.
+
+We investigated the reported failure to load In-App Purchase product information. The Paid Apps Agreement, banking information, and tax forms are active. The explicit App ID has In-App Purchase enabled, and the app's product identifier matches App Store Connect: jp.hino.piyotre.appliedinformation.unlock (non-consumable, JPY 300 in Japan).
+
+On October 16, we tested a development-signed copy on a physical iPhone with the local StoreKit configuration disabled. Apple's Sandbox returned the product for the JPN storefront. We also verified that the app's PurchaseManager loaded the same product and JPY 300 price without an error. This test queried product information only; it did not make a purchase.
+
+Both the app and this In-App Purchase are currently available in Japan only. Could you please re-test using a Sandbox account whose App Store country or region is Japan? If the issue persists, could you let us know the storefront used during review so we can investigate that environment further?
+
+Thank you.

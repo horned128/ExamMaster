@@ -1,14 +1,14 @@
 {
-  "checkedAtJST": "2026-10-14 13:12",
+  "checkedAtJST": "2026-10-15 21:04",
   "appStoreConnectID": "6821629759",
   "version": "1.0",
   "build": "3",
   "buildID": "6d5616dc-ef6f-4f9c-81a5-1b0ea0c7b536",
   "reviewSubmissionID": "01fd5a77-32b6-4c9c-ad66-52d2a43a2e38",
   "reviewURL": "https://appstoreconnect.apple.com/apps/6821629759/distribution/reviewsubmissions/details/01fd5a77-32b6-4c9c-ad66-52d2a43a2e38",
-  "appStatus": "WAITING_FOR_REVIEW",
+  "appStatus": "PUBLICLY_AVAILABLE",
   "iapAppleID": "6821756732",
-  "iapStatus": "WAITING_FOR_REVIEW",
+  "iapStatus": "LISTED_IN_APP_STORE",
   "itemsSubmitted": 2,
   "releaseMethod": "MANUAL",
   "appPriceJPY": 0,
@@ -16,12 +16,13 @@
   "territories": [
     "JPN"
   ],
-  "storePublic": false,
+  "storePublic": true,
   "adMobApprovalStatus": "REQUIRES_REVIEW",
   "appAdsPublisherVerifiedInPublicFile": true,
   "remainingAfterAppStoreRelease": [
-    "AdMobへ公開済みApp Storeページをリンク",
-    "Google側のアプリ審査とapp-ads.txt認証結果を確認"
+    "GoogleのApp Store掲載情報クロール後にAdMobのapp-ads.txt照合を再確認（現時点はアカウント詳細不一致、広告配信制限中）",
+    "Google側のアプリ確認・広告配信制限解除を確認",
+    "SubmitDockの非公開リリース台帳を配信済みに同期（管理ログインが必要。現在の記録は10月14日の審査待ち）"
   ],
   "verification": {
     "releasePreflightChecksPassed": 16,
@@ -135,12 +136,61 @@
       "previousSubmissionID": "4c610708-f1e2-4c12-ac8c-703a5596da5d",
       "previousSubmissionStatus": "DELETED",
       "reason": "商品を再追加できなかった旧提出物を取り下げ、同じアプリ版と買い切り商品を新しい提出物にまとめた。商品自体は削除・再作成していない。"
+    },
+    {
+      "checkedAtJST": "2026-10-15 20:58",
+      "source": "User confirmation + public App Store page and AdMob UI observed in Safari",
+      "appStatus": "PUBLICLY_AVAILABLE",
+      "iapStatus": "LISTED_IN_APP_STORE",
+      "storePublic": true,
+      "storeURL": "https://apps.apple.com/jp/app/ピヨトレ-ネットワークスペシャリスト/id6821629759",
+      "adMobApprovalStatus": "REQUIRES_REVIEW",
+      "adMobStoreLinkState": "NOT_LINKED_APP_NOT_FOUND",
+      "note": "App Store listing and 300 JPY in-app purchase are public. AdMob search by store ID, URL, and app name returned no selectable listing; existing AdMob app still says review required and ad serving limited."
+    },
+    {
+      "checkedAtJST": "2026-10-15 21:02",
+      "source": "SubmitDock public page API response",
+      "publicPageUpdated": true,
+      "pageID": "mv3sm6om-8784abde",
+      "storeURL": "https://apps.apple.com/jp/app/ピヨトレ-ネットワークスペシャリスト/id6821629759",
+      "note": "Existing public support/about page updated in place with App Store link and live availability copy."
+    },
+    {
+      "checkedAtJST": "2026-10-15 21:04",
+      "source": "AdMob UI + public app-ads.txt response",
+      "adMobStoreLinkState": "LINKED",
+      "adMobStoreID": "6821629759",
+      "adMobApprovalStatus": "REQUIRES_REVIEW",
+      "adMobAdServing": "LIMITED",
+      "appAdsVerificationState": "CHECK_FAILED_ACCOUNT_DETAILS_MISMATCH",
+      "appAdsPublisherLine": "google.com, pub-9785585722959806, DIRECT, f08c47fec0942fa0",
+      "appAdsURL": "https://submitdock-ios-pages.netlify.app/app-ads.txt",
+      "note": "App Store listing linked via the region-neutral URL after regional URL and ID searches returned no result. Immediate verification failed with account-details mismatch. AdMob app-ads.txt report currently lists only the older うちマップ app for this file; Google notes App Store developer-site changes may take up to seven days to be detected."
+    },
+    {
+      "checkedAtJST": "2026-10-15 21:04",
+      "source": "SubmitDock public page API response",
+      "publicPageUpdated": true,
+      "pageID": "mv3sm6om-8784abde",
+      "storeURL": "https://apps.apple.com/jp/app/ピヨトレ-ネットワークスペシャリスト/id6821629759",
+      "note": "Existing public support/about page updated in place with App Store link and live availability copy."
+    },
+    {
+      "checkedAtJST": "2026-10-15 21:04",
+      "source": "SubmitDock release management UI",
+      "cloudLedgerUpdated": false,
+      "reason": "The release management API returned an administrator-login requirement. The current browser session is unauthenticated and SUBMITDOCK_ADMIN_PASSWORD is not configured in the local environment.",
+      "lastCloudSave": "2026-10-14 13:14:31",
+      "lastCloudAppleState": "WAITING_FOR_REVIEW",
+      "lastCloudAdMobState": "REQUIRES_REVIEW",
+      "note": "Public support/about page was updated separately through its existing edit token; only the private release ledger remains stale."
     }
   ],
-  "reviewSubmissionStatus": "WAITING_FOR_REVIEW",
+  "reviewSubmissionStatus": "PUBLICLY_AVAILABLE",
   "binaryProcessingStatus": "VALID",
   "failureReason": "Guideline 2.1(b): failed to load in-app purchase product on iPad Air M3 / iPadOS 27.0",
-  "diagnosisStatus": "利用者がTestFlight 1.0（3）の購入動作を確認。300円・購入確認済みのIAP審査メモを保存し、旧提出物を取り下げたうえで、ビルド3と同一の買い切り商品を新しい提出物にまとめて再提出。2026-10-14 10:27 JSTにAppleがアプリ版とIAPの2項目を受け付け、どちらも審査待ち。",
+  "diagnosisStatus": "ビルド3と300円の買い切り商品はApple審査を通過し、2026-10-15に利用者が手動公開。App Store掲載を確認し、AdMobの既存アプリへストア情報を連携済み。Googleの即時確認はapp-ads.txtのアカウント詳細不一致で未完了。公開ファイルは設定中のpublisher ID行を返し、同じファイルは既存AdMobアプリで確認済み。ストア掲載の変更検知を待ち、Googleのアプリ確認・広告配信制限解除を再確認する。",
   "replacementBuild": "3",
   "replacementArchiveCreated": true,
   "replacementUploaded": true,
@@ -197,5 +247,112 @@
     "resolved": true,
     "resolvedAtJST": "2026-10-14 10:24",
     "resolution": "ブラウザを再接続し、審査メモの保存済み状態を再読込で確認。IAPを新しい提出物へ追加できた。"
+  },
+  "storeURL": "https://apps.apple.com/jp/app/ピヨトレ-ネットワークスペシャリスト/id6821629759",
+  "adMobStoreLinkState": "LINKED",
+  "adMobAppAdsVerificationState": "CHECK_FAILED_ACCOUNT_DETAILS_MISMATCH",
+  "adMobAppAdsURL": "https://submitdock-ios-pages.netlify.app/app-ads.txt",
+  "screenshotUpdate": {
+    "checkedAtJST": "2026-10-16 09:17",
+    "appID": "6821629759",
+    "approvedAppVersion": "1.0",
+    "approvedAppBuild": "3",
+    "kind": "PPO_SCREENSHOT_REPLACEMENT",
+    "submissionID": "ce7e586f-e785-4941-96f3-00c6a46d5691",
+    "reviewURL": "https://appstoreconnect.apple.com/apps/6821629759/distribution/reviewsubmissions/details/ce7e586f-e785-4941-96f3-00c6a46d5691",
+    "submittedAtJST": "2026-10-16 09:16",
+    "itemsSubmitted": 1,
+    "status": "WAITING_FOR_REVIEW",
+    "source": "Authenticated Safari App Store Connect UI: one Product Page Optimization item waiting for review, using the existing 12 screenshots.",
+    "locale": "ja",
+    "assetIDs": {
+      "1206x2622": {
+        "01": "eac00019-699c-8f3f-8030-54049df4c66e",
+        "02": "6c400019-699c-8f3f-8034-3b9a461fb364",
+        "03": "ea800019-699c-8f3f-8039-f5ff6d3eb832",
+        "04": "69400019-699c-8f3f-803a-022b5bd2e571",
+        "05": "bf000019-699c-8f3f-8010-6d481c3f6fc6",
+        "06": "60000019-699c-8f3f-8003-0c771549e9b0"
+      },
+      "1320x2868": {
+        "01": "d2000019-699c-8f3f-801e-8d8452796fec",
+        "02": "71000019-699c-8f3f-8038-f8fa5f314281",
+        "03": "af800019-699c-8f3f-8014-052f3e77c16c",
+        "04": "b4000019-699c-8f3f-8017-8c8bbb30d194",
+        "05": "d1000019-699c-8f3f-803e-6aec7bdc06da",
+        "06": "67000019-699c-8f3f-800b-b5217c1ae911"
+      }
+    },
+    "publicPlacementUpdated": false,
+    "oldAssetsDeleted": false,
+    "notes": [
+      "利用者が50%テストの開始と通常掲載への適用を明示承認済み。",
+      "画像単独の旧提出は取り下げ、同じアセットをPPOの提出に統合。アセットの再アップロード・複製なし。",
+      "現在はPPO審査待ち。実際のテスト表示・通常掲載への適用・公開Storeでの反映は未確認。",
+      "今回の出題メニュー／フィルタは実装・テスト済みだが新バイナリは未アップロード。"
+    ],
+    "placement": {
+      "kind": "PRODUCT_PAGE_OPTIMIZATION",
+      "name": "掲載画像更新 2026-10-16",
+      "testID": "7388d88d-8ac6-461a-8f0c-72c9a3ff86e5",
+      "treatmentID": "af242575-9e41-4091-8189-9965417fb88d",
+      "url": "https://appstoreconnect.apple.com/apps/6821629759/distribution/optimization/7388d88d-8ac6-461a-8f0c-72c9a3ff86e5",
+      "locale": "ja",
+      "screenshotCounts": {
+        "1206x2622": 6,
+        "1320x2868": 6
+      },
+      "ordersVerified": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06"
+      ],
+      "status": "WAITING_FOR_REVIEW",
+      "trafficPercent": 50,
+      "startRequiresUserApproval": false,
+      "approvalReason": "User explicitly approved the 50% test start and applying screenshots to the original product page; prior auto-review blocker is resolved.",
+      "started": false,
+      "appliedToOriginal": false,
+      "countsAndOrderVerified": true,
+      "userApproval": "2026-10-16: 50%のテスト開始を承認し、掲載画像へ適用する",
+      "reviewBlocker": null,
+      "reviewSubmissionID": "ce7e586f-e785-4941-96f3-00c6a46d5691",
+      "reviewSubmittedAtJST": "2026-10-16 09:16",
+      "applyActionAvailableWhileWaiting": false,
+      "reviewLockedScreensVerified": true
+    },
+    "history": [
+      {
+        "submissionID": "d2a7960c-c951-4763-835f-e4adf1662867",
+        "kind": "SCREENSHOTS_ONLY",
+        "items": 12,
+        "submittedAtJST": "2026-10-16 08:57",
+        "status": "CANCELED",
+        "cancellationConfirmedAtJST": "2026-10-16 09:15",
+        "reason": "PPO submission rejected because the same screenshots belonged to this active submission. Consolidating the 12 screenshots into the approved PPO review route."
+      }
+    ],
+    "screenshotsIncluded": 12
+  },
+  "appUpdate": {
+    "version": "1.0.1",
+    "build": "4",
+    "checkedAtJST": "2026-10-16T09:28:23.558606+09:00",
+    "status": "PREPARE_FOR_SUBMISSION",
+    "source": "App Store Connect Safari UI + local signed archive",
+    "archive": ".submitdock/piyotre-network/1.0.1-4.xcarchive",
+    "archiveVerified": true,
+    "privacyManifestsVerified": 3,
+    "privacyIssues": 0,
+    "uploaded": false,
+    "submitted": false,
+    "releaseMethod": "MANUAL",
+    "blocker": "Xcode exportArchive Failed to Use Accounts. User reauthentication requested in Xcode.",
+    "uploadLog": ".submitdock/piyotre-network/upload-1.0.1-4/upload.log",
+    "reviewMetadataSaved": true,
+    "appStoreURL": "https://appstoreconnect.apple.com/apps/6821629759/distribution/ios/version/inflight"
   }
 }

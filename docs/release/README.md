@@ -1,16 +1,20 @@
 # ピヨトレ！ネットワークスペシャリストの公開申請
 
-2026-10-14（日本時間）更新。対象は **NetworkSpecialist** Scheme。ExamMaster Schemeは架空資格のデモです。375問を収録。1.0（2）は課金商品を取得できずGuideline 2.1(b)で却下された。有料アプリ契約・銀行・税務情報を有効化し、買い切り価格を300円に変更。商品取得を改善した署名付きビルド3を提出し、TestFlightでの購入確認を受領。2026-10-14 10:27 JST、ビルド3と300円の買い切り商品を同じ提出物でAppleが受け付け、両項目とも審査待ち。提出IDは`01fd5a77-32b6-4c9c-ad66-52d2a43a2e38`。承認後は手動公開。
+2026-10-16（日本時間）更新。対象は **NetworkSpecialist** Scheme。ExamMaster Schemeは架空資格のデモです。375問を収録。1.0（2）は課金商品を取得できずGuideline 2.1(b)で却下されたため、購入再取得を改善した署名付きビルド3と300円の買い切り商品を再提出。Appleの審査通過後、利用者が手動公開し、App Store掲載を確認しました。
 
-[App Store Connectの提出物](https://appstoreconnect.apple.com/apps/6821629759/distribution/reviewsubmissions/details/01fd5a77-32b6-4c9c-ad66-52d2a43a2e38)、[申請結果・検証記録](submission-status.json)。Appleの審査・ストア公開・AdMobアプリ審査はまだ完了していない。ストア公開後にAdMobへ公開ページをリンクし、Google側の審査とapp-ads.txt認証結果を確認する。
+[App Storeで配信中](https://apps.apple.com/jp/app/ピヨトレ-ネットワークスペシャリスト/id6821629759)、[申請結果・検証記録](submission-status.json)。AdMobでは地域指定のないApp Store URLでアプリを選択でき、既存広告アプリへのストア連携を完了しました。直後の確認はapp-ads.txtのアカウント照合で失敗し、広告配信はまだ制限中です。
 
 初回提出の履歴：08:34 JSTには1.0（1）とIAPが審査待ちだったが、その後ITMS-91064で「バイナリが無効」になった。アプリ本体のPrivacy Manifestでtracking=trueに対する対象ドメイン一覧が空だったため、広告ホストを追記し、回帰テストと実リソース検査を追加した。ビルド2はXcode再ログイン後に配布用書き出しとアップロードが成功。既存の審査提出物を更新して再提出した。詳細は[itms-91064-build1.md](itms-91064-build1.md)。
+
+## 2026-10-16 掲載画像の更新と出題設定
+
+プロモーション画像6枚を中型・大型の各サイズで制作し、画像単独の提出後、利用者承認を受けたPPO（50%テスト）へ統合して審査に提出しました。現在はPPO審査待ちで、公開中の掲載画像は未変更です。[提出記録・残工程](screenshots-2026-10-16.md)を参照。年度別／分野別の出題メニューと学習状態フィルタは実装・27テスト成功、新バイナリは未提出です。
 
 ## 1.0（3）の課金修正
 
 [調査と変更の記録](iap-review-2026-10-13.md)を参照。購入画面を開くたびに商品と購入権限を再取得し、商品が空・通信失敗の際は最大3回再試行する。成功時に古いエラーを消し、検証済み購入済み権限は商品情報の取得失敗で取り消さない。
 
-300円のStoreKitTestでiPhone単体23件＋購入UI1件、審査端末と同じiPad Air M3 / iPadOS 27.0の対象5件、iPhone 17 Pro Maxの購入UI1件が成功。両iPhone画像の6枚目を `06-purchase-300.png` へ差し替え、旧480円の画像とテスト結果は履歴として保持する。署名付きビルド3のArchiveと全3つのPrivacy Manifest検査が成功。SubmitDockの既存台帳と公開ページも300円へ更新済み。TestFlight 1.0（3）での買い切り商品の購入動作は利用者が確認済み。2026-10-14 10:27 JSTにビルド3とIAPを同一提出へまとめ、Apple受付済みで両項目とも審査待ち。実Sandboxの購入確認は利用者申告、返金動作は未確認。
+300円のStoreKitTestでiPhone単体23件＋購入UI1件、審査端末と同じiPad Air M3 / iPadOS 27.0の対象5件、iPhone 17 Pro Maxの購入UI1件が成功。両iPhone画像の6枚目を `06-purchase-300.png` へ差し替え、旧480円の画像とテスト結果は履歴として保持する。署名付きビルド3のArchiveと全3つのPrivacy Manifest検査が成功。SubmitDockの既存台帳と公開ページも300円へ更新済み。TestFlight 1.0（3）での買い切り商品の購入動作は利用者が確認済み。2026-10-14 10:27 JSTにビルド3とIAPを同一提出へまとめ、Apple審査を通過後、2026-10-15に利用者が手動公開。実Sandboxの購入確認は利用者申告、返金動作は未確認。
 
 ## 375問の教材と3問の採点方針
 
@@ -28,18 +32,20 @@
 
 ## 必要な情報と現在の状態
 
-| 情報 | 2026-10-14の状態 |
+| 情報 | 2026-10-15の状態 |
 |---|---|
 | Apple登録 | Team QZH83KGFVX、App Store Connect ID 6821629759。既存アカウントで新アプリを登録済み。 |
 | 正式識別子 | Bundle `jp.hino.piyotre.networkspecialist`、非消耗型商品 `jp.hino.piyotre.networkspecialist.unlock`。本番設定は[production-config.json](production-config.json)。 |
 | 販売 | 本体無料、全問題解放＋広告停止は買い切り300円、日本のみ。手動公開。商品ID 6821756732を維持。有料アプリ契約・銀行・税務情報は有効。 |
 | 掲載情報 | 正式名「ピヨトレ！ネットワークスペシャリスト」、サブタイトル・日本語説明・キーワード・教育カテゴリ・審査連絡先を保存。個人の審査連絡先はGit管理外のprivateファイルにのみ保存。 |
-| 公開Web | [サポート兼紹介ページ](https://submitdock-ios-pages.netlify.app/support/mv3sm6om-8784abde)、[プライバシー](https://submitdock-ios-pages.netlify.app/privacy/mv3sm6om-8784abde)。既存URLのままアイコン・Markdown・375問画像・300円表示を更新済み。 |
+| App Store | [日本向け公開ページ](https://apps.apple.com/jp/app/ピヨトレ-ネットワークスペシャリスト/id6821629759)。利用者が手動配信を完了。公開ページと300円のアプリ内購入表示を確認。 |
+| 公開Web | [サポート兼紹介ページ](https://submitdock-ios-pages.netlify.app/support/mv3sm6om-8784abde)、[プライバシー](https://submitdock-ios-pages.netlify.app/privacy/mv3sm6om-8784abde)。既存URLを維持し、App Storeリンクと配信中の案内を公開ページへ反映済み。 |
+| SubmitDock台帳 | 非公開のリリース台帳は管理APIがログインを要求し、現在のブラウザーとローカル環境に認証がありません。最終保存は2026-10-14の審査待ち表示のまま。 |
 | AdMob | 本番アプリ、バナー、インタースティシャルのIDを登録・実装済み。一般向けGレーティングに制限し、高エンゲージメント広告をオフ。日本語・英語の欧州向けUMPメッセージを公開。 |
-| app-ads.txt | ドメイン直下に正しい `pub-9785585722959806` のDIRECT行が公開済み。既存の正しい行を保持。App Store公開後にAdMobへストアを紐付け、認証・アプリ審査結果を確認する。 |
+| app-ads.txt / AdMob | 公開ファイルは `pub-9785585722959806` のDIRECT行を返し、同ファイルは既存の「うちマップ」アプリで確認済み。NWアプリのストア連携は完了。即時のGoogle確認ではアカウント照合エラーとなり、NWの確認は未完了。Apple App Store掲載情報の変更検知には最大7日かかる場合があるため、反映後に再確認する。 |
 | App Privacy | 最終ArchiveのGoogle広告/UMP Privacy Manifestに従い7種類を入力。利用者の実行時同意を得てプライバシーラベル公開済み。位置情報・ID・使用状況は本人に関連、診断は非関連、デバイスIDをトラッキング用途として申告。学習履歴は端末保存。 |
 | 年齢/権利/暗号 | 広告あり・教育4+、コンテンツ権利情報を保存。標準システム/SDKのネットワーク暗号化のみで`ITSAppUsesNonExemptEncryption=false`。 |
-| ビルド3 | `.submitdock/piyotre-network/1.0-3.xcarchive` を署名・検査済み。`upload-1.0-3/upload.log` に Upload succeeded / EXPORT SUCCEEDED。Appleでバイナリ確認済み、版1.0への選択保存と内部TestFlight配布済み。2026-10-14にビルド3と300円IAPを同時再提出し、両項目の審査待ちを確認。 |
+| ビルド3 | `.submitdock/piyotre-network/1.0-3.xcarchive` を署名・検査済み。`upload-1.0-3/upload.log` に Upload succeeded / EXPORT SUCCEEDED。Appleでバイナリ確認済み、版1.0への選択保存と内部TestFlight配布済み。2026-10-14にビルド3と300円IAPを同時再提出、審査通過後に手動公開。 |
 | ビルド2の履歴 | `release-artifacts/app-store-1.0-build2-privacy-fix/` に修正版のArchive/IPAと検査結果、`app-store-1.0-build2-upload/` に **Upload succeeded / EXPORT SUCCEEDED** のログ。ビルド2は処理完了・再提出済み。アップロード済み番号を再送しない。旧ビルド1は履歴として保持。 |
 | 検証 | 過去の教材103件に加え、ビルド3の申請ツール17件・教材検査の回帰10件・事前検査16項目・ArchiveのPrivacy Manifest3つが成功。300円のStoreKitTestはiPhone単体23＋UI1、iPadOS 27対象5、大型iPhone購入UI1が成功。実Sandboxの購入は利用者が確認済みと申告。返金・最小OS実機・VoiceOverは未確認。 |
 

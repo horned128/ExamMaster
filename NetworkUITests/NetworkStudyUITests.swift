@@ -67,10 +67,10 @@ final class NetworkStudyUITests: XCTestCase {
             app.buttons["学習を中断"].tap()
             app.buttons["問題一覧へ戻る"].tap()
             XCTAssertTrue(app.navigationBars["\(year)年の問題"].waitForExistence(timeout: 5))
-            let mock = app.buttons["模擬試験"]
+            let mock = app.buttons["solveQuestions"]
             for _ in 0..<20 where !mock.isHittable { app.swipeDown() }
             XCTAssertTrue(mock.isHittable)
-            mock.tap()
+            startCollectionMock(in: app)
             jumpToMockQuestion(number, year: year, in: app)
             XCTAssertFalse(note.exists, "模試中に答えを表示しない")
             selectMockChoice(year == 2015 ? 3 : year == 2018 ? 2 : 0, in: app)
@@ -80,6 +80,53 @@ final class NetworkStudyUITests: XCTestCase {
             capture("\(year)年度・追加問題を含む25問固定模試の採点")
             app.buttons["mockResultFinish"].tap()
         }
+    }
+
+    func testYearPracticeStatePickerAndSubjectModes() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
+        app.launch()
+        app.buttons["skipDiagnosis"].tap()
+        app.buttons["homeYears"].tap()
+        app.buttons["year-2025"].tap()
+        app.buttons["solveQuestions"].tap()
+        XCTAssertTrue(app.buttons["practiceMock"].waitForExistence(timeout: 5))
+        app.buttons["practiceQuestionState"].tap()
+        app.buttons["学習済み（0問）"].tap()
+        XCTAssertFalse(app.buttons["practiceSequential"].isEnabled)
+        XCTAssertFalse(app.buttons["practiceRandom"].isEnabled)
+        XCTAssertTrue(app.buttons["practiceMock"].isEnabled)
+        app.buttons["practiceQuestionState"].tap()
+        app.buttons["未学習（25問）"].tap()
+        capture("年度別・学習状態と3つの出題方法")
+        app.buttons["practiceSequential"].tap()
+        XCTAssertTrue(app.staticTexts["1 / 25問"].waitForExistence(timeout: 5))
+        let choice = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch
+        scrollStudyContentTo(choice, in: app)
+        choice.tap()
+        app.buttons["submitOrAdvance"].tap()
+        XCTAssertTrue(app.staticTexts["answerOutcome"].waitForExistence(timeout: 5))
+        app.buttons["学習を中断"].tap()
+        app.buttons["問題一覧へ戻る"].tap()
+        app.buttons["solveQuestions"].tap()
+        app.buttons["practiceQuestionState"].tap()
+        app.buttons["前回不正解（1問）"].tap()
+        XCTAssertTrue(app.staticTexts["1問を出題"].exists)
+        app.buttons["practiceRandom"].tap()
+        XCTAssertTrue(app.staticTexts["1 / 1問"].waitForExistence(timeout: 5))
+        app.buttons["学習を中断"].tap()
+        app.buttons["問題一覧へ戻る"].tap()
+        app.navigationBars.buttons.firstMatch.tap()
+        app.tabBars.buttons["分野別"].tap()
+        app.buttons["subject-ネットワーク"].tap()
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "category-")).firstMatch.tap()
+        app.buttons["solveQuestions"].tap()
+        XCTAssertTrue(app.buttons["practiceSequential"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["practiceRandom"].exists)
+        XCTAssertTrue(app.buttons["practiceQuestionState"].exists)
+        XCTAssertFalse(app.buttons["practiceMock"].exists)
+        capture("分野別・学習状態と2つの出題方法")
     }
 
     override func tearDownWithError() throws {
@@ -150,9 +197,9 @@ final class NetworkStudyUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["2026年予想問題 第1回"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["ネットワーク · 16問"].exists)
         XCTAssertFalse(app.searchFields.firstMatch.exists)
-        XCTAssertFalse(app.buttons["solveQuestions"].exists)
+        XCTAssertTrue(app.buttons["solveQuestions"].exists)
         capture("2026年予想問題・分野別の問題一覧")
-        app.buttons["模擬試験"].tap()
+        startCollectionMock(in: app)
         XCTAssertTrue(app.staticTexts["ピヨトレ！ オリジナル 2026年予想問題 第1回 問1"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["mockChoice-1"].waitForExistence(timeout: 5))
         app.buttons["mockChoice-1"].tap()
@@ -181,8 +228,8 @@ final class NetworkStudyUITests: XCTestCase {
             XCTAssertTrue(app.navigationBars["2026年予想問題 第\(number)回"].waitForExistence(timeout: 5))
             XCTAssertTrue(app.staticTexts["ネットワーク · 16問"].exists)
             XCTAssertFalse(app.buttons["question-nw-2026-pred-01-q01"].exists)
-            XCTAssertFalse(app.buttons["solveQuestions"].exists)
-            app.buttons["模擬試験"].tap()
+            XCTAssertTrue(app.buttons["solveQuestions"].exists)
+            startCollectionMock(in: app)
             XCTAssertTrue(app.staticTexts["ピヨトレ！ オリジナル 2026年予想問題 第\(number)回 問1"].waitForExistence(timeout: 5))
             let correct = app.buttons["mockChoice-\(number == 2 ? 1 : 2)"]
             XCTAssertTrue(correct.waitForExistence(timeout: 5))
@@ -244,7 +291,7 @@ final class NetworkStudyUITests: XCTestCase {
         for _ in 0..<8 where !second.isHittable { app.swipeDown() }
         second.tap()
         XCTAssertTrue(app.navigationBars["2026年予想問題 第2回"].waitForExistence(timeout: 5))
-        app.buttons["模擬試験"].tap()
+        startCollectionMock(in: app)
         app.buttons["mockNavigator"].tap()
         let question = app.buttons["mockJump-23"]
         for _ in 0..<10 where !question.isHittable { app.swipeUp() }
@@ -281,8 +328,8 @@ final class NetworkStudyUITests: XCTestCase {
         capture("改訂・有料年度は購入前に入れない")
         buyAndDismissPaywall(in: app)
         openYear(2022, in: app)
-        XCTAssertTrue(app.buttons["模擬試験"].waitForExistence(timeout: 5))
-        app.buttons["模擬試験"].tap()
+        XCTAssertTrue(app.buttons["solveQuestions"].waitForExistence(timeout: 5))
+        startCollectionMock(in: app)
         XCTAssertTrue(app.staticTexts["ネットワークスペシャリスト試験 2022年春期 午前Ⅱ 問1"].waitForExistence(timeout: 5))
         app.buttons["mockSuspend"].tap()
         app.buttons["問題一覧へ戻る"].tap()
@@ -330,14 +377,14 @@ final class NetworkStudyUITests: XCTestCase {
         app.buttons["skipDiagnosis"].tap()
         app.tabBars.buttons["年度別"].tap()
         app.buttons["year-2025"].tap()
-        app.buttons["模擬試験"].tap()
+        startCollectionMock(in: app)
         XCTAssertTrue(app.buttons["mockChoice-1"].waitForExistence(timeout: 5))
         app.buttons["mockChoice-1"].tap()
         app.buttons["次へ"].tap()
         app.buttons["mockSuspend"].tap()
         app.buttons["問題一覧へ戻る"].tap()
-        XCTAssertTrue(app.buttons["模擬試験"].waitForExistence(timeout: 5))
-        app.buttons["模擬試験"].tap()
+        XCTAssertTrue(app.buttons["solveQuestions"].waitForExistence(timeout: 5))
+        startCollectionMock(in: app)
         XCTAssertTrue(app.buttons["mockChoice-1"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["mockChoice-1"].isSelected)
         XCTAssertTrue(app.staticTexts["ネットワークスペシャリスト試験 2025年春期 午前Ⅱ 問1"].exists)
@@ -351,7 +398,7 @@ final class NetworkStudyUITests: XCTestCase {
         app.buttons["skipDiagnosis"].tap()
         app.tabBars.buttons["年度別"].tap()
         app.buttons["year-2025"].tap()
-        app.buttons["模擬試験"].tap()
+        startCollectionMock(in: app)
         XCTAssertTrue(app.staticTexts["ネットワークスペシャリスト試験 2025年春期 午前Ⅱ 問1"].waitForExistence(timeout: 5))
         app.buttons["mockChoice-3"].tap()
         XCTAssertFalse(app.staticTexts["answerOutcome"].exists)
@@ -379,7 +426,7 @@ final class NetworkStudyUITests: XCTestCase {
         app.buttons["skipDiagnosis"].tap()
         app.tabBars.buttons["年度別"].tap()
         app.buttons["year-2025"].tap()
-        app.buttons["模擬試験"].tap()
+        startCollectionMock(in: app)
         app.buttons["mockNavigator"].tap()
         let jump = app.buttons["mockJump-5"]
         for _ in 0..<8 where !jump.isHittable { app.swipeUp() }
@@ -423,7 +470,7 @@ final class NetworkStudyUITests: XCTestCase {
         app.buttons["skipDiagnosis"].tap()
         app.tabBars.buttons["年度別"].tap()
         app.buttons["year-2023"].tap()
-        app.buttons["模擬試験"].tap()
+        startCollectionMock(in: app)
         XCTAssertTrue(app.staticTexts["ネットワークスペシャリスト試験 2023年春期 午前Ⅱ 問1"].waitForExistence(timeout: 5))
         for number in [5, 9, 11] {
             app.buttons["mockNavigator"].tap()
@@ -470,7 +517,7 @@ final class NetworkStudyUITests: XCTestCase {
         app.buttons["skipDiagnosis"].tap()
         app.tabBars.buttons["年度別"].tap()
         app.buttons["year-2025"].tap()
-        app.buttons["模擬試験"].tap()
+        startCollectionMock(in: app)
         app.buttons["mockChoice-0"].tap()
         app.terminate()
         app.launchArguments = ["-UITestDisableAds"]
@@ -478,7 +525,7 @@ final class NetworkStudyUITests: XCTestCase {
         if app.buttons["skipDiagnosis"].waitForExistence(timeout: 2) { app.buttons["skipDiagnosis"].tap() }
         app.tabBars.buttons["年度別"].tap()
         app.buttons["year-2025"].tap()
-        app.buttons["模擬試験"].tap()
+        startCollectionMock(in: app)
         XCTAssertFalse(app.buttons["mockChoice-0"].isSelected)
         XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label CONTAINS %@", "続きから")).firstMatch.exists)
     }
@@ -492,7 +539,7 @@ final class NetworkStudyUITests: XCTestCase {
         app.buttons["skipDiagnosis"].tap()
         app.tabBars.buttons["年度別"].tap()
         app.buttons["year-2025"].tap()
-        app.buttons["模擬試験"].tap()
+        startCollectionMock(in: app)
         XCTAssertTrue(app.buttons["mockNavigator"].waitForExistence(timeout: 5))
         XCUIDevice.shared.orientation = .landscapeLeft
         let window = app.windows.firstMatch
@@ -536,7 +583,7 @@ final class NetworkStudyUITests: XCTestCase {
         if app.buttons["skipDiagnosis"].waitForExistence(timeout: 2) { app.buttons["skipDiagnosis"].tap() }
         app.tabBars.buttons["年度別"].tap()
         app.buttons["year-2025"].tap()
-        app.buttons["模擬試験"].tap()
+        startCollectionMock(in: app)
         XCTAssertTrue(app.buttons["mockNavigator"].waitForExistence(timeout: 5))
         let timer = app.staticTexts["mockRemainingTime"]
         XCTAssertTrue(timer.isHittable)
@@ -692,6 +739,16 @@ final class NetworkStudyUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars.matching(NSPredicate(format: "identifier ENDSWITH %@", "年の問題")).firstMatch.waitForExistence(timeout: 5))
     }
 
+    private func startCollectionMock(in app: XCUIApplication) {
+        let solve = app.buttons["solveQuestions"]
+        XCTAssertTrue(solve.waitForExistence(timeout: 5))
+        for _ in 0..<20 where !solve.isHittable { app.swipeDown() }
+        solve.tap()
+        let mock = app.buttons["practiceMock"]
+        XCTAssertTrue(mock.waitForExistence(timeout: 5))
+        mock.tap()
+    }
+
     private func openMockLibrary(in app: XCUIApplication) {
         app.tabBars.buttons["年度別"].tap()
         XCTAssertTrue(app.navigationBars["年度別演習"].waitForExistence(timeout: 5))
@@ -699,7 +756,7 @@ final class NetworkStudyUITests: XCTestCase {
 
     private func openPaidMock(year: Int, in app: XCUIApplication) {
         openYear(year, in: app)
-        if app.buttons["模擬試験"].waitForExistence(timeout: 2) { app.buttons["模擬試験"].tap() }
+        if app.buttons["solveQuestions"].waitForExistence(timeout: 2) { startCollectionMock(in: app) }
     }
 
     private func jumpToMockQuestion(_ number: Int, year: Int, in app: XCUIApplication) {
@@ -1126,7 +1183,7 @@ final class NetworkStudyUITests: XCTestCase {
         capture("2018部分年度・購入前の解放ゲート")
         buyAndDismissPaywall(in: app)
         openYear(2018, in: app)
-        XCTAssertTrue(app.buttons["模擬試験"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["solveQuestions"].waitForExistence(timeout: 5))
         for (number, keyword, choice, answer) in [(4, "MTU", 1, "ア"), (6, "プロキシARP", 2, "イ")] {
             app.swipeDown()
             let search = app.searchFields.firstMatch

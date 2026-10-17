@@ -1,0 +1,7 @@
+Test Case '-[AppliedInformationTests.AppliedSandboxProductDiagnostics testFetchProductFromAppStoreConnectWithoutLocalConfiguration]' started.
+AP_SANDBOX storefront=JPN id=jp.hino.piyotre.appliedinformation.unlock
+AP_SANDBOX productCount=1
+AP_SANDBOX product=jp.hino.piyotre.appliedinformation.unlock price=¥300 type=ProductType(rawValue: "Non-Consumable")
+AP_SANDBOX managerProduct=jp.hino.piyotre.appliedinformation.unlock managerPrice=¥300 loading=false
+Test Case '-[AppliedInformationTests.AppliedSandboxProductDiagnostics testFetchProductFromAppStoreConnectWithoutLocalConfiguration]' passed (0.436 seconds).
+** TEST SUCCEEDED **

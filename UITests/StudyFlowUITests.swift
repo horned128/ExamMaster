@@ -51,7 +51,7 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertFalse(app.navigationBars["2023年の問題"].exists)
         app.buttons["閉じる"].tap()
         app.buttons["year-2025"].tap()
-        XCTAssertTrue(app.buttons["模擬試験"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["solveQuestions"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["ランダム出題"].exists)
         XCTAssertFalse(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "順番に回答")).firstMatch.exists)
         XCTAssertTrue(app.staticTexts["点検計画 · 2問"].exists)
@@ -678,7 +678,7 @@ final class StudyFlowUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["年度から選ぶ"].waitForExistence(timeout: 5))
         scrollTo(app.staticTexts["2025年"], in: app)
         app.staticTexts["2025年"].tap()
-        XCTAssertTrue(app.buttons["模擬試験"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["solveQuestions"].waitForExistence(timeout: 5))
         for _ in 0..<5 { app.swipeUp() }
         let screenshot = XCTAttachment(screenshot: app.screenshot())
         screenshot.name = "無料版・問題一覧の広告枠"

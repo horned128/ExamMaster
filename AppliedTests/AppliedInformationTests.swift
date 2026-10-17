@@ -1,5 +1,6 @@
 import XCTest
 import StoreKitTest
+import StoreKit
 @testable import AppliedInformation
 
 final class AppliedInformationTests: XCTestCase {
@@ -156,5 +157,24 @@ final class AppliedInformationTests: XCTestCase {
         let restored = PurchaseManager(productID: catalog.qualification.productID)
         await restored.restore()
         XCTAssertTrue(restored.unlocked, restored.error ?? "復元権限が反映されませんでした")
+    }
+}
+
+@MainActor final class AppliedProductLoadingTests: XCTestCase {
+    func testAppActivationRecoversRealAPProductAfterLocalNetworkFailure() async throws {
+        let session = try SKTestSession(configurationFileNamed: "products")
+        session.disableDialogs = true
+        try await session.setSimulatedError(.generic(.networkError(URLError(.notConnectedToInternet))), forAPI: .loadProducts)
+        let id = try Catalog.load(id: "applied-information").qualification.productID
+        let manager = PurchaseManager(productID: id)
+        await manager.refresh()
+        XCTAssertNil(manager.product)
+        XCTAssertNotNil(manager.productLoadFailure)
+        try await session.setSimulatedError(nil, forAPI: .loadProducts)
+        await manager.refreshIfNeeded()
+        XCTAssertEqual(manager.product?.id, id)
+        XCTAssertEqual(manager.product?.price, 300)
+        XCTAssertNil(manager.error)
+        XCTAssertFalse(manager.unlocked)
     }
 }

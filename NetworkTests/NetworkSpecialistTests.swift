@@ -20,6 +20,44 @@ final class NetworkSpecialistTests: XCTestCase {
 
     private let start = Date(timeIntervalSince1970: 1_790_000_000)
 
+    func testPracticeStateFiltersKeepSourceOrderAndTreatZeroAttemptsAsUnlearned() throws {
+        let pool = Array(try Catalog.load(id: "network-specialist").questions.prefix(6))
+        var data = StudyData()
+        data.mastery[pool[1].id] = Mastery()
+        data.mastery[pool[2].id] = Mastery(attempts: 1, lastAnswered: start,
+                                          dueAt: start.addingTimeInterval(86_400), lastCorrect: true)
+        data.mastery[pool[3].id] = Mastery(attempts: 1, lastAnswered: start, lastCorrect: false)
+        data.mastery[pool[4].id] = Mastery(attempts: 2, lastAnswered: start,
+                                          dueAt: start.addingTimeInterval(-1), lastCorrect: true)
+        data.mastery[pool[5].id] = Mastery(attempts: 3, distinctSuccessDays: 3, lastAnswered: start,
+                                          stabilityDays: 14, dueAt: start.addingTimeInterval(86_400), lastCorrect: true)
+        let expected: [(PracticeQuestionFilter, [Int])] = [
+            (.all, [0, 1, 2, 3, 4, 5]), (.unlearned, [0, 1]), (.answered, [2, 3, 4, 5]),
+            (.incorrect, [3]), (.needsReview, [3, 4]), (.mastered, [5])
+        ]
+        for (filter, indices) in expected {
+            XCTAssertEqual(filter.questions(in: pool, data: data, now: start).map(\.id),
+                           indices.map { pool[$0].id }, filter.title)
+        }
+        XCTAssertEqual(data.mastery[pool[1].id]?.attempts, 0)
+        XCTAssertTrue(data.answers.isEmpty)
+    }
+
+    func testYearPracticeFilteringDoesNotAlterTheFixedMock() throws {
+        let catalog = try Catalog.load(id: "network-specialist")
+        let pool = QuestionCollections.questions(for: .year(2025), catalog: catalog, data: StudyData())
+        var data = StudyData()
+        for index in [19, 2] { data.mastery[pool[index].id] = Mastery(attempts: 1, lastCorrect: false) }
+        let filtered = PracticeQuestionFilter.incorrect.questions(in: pool, data: data, now: start)
+        XCTAssertEqual(filtered.map(\.questionNumber), [3, 20])
+        let set = try XCTUnwrap(catalog.mockSets.first { $0.id == "nw-2025-spring" })
+        let mock = try XCTUnwrap(MockExam.session(set: set, catalog: catalog, unlocked: false))
+        XCTAssertEqual(mock.questions.count, 25)
+        XCTAssertEqual(mock.questions.map(\.questionNumber), Array(1...25))
+        XCTAssertTrue(mock.timed)
+        XCTAssertTrue(PracticeQuestionFilter.unlearned.questions(in: [], data: data, now: start).isEmpty)
+    }
+
     func testVerified2025CatalogAndResources() throws {
         let catalog = try Catalog.load(id: "network-specialist")
         let questions = catalog.questions.filter { $0.year == 2025 && $0.kind == .past }
