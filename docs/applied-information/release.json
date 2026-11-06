@@ -69,7 +69,7 @@
     "icon": "../../Assets.xcassets/AppliedInformationIcon.appiconset/AppIcon.png",
     "screenshots": [
       {
-        "name": "01-learning-guide",
+        "name": "01",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
@@ -78,7 +78,7 @@
         "path": "app-store-assets/png/1320x2868/01.png"
       },
       {
-        "name": "02-topic-map",
+        "name": "02",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
@@ -87,7 +87,7 @@
         "path": "app-store-assets/png/1320x2868/02.png"
       },
       {
-        "name": "03-topic-subcategories",
+        "name": "03",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
@@ -96,7 +96,7 @@
         "path": "app-store-assets/png/1320x2868/03.png"
       },
       {
-        "name": "04-question-text",
+        "name": "04",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
@@ -105,7 +105,7 @@
         "path": "app-store-assets/png/1320x2868/04.png"
       },
       {
-        "name": "05-explanation",
+        "name": "05",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
@@ -114,13 +114,22 @@
         "path": "app-store-assets/png/1320x2868/05.png"
       },
       {
-        "name": "06-unlock",
+        "name": "06",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
           2868
         ],
         "path": "app-store-assets/png/1320x2868/06.png"
+      },
+      {
+        "name": "07",
+        "family": "APP_IPHONE_67",
+        "size": [
+          1320,
+          2868
+        ],
+        "path": "app-store-assets/png/1320x2868/07.png"
       }
     ]
   },

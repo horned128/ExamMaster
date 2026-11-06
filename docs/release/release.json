@@ -76,112 +76,130 @@
   "assets": {
     "screenshots": [
       {
-        "name": "piyotre-store-20261016-1320x2868-01-home",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1320x2868/01.png",
+        "name": "piyotre-store-piyopop-1320x2868-01",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
           2868
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1320x2868/01.png"
       },
       {
-        "name": "piyotre-store-20261016-1320x2868-02-years",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1320x2868/02.png",
+        "name": "piyotre-store-piyopop-1320x2868-02",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
           2868
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1320x2868/02.png"
       },
       {
-        "name": "piyotre-store-20261016-1320x2868-03-subject-map",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1320x2868/03.png",
+        "name": "piyotre-store-piyopop-1320x2868-03",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
           2868
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1320x2868/03.png"
       },
       {
-        "name": "piyotre-store-20261016-1320x2868-04-predictions",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1320x2868/04.png",
+        "name": "piyotre-store-piyopop-1320x2868-04",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
           2868
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1320x2868/04.png"
       },
       {
-        "name": "piyotre-store-20261016-1320x2868-05-study",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1320x2868/05.png",
+        "name": "piyotre-store-piyopop-1320x2868-05",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
           2868
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1320x2868/05.png"
       },
       {
-        "name": "piyotre-store-20261016-1320x2868-06-purchase-300",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1320x2868/06.png",
+        "name": "piyotre-store-piyopop-1320x2868-06",
         "family": "APP_IPHONE_67",
         "size": [
           1320,
           2868
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1320x2868/06.png"
       },
       {
-        "name": "piyotre-store-20261016-1206x2622-01-home",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1206x2622/01.png",
+        "name": "piyotre-store-piyopop-1320x2868-07",
+        "family": "APP_IPHONE_67",
+        "size": [
+          1320,
+          2868
+        ],
+        "path": "../network-specialist/app-store-assets/png/1320x2868/07.png"
+      },
+      {
+        "name": "piyotre-store-piyopop-1206x2622-01",
         "family": "APP_IPHONE_61",
         "size": [
           1206,
           2622
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1206x2622/01.png"
       },
       {
-        "name": "piyotre-store-20261016-1206x2622-02-years",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1206x2622/02.png",
+        "name": "piyotre-store-piyopop-1206x2622-02",
         "family": "APP_IPHONE_61",
         "size": [
           1206,
           2622
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1206x2622/02.png"
       },
       {
-        "name": "piyotre-store-20261016-1206x2622-03-subject-map",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1206x2622/03.png",
+        "name": "piyotre-store-piyopop-1206x2622-03",
         "family": "APP_IPHONE_61",
         "size": [
           1206,
           2622
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1206x2622/03.png"
       },
       {
-        "name": "piyotre-store-20261016-1206x2622-04-predictions",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1206x2622/04.png",
+        "name": "piyotre-store-piyopop-1206x2622-04",
         "family": "APP_IPHONE_61",
         "size": [
           1206,
           2622
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1206x2622/04.png"
       },
       {
-        "name": "piyotre-store-20261016-1206x2622-05-study",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1206x2622/05.png",
+        "name": "piyotre-store-piyopop-1206x2622-05",
         "family": "APP_IPHONE_61",
         "size": [
           1206,
           2622
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1206x2622/05.png"
       },
       {
-        "name": "piyotre-store-20261016-1206x2622-06-purchase-300",
-        "path": "../../release-artifacts/app-store-assets-2026-10-16/png/1206x2622/06.png",
+        "name": "piyotre-store-piyopop-1206x2622-06",
         "family": "APP_IPHONE_61",
         "size": [
           1206,
           2622
-        ]
+        ],
+        "path": "../network-specialist/app-store-assets/png/1206x2622/06.png"
+      },
+      {
+        "name": "piyotre-store-piyopop-1206x2622-07",
+        "family": "APP_IPHONE_61",
+        "size": [
+          1206,
+          2622
+        ],
+        "path": "../network-specialist/app-store-assets/png/1206x2622/07.png"
       }
     ],
     "icon": "../../Assets.xcassets/NetworkSpecialistIcon.appiconset/AppIcon.png",

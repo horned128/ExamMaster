@@ -125,6 +125,15 @@
         "path": "app-store-assets/png/1320x2868/06.png"
       },
       {
+        "name": "07",
+        "family": "APP_IPHONE_67",
+        "size": [
+          1320,
+          2868
+        ],
+        "path": "app-store-assets/png/1320x2868/07.png"
+      },
+      {
         "name": "01",
         "family": "APP_IPHONE_61",
         "size": [
@@ -177,6 +186,15 @@
           2622
         ],
         "path": "app-store-assets/png/1206x2622/06.png"
+      },
+      {
+        "name": "07",
+        "family": "APP_IPHONE_61",
+        "size": [
+          1206,
+          2622
+        ],
+        "path": "app-store-assets/png/1206x2622/07.png"
       }
     ],
     "icon": "../../Assets.xcassets/FundamentalInformationIcon.appiconset/AppIcon.png"

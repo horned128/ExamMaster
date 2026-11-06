@@ -1,0 +1,14 @@
+{
+  "brand": "ピヨトレ！基本情報技術者",
+  "accent": "#B64B29",
+  "note": "",
+  "panels": [
+    {"image": "home.png", "headline": ["今日の[10問]、", "ピヨといっしょに。"], "subhead": "復習と新しい問題を、毎日ちょうどよく。", "alt": "今日の学習とあしあとが並ぶホーム画面", "evidence": "SessionPlanner.today count:10 / DashboardView homeTodayStudy"},
+    {"image": "question.png", "headline": ["1問ずつ、", "[サクッと]解ける。"], "subhead": "科目Aも科目Bも、スマホで読みやすく。", "alt": "4択問題の回答画面", "evidence": "SessionView / QuestionContentView"},
+    {"image": "answer.png", "headline": ["答えたら、", "すぐ[解説]。"], "subhead": "正解の理由と、まちがえやすい点を確認。", "alt": "回答後に正誤と解説が表示された画面", "evidence": "SessionView answer feedback"},
+    {"image": "years.png", "headline": ["公開過去問と", "[オリジナル]問題。"], "subhead": "全1,004問。年度別・模試形式で練習。", "alt": "年度別の問題一覧", "evidence": "questions.json 1004問 / FundamentalSetLibraryView"},
+    {"image": "subject-map.png", "headline": ["分野ごとに、", "[弱点]が見える。"], "subhead": "分野マップで、どこを復習するか一目で。", "alt": "分野マップ画面", "evidence": "subjectMap / QuestionCollectionView"},
+    {"image": "records.png", "headline": ["続けた日が、", "[あしあと]に。"], "subhead": "学習記録とピヨの成長で、毎日つづく。", "alt": "学習記録と相棒の画面", "evidence": "InsightsView / TankeiGrowth"},
+    {"image": "unlock.png", "headline": ["まずは[184問]、", "無料で。"], "subhead": "全問解放は300円の買い切り。広告も消えます。", "alt": "買い切りの全問題解放画面", "evidence": "qualification.json freeQuestionIDs 184 / products.storekit 300 / AdsService"}
+  ]
+}

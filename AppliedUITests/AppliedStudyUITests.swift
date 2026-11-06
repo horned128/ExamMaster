@@ -2,6 +2,107 @@ import XCTest
 import StoreKitTest
 
 final class AppliedStudyUITests: XCTestCase {
+    // MARK: App Store screenshots
+    /// Promotional captures of the Piyo Pop UI: light mode, seeded 3-day history, the correct answer chosen.
+    /// Before running: xcrun simctl status_bar <udid> override --time 9:41 --batteryState charged --batteryLevel 100
+    /// Export: xcrun xcresulttool export attachments --path <xcresult> --output-path <dir>
+    func testStoreScreenshotSet() throws {
+        continueAfterFailure = false
+        let session = try SKTestSession(configurationFileNamed: "products")
+        session.disableDialogs = true
+        session.clearTransactions()
+        session.storefront = "JPN"
+        session.locale = Locale(identifier: "ja_JP")
+        defer { session.clearTransactions(); session.resetToDefaultState() }
+        var app = storeLaunch()
+        storeCapture("store-01-home")
+        let firstTry = storeOpenTodayQuestion(app)
+        storeCapture("store-02-question")
+        let correct = storeAnswer(firstTry, in: app)
+        if app.staticTexts["answerOutcome"].label != "正解です" {
+            app = storeLaunch()
+            _ = storeOpenTodayQuestion(app)
+            let choice = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", correct)).firstMatch
+            _ = storeAnswer(choice, in: app)
+        }
+        XCTAssertEqual(app.staticTexts["answerOutcome"].label, "正解です")
+        storeCapture("store-03-answer")
+
+        app = storeLaunch()
+        storeScroll(to: app.buttons["homeYears"], in: app)
+        app.buttons["homeYears"].tap()
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "year-")).firstMatch.waitForExistence(timeout: 10))
+        storeCapture("store-04-years")
+
+        app = storeLaunch()
+        storeScroll(to: app.buttons["homeSubjects"], in: app)
+        app.buttons["homeSubjects"].tap()
+        let subject = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "subject-")).firstMatch
+        XCTAssertTrue(subject.waitForExistence(timeout: 10))
+        storeCapture("store-05-subjects")
+        subject.tap()
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "subjectMap").firstMatch.waitForExistence(timeout: 10))
+        storeCapture("store-06-subject-map")
+
+        app = storeLaunch()
+        storeScroll(to: app.buttons["homeRecords"], in: app)
+        app.buttons["homeRecords"].tap()
+        XCTAssertTrue(app.navigationBars["学習記録"].waitForExistence(timeout: 10))
+        storeCapture("store-07-records")
+
+        app = storeLaunch()
+        app.buttons["設定"].tap()
+        app.buttons["全問題を解放する"].tap()
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label CONTAINS '300'")).firstMatch.waitForExistence(timeout: 10))
+        storeCapture("store-08-unlock")
+    }
+
+    private func storeLaunch() -> XCUIApplication {
+        let app = XCUIApplication()
+        app.terminate()
+        app.launchArguments = ["-UITestResetStudy", "-UITestSeedCompanionHistory", "-UITestDisableAds",
+                               "-AppleInterfaceStyle", "Light"]
+        app.launch()
+        XCTAssertTrue(app.buttons["homeTodayStudy"].waitForExistence(timeout: 20))
+        return app
+    }
+
+    /// Opens today's first question and returns its first choice.
+    private func storeOpenTodayQuestion(_ app: XCUIApplication) -> XCUIElement {
+        app.buttons["homeTodayStudy"].tap()
+        if app.buttons["選択肢を見る"].waitForExistence(timeout: 3) { app.buttons["選択肢を見る"].tap() }
+        let choice = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 ")).firstMatch
+        XCTAssertTrue(choice.waitForExistence(timeout: 10))
+        return choice
+    }
+
+    /// Answers with `choice` and returns the correct choice's label prefix ("選択肢 N、").
+    private func storeAnswer(_ choice: XCUIElement, in app: XCUIApplication) -> String {
+        storeScroll(to: choice, in: app)
+        choice.tap()
+        let confirm = app.buttons["回答を確定"]
+        storeScroll(to: confirm, in: app)
+        confirm.tap()
+        XCTAssertTrue(app.staticTexts["answerOutcome"].waitForExistence(timeout: 10))
+        let correct = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@ AND label CONTAINS %@", "選択肢 ", "、正答")).firstMatch
+        guard correct.exists, let prefix = correct.label.components(separatedBy: "、").first else { return "選択肢 1、" }
+        for _ in 0..<10 where !app.staticTexts["answerOutcome"].isHittable { app.swipeDown() }
+        return prefix + "、"
+    }
+
+    private func storeScroll(to element: XCUIElement, in app: XCUIApplication) {
+        XCTAssertTrue(element.waitForExistence(timeout: 10))
+        for _ in 0..<10 where !element.isHittable { app.swipeUp() }
+        XCTAssertTrue(element.isHittable)
+    }
+
+    private func storeCapture(_ name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
     private func launch() -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()

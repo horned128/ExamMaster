@@ -56,10 +56,15 @@ func path(_ shape: [String: String]) throws -> NSBezierPath {
     return result
 }
 
+func roundedFont(_ size: CGFloat) -> NSFont {
+    let base = NSFont.systemFont(ofSize: size, weight: .black)
+    guard let descriptor = base.fontDescriptor.withDesign(.rounded) else { return base }
+    return NSFont(descriptor: descriptor, size: size) ?? base
+}
+
 func titleLines(_ title: String) -> [String] {
     if title.contains("\n") { return title.components(separatedBy: "\n") }
-    let font = NSFont.systemFont(ofSize: 144, weight: .heavy)
-    if (title as NSString).size(withAttributes: [.font: font]).width <= 864 { return [title] }
+    if (title as NSString).size(withAttributes: [.font: roundedFont(140)]).width <= labelTextWidth { return [title] }
     let characters = Array(title)
     let middle = (characters.count + 1) / 2
     let spaces = characters.indices.filter { characters[$0].isWhitespace && $0 > 0 && $0 < characters.count - 1 }
@@ -69,6 +74,10 @@ func titleLines(_ title: String) -> [String] {
     }
 }
 
+let labelTextWidth: CGFloat = 760
+
+/// Piyo Pop: brand-yellow ground shared by every qualification app, the mascot face in its
+/// qualification colour, and a puffy white label whose depth edge carries the qualification accent.
 func generate(configuration: URL) throws -> Data {
     guard let config = try JSONSerialization.jsonObject(with: Data(contentsOf: configuration)) as? [String: Any],
           let name = config["name"] as? String, let accentHex = config["accentHex"] as? String else {
@@ -84,7 +93,8 @@ func generate(configuration: URL) throws -> Data {
     }
     let baseColor = try color(config["mascotBaseHex"] as? String ?? baseFill)
     let accent = try color(accentHex)
-    let ink = try color("#243B3A")
+    let ink = try color("#2D2618")
+    let faceInk = "#243B3A"
     guard let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: 1024, pixelsHigh: 1024,
                                   bitsPerSample: 8, samplesPerPixel: 3, hasAlpha: false,
                                   isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 4096, bitsPerPixel: 32),
@@ -94,25 +104,27 @@ func generate(configuration: URL) throws -> Data {
     NSGraphicsContext.current = graphics
     let context = graphics.cgContext
     context.setShouldAntialias(true)
-    let defaultBackground = NSColor(srgbRed: 0.90 + accent.redComponent * 0.10,
-            green: 0.90 + accent.greenComponent * 0.10,
-            blue: 0.90 + accent.blueComponent * 0.10, alpha: 1)
-    let backgroundHex = (config["theme"] as? [String: Any])?["backgroundLight"] as? String
-    (try backgroundHex.map(color) ?? defaultBackground).setFill()
-    NSRect(x: 0, y: 0, width: 1024, height: 1024).fill()
 
+    // Ground: brand yellow, slightly lighter at the top, with a soft cream halo behind the face.
+    let canvas = NSRect(x: 0, y: 0, width: 1024, height: 1024)
+    NSGradient(starting: try color("#FFC83D"), ending: try color("#FFDA6B"))!.draw(in: canvas, angle: 90)
+    NSGradient(colors: [try color("#FFF1C7").withAlphaComponent(0.95), try color("#FFF1C7").withAlphaComponent(0)])!
+        .draw(fromCenter: NSPoint(x: 512, y: 600), radius: 0, toCenter: NSPoint(x: 512, y: 600), radius: 400,
+              options: [])
+
+    // Face, drawn from the shared mascot geometry (y-down SVG space, ~76…165 × 16…126).
     context.saveGState()
-    context.translateBy(x: 512, y: 952)
-    context.scaleBy(x: 4.8, y: -4.8)
-    context.translateBy(x: -128, y: -15)
+    context.translateBy(x: 512, y: 948)
+    context.scaleBy(x: 5.1, y: -5.1)
+    context.translateBy(x: -128, y: -12)
     for shape in shapes {
         let outline = try path(shape)
         if let fill = shape["fill"], fill != "none" {
-            (fill == baseFill ? baseColor : try color(fill)).setFill()
+            (fill == baseFill ? baseColor : fill == faceInk ? ink : try color(fill)).setFill()
             outline.fill()
         }
         if let stroke = shape["stroke"], stroke != "none" {
-            try color(stroke).setStroke()
+            (stroke == faceInk ? ink : try color(stroke)).setStroke()
             outline.lineWidth = Double(shape["stroke-width"] ?? "1") ?? 1
             outline.lineCapStyle = shape["stroke-linecap"] == "round" ? .round : .butt
             outline.lineJoinStyle = shape["stroke-linejoin"] == "round" ? .round : .miter
@@ -125,22 +137,37 @@ func generate(configuration: URL) throws -> Data {
     guard (1...2).contains(lines.count), lines.allSatisfy({ !$0.isEmpty }) else {
         try fail("Use at most two non-empty lines in iconTitle")
     }
-    var fontSize: CGFloat = 144
-    while fontSize >= 72 {
-        let font = NSFont.systemFont(ofSize: fontSize, weight: .heavy)
-        if lines.allSatisfy({ ($0 as NSString).size(withAttributes: [.font: font]).width <= 864 }) { break }
+    var fontSize: CGFloat = lines.count == 1 ? 150 : 108
+    let minimum: CGFloat = 72
+    while fontSize >= minimum {
+        if lines.allSatisfy({ ($0 as NSString).size(withAttributes: [.font: roundedFont(fontSize)]).width <= labelTextWidth }) { break }
         fontSize -= 2
     }
-    guard fontSize >= 72 else { try fail("Name is too long for a readable icon. Set a shorter iconTitle.") }
+    guard fontSize >= minimum else { try fail("Name is too long for a readable icon. Set a shorter iconTitle.") }
+
+    // Puffy label: white face over an accent-coloured depth edge, like the in-app PuffyButtonStyle.
+    let lineHeight = fontSize * 1.12
+    let textHeight = lineHeight * CGFloat(lines.count)
+    let labelHeight = textHeight + 64
+    let labelTop: CGFloat = 400
+    let label = NSRect(x: 96, y: labelTop - labelHeight, width: 832, height: labelHeight)
+    let radius: CGFloat = min(72, labelHeight / 2)
+    accent.setFill()
+    NSBezierPath(roundedRect: label.offsetBy(dx: 0, dy: -22), xRadius: radius, yRadius: radius).fill()
+    NSColor.white.setFill()
+    let labelPath = NSBezierPath(roundedRect: label, xRadius: radius, yRadius: radius)
+    labelPath.fill()
     let paragraph = NSMutableParagraphStyle()
     paragraph.alignment = .center
-    let attributes: [NSAttributedString.Key: Any] = [.font: NSFont.systemFont(ofSize: fontSize, weight: .heavy),
+    let attributes: [NSAttributedString.Key: Any] = [.font: roundedFont(fontSize),
                                                    .foregroundColor: ink, .paragraphStyle: paragraph]
-    let lineHeight = fontSize * 1.15
-    let blockHeight = lineHeight * CGFloat(lines.count)
+    let font = roundedFont(fontSize)
+    let glyphHeight = font.ascender - font.descender
     for (index, line) in lines.enumerated() {
-        let y = 212 + blockHeight / 2 - CGFloat(index + 1) * lineHeight
-        (line as NSString).draw(in: NSRect(x: 80, y: y, width: 864, height: lineHeight), withAttributes: attributes)
+        let rowTop = label.midY + textHeight / 2 - CGFloat(index) * lineHeight
+        let y = rowTop - lineHeight + (lineHeight - glyphHeight) / 2
+        (line as NSString).draw(in: NSRect(x: label.minX, y: y, width: label.width, height: glyphHeight),
+                                withAttributes: attributes)
     }
     guard let png = bitmap.representation(using: .png, properties: [:]) else { try fail("PNG encoding failed") }
     return png
@@ -155,11 +182,11 @@ do {
     let output = URL(fileURLWithPath: arguments[1])
     if arguments.contains("--check") {
         guard try Data(contentsOf: output) == png else { try fail("Icon differs from qualification settings. Regenerate it.") }
-        print("Verified chicken face icon: \(arguments[1])")
+        print("Verified Piyo Pop icon: \(arguments[1])")
     } else {
         try FileManager.default.createDirectory(at: output.deletingLastPathComponent(), withIntermediateDirectories: true)
         try png.write(to: output, options: .atomic)
-        print("Generated opaque 1024px chicken face icon: \(arguments[1])")
+        print("Generated opaque 1024px Piyo Pop icon: \(arguments[1])")
     }
 } catch {
     FileHandle.standardError.write(Data("\(error.localizedDescription)\n".utf8))

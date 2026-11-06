@@ -86,7 +86,7 @@ UI、出題計画、習熟計算、端末保存、決済、広告は別ファイ
 
 ### アイコンと資格ごとの色
 
-`Qualifications/<id>/qualification.json` の `name` が資格名、任意の `brandName` がシリーズ名です。アプリ内の表示名は`brandName + name`で組み立て、ホームではブランドと資格名を2行にします。未指定なら従来の資格名のみ表示。`project.yml`の`displayName`とApp Storeの販売名も同じ全文にそろえてください。アイコンは資格名または`iconTitle`を使います。`mascotBaseHex` がチキンのベースカラーです。未指定なら原案の `#FFF3DA`。アプリ内の若鶏／チキンの全画面と、アイコンの顔に共通で反映します。ひよこは `chickBaseHex` の未指定時に原案色を使い、顔の細部・輪郭は原案色を維持します。アイコン背景は `theme.backgroundLight`、未指定時は `accentHex` の淡い色。長い資格名は自動で2行に分け、必要なら任意の `iconTitle` に短縮名や `\n` で2行の名前を指定できます。
+`Qualifications/<id>/qualification.json` の `name` が資格名、任意の `brandName` がシリーズ名です。アプリ内の表示名は`brandName + name`で組み立て、ホームではブランドと資格名を2行にします。未指定なら従来の資格名のみ表示。`project.yml`の`displayName`とApp Storeの販売名も同じ全文にそろえてください。アイコンは資格名または`iconTitle`を使います。`mascotBaseHex` がチキンのベースカラーです。未指定なら原案の `#FFF3DA`。アプリ内の若鶏／チキンの全画面と、アイコンの顔に共通で反映します。ひよこは `chickBaseHex` の未指定時に原案色を使い、顔の細部・輪郭は原案色を維持します。アイコンはピヨポップ共通の黄色地に相棒の顔と白いラベルを置き、ラベルの下端（ぷっくりした影）だけを `accentHex` にして資格を見分けます。ラベルは1行が読みやすいので、長い資格名は `iconTitle` に短縮名（例: 基本情報、ネスペ）を指定してください。`\n` で2行も可能です。
 
 ```sh
 python3 tools/GenerateMascot.py
