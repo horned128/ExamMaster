@@ -341,9 +341,8 @@ struct TankeiGrowthCelebration: View {
         }
         .safeAreaInset(edge: .bottom) {
             Button(buttonTitle, action: continueAction)
-                .font(.headline).frame(maxWidth: 600, minHeight: 44)
-                .buttonStyle(.borderedProminent).controlSize(.large)
-                .tint(Palette.accent(accentHex)).foregroundStyle(Palette.onAccent(accentHex))
+                .buttonStyle(PuffyButtonStyle())
+                .frame(maxWidth: 600)
                 .padding(20).frame(maxWidth: .infinity).background(.bar)
         }
     }

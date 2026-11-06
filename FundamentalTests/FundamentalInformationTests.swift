@@ -30,6 +30,15 @@ final class FundamentalInformationTests: XCTestCase {
         }
     }
 
+    func testTodayPlanLimitsLongSubjectBReading() throws {
+        let catalog = try Catalog.load(id: "fundamental-information")
+        for unlocked in [false, true] {
+            let plan = SessionPlanner.today(catalog, data: StudyData(), unlocked: unlocked)
+            XCTAssertEqual(plan.session.questions.count, 10)
+            XCTAssertLessThanOrEqual(plan.session.questions.filter { $0.subject == "科目B" }.count, 2)
+        }
+    }
+
     func testTenChoiceOfficialQuestionAndReadingBlocks() throws {
         let catalog = try Catalog.load(id: "fundamental-information")
         let question = try XCTUnwrap(catalog.questions.first { $0.id == "fe-2026-b-q06" })

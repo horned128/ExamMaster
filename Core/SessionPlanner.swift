@@ -21,6 +21,13 @@ struct StudySession: Identifiable {
     }
 }
 
+struct TodayPlan {
+    let session: StudySession
+    /// 一度でも回答した問題（要復習・前回不正解・おさらい）。
+    let reviewCount: Int
+    let newCount: Int
+}
+
 enum SessionPlanner {
     static func available(_ catalog: Catalog, unlocked: Bool) -> [Question] {
         unlocked ? catalog.questions : catalog.questions.filter { catalog.qualification.freeQuestionIDs.contains($0.id) }
@@ -35,23 +42,39 @@ enum SessionPlanner {
     }
 
     static func recommended(_ catalog: Catalog, data: StudyData, unlocked: Bool, now: Date = .now,
-                            excluding questionIDs: Set<String> = []) -> StudySession {
+                            excluding questionIDs: Set<String> = [], count: Int = 12,
+                            subjectCaps: [String: Int] = [:], title: String = "復習") -> StudySession {
         let items = available(catalog, unlocked: unlocked).filter { !questionIDs.contains($0.id) }
-        let states = data.mastery
+        // Home re-plans on every refresh, so score each question once instead of re-sorting the bank per pick.
+        let base = Dictionary(items.map { ($0.id, priority($0, state: data.mastery[$0.id], now: now)) },
+                              uniquingKeysWith: { first, _ in first })
         var pool = items
         var chosen: [Question] = []
-        while !pool.isEmpty && chosen.count < 12 {
-            let ordered = pool.sorted { a, b in
-                let pa = priority(a, state: states[a.id], now: now) - Double(chosen.filter { $0.subject == a.subject }.count) * 16
-                let pb = priority(b, state: states[b.id], now: now) - Double(chosen.filter { $0.subject == b.subject }.count) * 16
+        var perSubject: [String: Int] = [:]
+        while chosen.count < count {
+            func score(_ q: Question) -> Double { (base[q.id] ?? 0) - Double(perSubject[q.subject, default: 0]) * 16 }
+            guard let next = pool.min(by: { a, b in
+                let pa = score(a), pb = score(b)
                 return pa == pb ? a.id < b.id : pa > pb
-            }
-            let next = ordered[0]
+            }) else { break }
             chosen.append(next)
+            perSubject[next.subject, default: 0] += 1
             pool.removeAll { $0.id == next.id }
+            if let cap = subjectCaps[next.subject], perSubject[next.subject, default: 0] >= cap {
+                pool.removeAll { $0.subject == next.subject }
+            }
         }
-        return StudySession(title: "復習", mode: .recommended,
+        return StudySession(title: title, mode: .recommended,
                             questions: interleave(chosen), timed: false)
+    }
+
+    /// ホームの「今日の学習」。復習の優先順は`recommended`と同じで、毎日開いて終えられる量に絞る。
+    static func today(_ catalog: Catalog, data: StudyData, unlocked: Bool, now: Date = .now) -> TodayPlan {
+        // 科目Bは1問が長文読解なので、1日のセットでは2問までにする。
+        let session = recommended(catalog, data: data, unlocked: unlocked, now: now, count: 10,
+                                  subjectCaps: ["科目B": 2], title: "今日の学習")
+        let newCount = session.questions.filter { data.mastery[$0.id] == nil }.count
+        return TodayPlan(session: session, reviewCount: session.questions.count - newCount, newCount: newCount)
     }
 
     private static func priority(_ q: Question, state: Mastery?, now: Date) -> Double {

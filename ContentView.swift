@@ -1,3 +1,4 @@
+import StoreKit
 import SwiftUI
 
 struct ContentView: View {
@@ -29,13 +30,14 @@ struct ContentView: View {
 
 struct StudyAppView: View {
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.requestReview) private var requestReview
     private enum MainTab: Hashable { case home, years, subjects, incorrect, bookmarks }
     let catalog: Catalog
     @State private var store: StudyStore
     @State private var purchase: PurchaseManager
     @State private var ads: AdsService
     @State private var session: StudySession?
-    @State private var completedForAds: (mode: StudyMode, answered: Int)?
+    @State private var completedForAds: (mode: StudyMode, answered: Int, correct: Int?)?
     @State private var showPaywall = false
     @State private var showSettings = false
     @State private var homePath = NavigationPath()
@@ -119,20 +121,23 @@ struct StudyAppView: View {
             store.clearInterruptedStudy()
             ads.updateAccess(adAccess)
             if let completedForAds {
-                ads.completedSession(mode: completedForAds.mode, answered: completedForAds.answered)
+                let showedAd = ads.completedSession(mode: completedForAds.mode, answered: completedForAds.answered)
+                if !showedAd, let correct = completedForAds.correct {
+                    requestReviewIfEarned(completedForAds.mode, answered: completedForAds.answered, correct: correct)
+                }
                 self.completedForAds = nil
             }
         }) { active in
             if active.timed {
                 MockExamSessionView(session: active, catalog: catalog, store: store, purchase: purchase) { answered in
-                    completedForAds = (active.mode, answered)
+                    completedForAds = (active.mode, answered, nil)
                     session = nil
                 }
             } else {
               SessionView(session: active, qualification: catalog.qualification, store: store, purchase: purchase,
-                        ads: ads, growthQuestions: SessionPlanner.available(catalog, unlocked: purchase.unlocked)) { answered in
+                        ads: ads, growthQuestions: SessionPlanner.available(catalog, unlocked: purchase.unlocked)) { answered, correct in
                 if active.mode == .diagnostic { store.completeOnboarding(diagnostic: true) }
-                completedForAds = (active.mode, answered)
+                completedForAds = (active.mode, answered, correct)
                 session = nil
             }
             .environment(\.mascotMotionEnabled, true)
@@ -153,6 +158,7 @@ struct StudyAppView: View {
             .tint(Palette.linkAccent(catalog.qualification.accentHex))
         }
         .tint(Palette.linkAccent(catalog.qualification.accentHex))
+        .fontDesign(.rounded)
         .environment(\.mascotBaseColor, Palette.accent(catalog.qualification.mascotColorHex))
         .environment(\.mascotChickColor, catalog.qualification.chickBaseHex.map(Palette.accent))
         .onChange(of: scenePhase) { _, phase in
@@ -212,6 +218,14 @@ struct StudyAppView: View {
             QuestionCollectionView(route: route, catalog: catalog, store: store, purchase: purchase,
                                    ads: ads, start: start, paywall: openPaywall)
         }
+    }
+
+    private func requestReviewIfEarned(_ mode: StudyMode, answered: Int, correct: Int) {
+        guard !ReviewPrompt.suppressed,
+              ReviewPrompt.shouldRequest(mode: mode, answered: answered, correct: correct, history: store.data.answers,
+                                         lastRequested: ReviewPrompt.lastRequested) else { return }
+        ReviewPrompt.markRequested()
+        requestReview()
     }
 
     private func openPaywall() {

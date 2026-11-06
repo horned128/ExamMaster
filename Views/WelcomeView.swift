@@ -33,11 +33,9 @@ struct WelcomeView: View {
                                 Spacer()
                                 Image(systemName: "arrow.right").accessibilityHidden(true)
                             }
-                            .font(.headline).frame(maxWidth: .infinity, minHeight: 44).padding(8)
+                            .padding(.horizontal, 8)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(Palette.accent(catalog.qualification.accentHex))
-                        .foregroundStyle(Palette.onAccent(catalog.qualification.accentHex))
+                        .buttonStyle(PuffyButtonStyle())
                         Button("診断なしで始める", action: skip)
                             .font(.subheadline).frame(maxWidth: .infinity, minHeight: 44)
                             .accessibilityIdentifier("skipDiagnosis")

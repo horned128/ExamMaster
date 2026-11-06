@@ -32,9 +32,8 @@ struct MockExamSessionView: View {
                             Button("学習を終える") {
                                 onFinish(result.questionResults?.filter { $0.selectedIndex != nil }.count ?? 0)
                                 dismiss()
-                            }.buttonStyle(.borderedProminent).controlSize(.large)
-                                .tint(Palette.accent(catalog.qualification.accentHex))
-                                .foregroundStyle(Palette.onAccent(catalog.qualification.accentHex))
+                            }.buttonStyle(PuffyButtonStyle())
+                                .padding(.horizontal, 16)
                                 .accessibilityIdentifier("mockResultFinish")
                                 .padding().frame(maxWidth: .infinity).background(.bar)
                         }
@@ -150,10 +149,8 @@ struct MockExamSessionView: View {
                     }
                 }
                 Button { confirmFinish = true } label: {
-                    Text("終了して採点").frame(minHeight: 44)
-                }.buttonStyle(.borderedProminent)
-                    .tint(Palette.accent(catalog.qualification.accentHex))
-                    .foregroundStyle(Palette.onAccent(catalog.qualification.accentHex))
+                    Text("終了して採点")
+                }.buttonStyle(PuffyButtonStyle(minHeight: 50))
                     .frame(maxWidth: .infinity)
                     .accessibilityIdentifier("mockFinish")
             }.padding(.horizontal, 20).padding(.vertical, 8).background(.bar)

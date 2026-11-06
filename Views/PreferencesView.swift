@@ -123,9 +123,7 @@ struct PaywallView: View {
                     }
                     if purchase.unlocked {
                         Button("学習を続ける") { dismiss() }
-                            .buttonStyle(.borderedProminent)
-                            .tint(Palette.accent(catalog.qualification.accentHex))
-                            .foregroundStyle(Palette.onAccent(catalog.qualification.accentHex))
+                            .buttonStyle(PuffyButtonStyle())
                     } else if purchase.loading {
                         ProgressView("商品情報を確認中…")
                     } else if let product = purchase.product {
@@ -133,11 +131,8 @@ struct PaywallView: View {
                             Task { await purchase.buy() }
                         } label: {
                             Text("買い切り \(product.displayPrice)で解放")
-                                .frame(maxWidth: .infinity).padding(7)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(Palette.accent(catalog.qualification.accentHex))
-                        .foregroundStyle(Palette.onAccent(catalog.qualification.accentHex))
+                        .buttonStyle(PuffyButtonStyle())
                         .disabled(purchase.purchasing)
                     }
                     Button("購入を復元") { Task { await purchase.restore() } }

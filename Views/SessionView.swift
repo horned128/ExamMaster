@@ -9,7 +9,7 @@ struct SessionView: View {
     let ads: AdsService
     let growthQuestions: [Question]
     @State private var initialGrowthStage: TankeiStage
-    let onFinish: (Int) -> Void
+    let onFinish: (_ answered: Int, _ correct: Int) -> Void
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -30,11 +30,14 @@ struct SessionView: View {
     @State private var choicesJump = 0
     @State private var deadline: Date
     @State private var remaining: TimeInterval
+    @State private var featherBurst = 0
+    @State private var wrongShake = 0
+    @State private var initialStreak: Int
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     init(session: StudySession, qualification: Qualification, store: StudyStore, purchase: PurchaseManager, ads: AdsService,
          growthQuestions: [Question],
-         onFinish: @escaping (Int) -> Void) {
+         onFinish: @escaping (_ answered: Int, _ correct: Int) -> Void) {
         self.session = session
         self.qualification = qualification
         self.store = store
@@ -42,6 +45,7 @@ struct SessionView: View {
         self.ads = ads
         self.growthQuestions = growthQuestions
         _initialGrowthStage = State(initialValue: TankeiGrowth(questions: growthQuestions, data: store.data, earnedOnly: true).stage)
+        _initialStreak = State(initialValue: StudyMomentum(answers: store.data.answers).streak)
         self.onFinish = onFinish
         let seconds = TimeInterval(qualification.examMinutes * 60)
         _deadline = State(initialValue: .now.addingTimeInterval(seconds))
@@ -126,21 +130,35 @@ struct SessionView: View {
 
     private var questionScreen: some View {
         VStack(spacing: 0) {
-            ProgressView(value: Double(index + (submitted ? 1 : 0)), total: Double(max(1, session.questions.count)))
+            SessionProgressBar(total: session.questions.count, results: session.timed ? nil : answers.map(\.correct),
+                               answered: answers.count)
+                .padding(.horizontal, 16).padding(.vertical, 8)
+                .background(Palette.background)
+                .zIndex(1)
+                .accessibilityElement(children: .ignore)
                 .accessibilityLabel("進捗")
                 .accessibilityValue("\(session.questions.count)問中\(index + 1)問目")
             ScrollViewReader { proxy in
               ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("\(index + 1) / \(session.questions.count)問").font(.subheadline.bold().monospacedDigit())
-                        Text("\(question.year.formatted(.number.grouping(.never))) · \(question.subject)" +
-                             (question.questionNumber.map { " · 問\($0)" } ?? ""))
-                            .font(.caption).foregroundStyle(Palette.muted)
+                        HStack {
+                            Text("\(index + 1) / \(session.questions.count)問").font(.subheadline.bold().monospacedDigit())
+                            Spacer(minLength: 8)
+                            if !session.timed && combo >= 2 {
+                                Text("\(combo)れんぞく！").font(.caption.weight(.heavy)).foregroundStyle(Palette.onPiyo)
+                                    .padding(.horizontal, 10).padding(.vertical, 4)
+                                    .background(Palette.beak, in: Capsule())
+                                    .transition(.scale.combined(with: .opacity))
+                                    .accessibilityIdentifier("comboChip")
+                            }
+                        }
+                        Text(questionMeta).font(.caption).foregroundStyle(Palette.muted)
                     }
                     .id("questionTop")
                     if let kind = question.kindTitle { Text(kind).font(.caption).foregroundStyle(Palette.muted) }
                     QuestionBodyView(question: question, largeText: largeText)
+                        .fontDesign(.default)
                     if recallMode && !revealed {
                         Surface {
                             Label("答えを思い浮かべる", systemImage: "bubble.left")
@@ -188,10 +206,9 @@ struct SessionView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if recallMode && !revealed {
                 Button("選択肢を見る") { revealed = true }
-                    .font(.headline).frame(maxWidth: 640, minHeight: 44)
-                    .buttonStyle(.borderedProminent).controlSize(.large)
-                    .tint(Palette.accent(qualification.accentHex)).foregroundStyle(Palette.onAccent(qualification.accentHex))
-                    .padding(16).frame(maxWidth: .infinity).background(.bar)
+                    .buttonStyle(PuffyButtonStyle(minHeight: 50))
+                    .frame(maxWidth: 640)
+                    .padding(.horizontal, 16).padding(.vertical, 10).frame(maxWidth: .infinity).background(.bar)
             } else {
                 let unavailable = selected == nil && !submitted
                 let action = Button {
@@ -199,7 +216,7 @@ struct SessionView: View {
                 } label: {
                     Text(submitted ? (index + 1 == session.questions.count ? (returnsToList ? "問題一覧へ戻る" : "結果を見る") : "次の問題へ") :
                          (session.timed && index + 1 == session.questions.count ? "回答して採点する" : "回答を確定"))
-                         .font(.headline).frame(maxWidth: .infinity, minHeight: 44)
+                         .font(.headline)
                 }
                 let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) :
                     AnyLayout(HStackLayout(alignment: .center, spacing: 16))
@@ -212,32 +229,39 @@ struct SessionView: View {
                         }
                     }
                     .fixedSize(horizontal: false, vertical: true)
-                    Group {
-                        if unavailable {
-                            // Keep disabled text readable on light surfaces.
-                            action.buttonStyle(StudyButtonStyle())
-                                .foregroundStyle(Palette.ink)
-                                .padding(.vertical, 8)
-                                .background(Palette.track, in: Capsule())
-                        } else {
-                            action.buttonStyle(.borderedProminent)
-                                .tint(Palette.accent(qualification.accentHex))
-                                .foregroundStyle(Palette.onAccent(qualification.accentHex))
-                        }
-                    }
-                    .disabled(unavailable)
-                    .accessibilityIdentifier("submitOrAdvance")
+                    action.buttonStyle(PuffyButtonStyle(minHeight: 50))
+                        .disabled(unavailable)
+                        .accessibilityIdentifier("submitOrAdvance")
                 }
-                .padding(16).frame(maxWidth: 672).frame(maxWidth: .infinity)
+                .padding(.horizontal, 16).padding(.vertical, 10).frame(maxWidth: 672).frame(maxWidth: .infinity)
                 .background(.bar)
                 .accessibilityElement(children: .contain).accessibilityIdentifier("studyControls")
             }
         }
+        .overlay {
+            if !reduceMotion && !session.timed { FeatherBurst(trigger: featherBurst).allowsHitTesting(false) }
+        }
+        .sensoryFeedback(.selection, trigger: selected)
+        .sensoryFeedback(trigger: submitted) { _, isSubmitted in
+            // Timed sessions never reveal correctness before grading.
+            guard isSubmitted, !session.timed else { return nil }
+            return selected == question.correctIndex ? .success : .warning
+        }
     }
+
+    private var questionMeta: String {
+        let number = question.questionNumber.map { " · 問\($0)" } ?? ""
+        return "\(question.year.formatted(.number.grouping(.never))) · \(question.subject)\(number)"
+    }
+
+    /// Trailing run of correct answers in this session.
+    private var combo: Int { answers.reversed().prefix { $0.correct }.count }
 
     private func choiceButton(_ choice: Int) -> some View {
         let isCorrect = submitted && choice == question.correctIndex
         let isWrong = submitted && choice == selected && choice != question.correctIndex
+        let isSelected = !submitted && selected == choice
+        let edge = isCorrect ? Palette.correct : isWrong ? Palette.oops : isSelected ? Palette.sky : Palette.border
         return Button {
             if !submitted { selected = choice }
         } label: {
@@ -245,25 +269,39 @@ struct SessionView: View {
                 Text(qualification.choiceLabel(choice))
                     .font(.subheadline.bold())
                     .frame(width: choiceMarkerSize, height: choiceMarkerSize)
-                    .background(.tint.opacity(0.12), in: Circle())
+                    .foregroundStyle(isCorrect || isWrong || isSelected ? Palette.surface : Palette.ink)
+                    .background(isCorrect || isWrong || isSelected ? edge : Palette.piyoTint,
+                                in: RoundedRectangle(cornerRadius: 9))
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 6) {
                     Text(question.choices[choice]).font(largeText ? .title3 : .body)
                         .fixedSize(horizontal: false, vertical: true)
-                    if isCorrect { Text("正解").font(.caption.bold()).foregroundStyle(Palette.positive) }
-                    if isWrong { Text("あなたの回答").font(.caption.bold()).foregroundStyle(Palette.review) }
+                    if isCorrect { Text("正解").font(.caption.bold()) }
+                    if isWrong { Text("あなたの回答").font(.caption.bold()) }
                 }.frame(maxWidth: .infinity, alignment: .leading)
-                if isCorrect { Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.positive).accessibilityHidden(true) }
-                if isWrong { Image(systemName: "xmark.circle.fill").foregroundStyle(Palette.review).accessibilityHidden(true) }
+                if isCorrect { Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.correct).accessibilityHidden(true) }
+                if isWrong { Image(systemName: "xmark.circle.fill").foregroundStyle(Palette.oops).accessibilityHidden(true) }
             }
             .padding(15)
-            .foregroundStyle(Palette.ink)
-            .background(isCorrect ? Palette.positive.opacity(0.10) : isWrong ? Palette.review.opacity(0.10) :
-                        selected == choice ? Palette.linkAccent(qualification.accentHex).opacity(0.10) : Palette.surface,
-                        in: RoundedRectangle(cornerRadius: 14))
-            .overlay(RoundedRectangle(cornerRadius: 14)
-                .stroke(isCorrect ? Palette.positive : isWrong ? Palette.review :
-                        selected == choice ? Palette.linkAccent(qualification.accentHex) : Palette.border, lineWidth: 1.5))
+            .foregroundStyle(isCorrect ? Palette.correctText : isWrong ? Palette.oopsText : Palette.ink)
+            .background(isCorrect ? Palette.correctTint : isWrong ? Palette.oopsTint :
+                        isSelected ? Palette.skyTint : Palette.surface, in: RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(edge, lineWidth: 2))
+            .background(RoundedRectangle(cornerRadius: 16).fill(edge.opacity(0.45)).offset(y: 4))
+            .padding(.bottom, 4)
+            .opacity(submitted && !isCorrect && !isWrong ? 0.6 : 1)
+            .scaleEffect(isSelected && !reduceMotion ? 1.02 : 1)
+            .animation(reduceMotion ? nil : .spring(duration: 0.2, bounce: 0.5), value: isSelected)
+            .keyframeAnimator(initialValue: 0.0, trigger: wrongShake) { content, offset in
+                content.offset(x: isWrong ? offset : 0)
+            } keyframes: { _ in
+                KeyframeTrack {
+                    LinearKeyframe(-7, duration: 0.08)
+                    LinearKeyframe(6, duration: 0.08)
+                    LinearKeyframe(-3, duration: 0.08)
+                    LinearKeyframe(0, duration: 0.08)
+                }
+            }
         }
         .buttonStyle(StudyButtonStyle())
         .disabled(submitted)
@@ -311,7 +349,7 @@ struct SessionView: View {
         return VStack(alignment: .leading, spacing: 14) {
             layout {
                 HStack(spacing: 10) {
-                    Image(systemName: correct ? "checkmark.circle.fill" : "arrow.uturn.backward.circle.fill")
+                    Image(systemName: correct ? "checkmark.circle.fill" : "xmark.circle.fill")
                         .font(.system(size: 32, weight: .semibold)).accessibilityHidden(true)
                     Text(correct ? "正解です" : "答えを確認")
                         .font(.title3.bold()).fixedSize(horizontal: false, vertical: true)
@@ -321,7 +359,7 @@ struct SessionView: View {
                         .accessibilityValue("相棒：\(initialGrowthStage.title)")
                         #endif
                 }
-                .foregroundStyle(correct ? Palette.positive : Palette.review)
+                .foregroundStyle(correct ? Palette.correctText : Palette.oopsText)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 TankeiView(state: correct ? .celebrate : .recover,
                            stage: initialGrowthStage, size: 72, animated: true, idle: true, expressive: true, eventID: index)
@@ -352,7 +390,7 @@ struct SessionView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
-        .background(Palette.surface, in: RoundedRectangle(cornerRadius: 18))
+        .background(correct ? Palette.correctTint : Palette.oopsTint, in: RoundedRectangle(cornerRadius: 24))
     }
 
     private func submit() {
@@ -363,7 +401,9 @@ struct SessionView: View {
                             confidence: session.timed ? nil : confidence, mode: session.mode)
         answers.append(answer)
         store.record(answer, question: question)
-        if session.timed { advance() } else { submitted = true }
+        if session.timed { advance(); return }
+        submitted = true
+        if answer.correct { featherBurst += 1 } else { wrongShake += 1 }
     }
 
     private func advance() {
@@ -394,7 +434,7 @@ struct SessionView: View {
     }
 
     private func closeSession() {
-        onFinish(answers.count)
+        onFinish(answers.count, answers.filter(\.correct).count)
         dismiss()
     }
 
@@ -402,6 +442,7 @@ struct SessionView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 summaryHeading
+                if !session.timed && session.mode != .diagnostic { momentumSummary }
                 Surface {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Text("\(answers.filter(\.correct).count)")
@@ -476,13 +517,45 @@ struct SessionView: View {
                 }
                 Button(action: closeSession) {
                     Text(session.mode == .diagnostic ? "ホームへ進む" : "学習を終える")
-                        .frame(maxWidth: .infinity).padding(6)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Palette.accent(qualification.accentHex)).foregroundStyle(Palette.onAccent(qualification.accentHex))
+                .buttonStyle(PuffyButtonStyle())
             }
             .padding(24).frame(maxWidth: 640).frame(maxWidth: .infinity)
         }
+    }
+
+    /// はね・あしあとの獲得をその場で見せる。あしあとは今日初めての学習なら「+1」のスタンプ。
+    private var momentumSummary: some View {
+        let momentum = StudyMomentum(answers: store.data.answers)
+        let earned = answers.reduce(0) { $0 + ($1.correct ? StudyMomentum.feathersPerCorrect : StudyMomentum.feathersPerAttempt) }
+        let grew = momentum.streak > initialStreak
+        return HStack(spacing: 10) {
+            momentumTile("はね", value: "+\(earned)", tint: Palette.beakText)
+                .accessibilityIdentifier("resultFeathers")
+            momentumTile("あしあと", value: "\(momentum.streak)日", tint: Palette.ink)
+                .overlay(alignment: .topTrailing) {
+                    if grew {
+                        Text("+1").font(.caption.weight(.heavy)).foregroundStyle(Palette.onPiyo)
+                            .padding(.horizontal, 8).padding(.vertical, 4)
+                            .background(Palette.beak, in: Capsule())
+                            .offset(x: 6, y: -10)
+                            .transition(.scale(scale: 2.2).combined(with: .opacity))
+                            .accessibilityHidden(true)
+                    }
+                }
+                .accessibilityValue(grew ? "今日で1日のびました" : "")
+                .accessibilityIdentifier("resultStreak")
+        }
+    }
+
+    private func momentumTile(_ title: String, value: String, tint: Color) -> some View {
+        VStack(spacing: 2) {
+            Text(title).font(.caption.weight(.bold)).foregroundStyle(Palette.muted)
+            Text(value).font(.title2.weight(.heavy).monospacedDigit()).foregroundStyle(tint)
+        }
+        .frame(maxWidth: .infinity).padding(.vertical, 12)
+        .popCard(radius: 20)
+        .accessibilityElement(children: .combine)
     }
 
     private var completionState: TankeiState {

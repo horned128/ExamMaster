@@ -189,6 +189,8 @@ struct Catalog {
 }
 
 /// Optional per-qualification colours keep existing apps' appearance intact.
+/// Per-qualification colours. Since the series-wide Piyo Pop redesign only the state colours
+/// (positive / review / growing) are applied; the surface keys are still decoded so existing files stay valid.
 struct QualificationTheme: Codable {
     let backgroundLight: String
     let backgroundDark: String

@@ -70,6 +70,76 @@ final class EngineTests: XCTestCase {
         }
     }
 
+    func testTodayPlanStaysSmallRespectsCapsAndSeparatesReviewFromNew() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let fresh = SessionPlanner.today(catalog, data: StudyData(), unlocked: true, now: start)
+        XCTAssertEqual(fresh.session.title, "今日の学習")
+        XCTAssertEqual(fresh.session.mode, .recommended)
+        XCTAssertEqual(fresh.session.questions.count, 10)
+        XCTAssertEqual(fresh.newCount, 10)
+        XCTAssertEqual(fresh.reviewCount, 0)
+
+        var data = StudyData()
+        data.mastery["r01"] = Mastery(attempts: 2, misconception: true)
+        let planned = SessionPlanner.today(catalog, data: data, unlocked: false, now: start)
+        XCTAssertTrue(planned.session.questions.contains { $0.id == "r01" })
+        XCTAssertEqual(planned.reviewCount, 1)
+        XCTAssertTrue(planned.session.questions.allSatisfy { catalog.qualification.freeQuestionIDs.contains($0.id) })
+
+        let capped = SessionPlanner.recommended(catalog, data: StudyData(), unlocked: true, now: start, count: 10,
+                                                subjectCaps: ["安全計算": 1])
+        XCTAssertEqual(capped.questions.filter { $0.subject == "安全計算" }.count, 1)
+        XCTAssertEqual(capped.questions.count, 10)
+    }
+
+    func testMomentumStreakForgivesOneMissedDayPerWeekAndCountsFeathers() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "Asia/Tokyo"))
+        func date(_ day: Int, _ hour: Int = 9) -> Date {
+            calendar.date(from: DateComponents(year: 2026, month: 10, day: day, hour: hour))!
+        }
+        // 2026-10-26 is a Monday. Wednesday is skipped and today (Friday) is not studied yet.
+        let answers = [answer("a", at: date(26), correct: true), answer("b", at: date(27), correct: false),
+                       answer("c", at: date(29), correct: true)]
+        let momentum = StudyMomentum(answers: answers, now: date(30, 20), calendar: calendar)
+        XCTAssertEqual(momentum.streak, 3)
+        XCTAssertFalse(momentum.studiedToday)
+        XCTAssertFalse(momentum.restTicketAvailable)
+        XCTAssertEqual(momentum.week.map(\.studied), [true, true, false, true, false, false, false])
+        XCTAssertEqual(momentum.week.map(\.rested), [false, false, true, false, false, false, false])
+        XCTAssertEqual(momentum.week.map(\.isToday), [false, false, false, false, true, false, false])
+        XCTAssertEqual(momentum.week.map(\.isFuture), [false, false, false, false, false, true, true])
+        XCTAssertEqual(momentum.feathers, 10 + 2 + 10)
+
+        // A second missed day in the same week ends the run; an unconfirmed rest keeps the ticket.
+        let broken = StudyMomentum(answers: Array(answers.prefix(2)) + [answer("d", at: date(30), correct: true)],
+                                   now: date(30, 20), calendar: calendar)
+        XCTAssertEqual(broken.streak, 1)
+        XCTAssertTrue(broken.studiedToday)
+        XCTAssertEqual(broken.todayAnswers, 1)
+        XCTAssertTrue(broken.restTicketAvailable)
+        XCTAssertEqual(StudyMomentum(answers: [], now: date(30), calendar: calendar).streak, 0)
+    }
+
+    func testReviewPromptOnlyAfterGoodSessionsOnSeveralDaysAndRarely() {
+        let history = (0..<3).map { answer(at: start.addingTimeInterval(Double($0) * day), correct: true) }
+        let now = start.addingTimeInterval(3 * day)
+        XCTAssertTrue(ReviewPrompt.shouldRequest(mode: .recommended, answered: 10, correct: 8, history: history,
+                                                 lastRequested: nil, now: now))
+        XCTAssertFalse(ReviewPrompt.shouldRequest(mode: .recommended, answered: 10, correct: 6, history: history,
+                                                  lastRequested: nil, now: now))
+        XCTAssertFalse(ReviewPrompt.shouldRequest(mode: .recommended, answered: 4, correct: 4, history: history,
+                                                  lastRequested: nil, now: now))
+        XCTAssertFalse(ReviewPrompt.shouldRequest(mode: .diagnostic, answered: 10, correct: 10, history: history,
+                                                  lastRequested: nil, now: now))
+        XCTAssertFalse(ReviewPrompt.shouldRequest(mode: .recommended, answered: 10, correct: 10, history: Array(history.prefix(2)),
+                                                  lastRequested: nil, now: now))
+        XCTAssertFalse(ReviewPrompt.shouldRequest(mode: .recommended, answered: 10, correct: 10, history: history,
+                                                  lastRequested: now.addingTimeInterval(-30 * day), now: now))
+        XCTAssertTrue(ReviewPrompt.shouldRequest(mode: .recommended, answered: 10, correct: 10, history: history,
+                                                 lastRequested: now.addingTimeInterval(-121 * day), now: now))
+    }
+
     func testMockRequiresTotalAndEachSubject() throws {
         let catalog = try Catalog.load(id: "demo-safety")
         let items = SessionPlanner.mock(catalog, unlocked: true).questions

@@ -165,15 +165,18 @@ enum AdFrequencyPolicy {
         return provider.makeBanner(width: width, unitID: AdUnitSelection.banner(configuration), onLoad: onLoad)
     }
 
-    func completedSession(mode: StudyMode, answered: Int, now: Date = .now) {
+    /// Returns whether an interstitial was attempted, so callers avoid stacking other prompts on top of it.
+    @discardableResult
+    func completedSession(mode: StudyMode, answered: Int, now: Date = .now) -> Bool {
         guard ready, access.permitsRequests, access.safeScreen, configuration.interstitialEnabled,
               AdFrequencyPolicy.qualifies(mode, answered: answered, settings: configuration),
-              frequency.complete() else { return }
+              frequency.complete() else { return false }
         guard AdFrequencyPolicy.mayPresent(frequency.state, settings: configuration, now: now),
-              interstitialLoaded, frequency.markPresented(at: now) else { return }
+              interstitialLoaded, frequency.markPresented(at: now) else { return false }
         interstitialLoaded = false
         _ = provider.presentInterstitial() // A failed/expired ad still consumes this opportunity.
         preloadIfNeeded()
+        return true
     }
 
     func presentPrivacyOptions() async {

@@ -16,7 +16,8 @@ final class NetworkStudyUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["homeExamCountdown"].label, "あと30日")
         let examDate = app.staticTexts["homeExamDate"].label
         XCTAssertTrue(examDate.hasPrefix("試験日 "))
-        XCTAssertTrue(app.buttons["homeRecords"].isHittable)
+        // The first screen leads with today's set; the menu grid scrolls into view below it.
+        XCTAssertTrue(app.buttons["homeTodayStudy"].isHittable)
         capture("試験日・ネットワークのホーム")
         app.terminate()
         app.launchArguments = ["-UITestDisableAds"]
