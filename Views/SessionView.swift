@@ -18,7 +18,6 @@ struct SessionView: View {
     @AccessibilityFocusState private var feedbackFocused: Bool
     @State private var index = 0
     @State private var selected: Int?
-    @State private var confidence: Confidence?
     @State private var revealed = false
     @State private var submitted = false
     @State private var finished = false
@@ -94,14 +93,6 @@ struct SessionView: View {
                                 .accessibilityLabel(largeText ? "文字を標準サイズにする" : "文字を大きくする")
                                 .accessibilityIdentifier("questionTextSize")
                         }
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button {
-                                store.toggleBookmark(question.id)
-                            } label: {
-                                Image(systemName: store.data.bookmarks.contains(question.id) ? "bookmark.fill" : "bookmark")
-                            }
-                            .accessibilityLabel(store.data.bookmarks.contains(question.id) ? "ブックマークを解除" : "ブックマークに追加")
-                        }
                     }
                 }
             }
@@ -141,22 +132,7 @@ struct SessionView: View {
             ScrollViewReader { proxy in
               ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text("\(index + 1) / \(session.questions.count)問").font(.subheadline.bold().monospacedDigit())
-                            Spacer(minLength: 8)
-                            if !session.timed && combo >= 2 {
-                                Text("\(combo)れんぞく！").font(.caption.weight(.heavy)).foregroundStyle(Palette.onPiyo)
-                                    .padding(.horizontal, 10).padding(.vertical, 4)
-                                    .background(Palette.beak, in: Capsule())
-                                    .transition(.scale.combined(with: .opacity))
-                                    .accessibilityIdentifier("comboChip")
-                            }
-                        }
-                        Text(questionMeta).font(.caption).foregroundStyle(Palette.muted)
-                    }
-                    .id("questionTop")
-                    if let kind = question.kindTitle { Text(kind).font(.caption).foregroundStyle(Palette.muted) }
+                    questionHeader.id("questionTop")
                     QuestionBodyView(question: question, largeText: largeText)
                         .fontDesign(.default)
                     if recallMode && !revealed {
@@ -174,8 +150,11 @@ struct SessionView: View {
                             }
                         }
                         .id("answerChoices")
-                        if !submitted && !session.timed { confidencePicker }
-                        if submitted && !session.timed { feedback.id("feedback") }
+                        if showsFeedback {
+                            QuestionExplanationView(question: question, qualification: qualification, listsChoiceReasons: false)
+                                .id("explanation")
+                                .transition(.opacity)
+                        }
                     }
                 }
                 .padding(20)
@@ -186,11 +165,14 @@ struct SessionView: View {
               .onChange(of: index) { _, _ in proxy.scrollTo("questionTop", anchor: .top) }
               .onChange(of: choicesJump) { _, _ in proxy.scrollTo("answerChoices", anchor: .top) }
               .onChange(of: submitted) { _, value in
-                  if value {
-                      withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
-                          proxy.scrollTo("feedback", anchor: .top)
+                  guard value, !session.timed else { return }
+                  feedbackFocused = true
+                  // Wait for the panel's inset, otherwise the scroll is dropped while the layout changes.
+                  Task { @MainActor in
+                      try? await Task.sleep(for: .milliseconds(120))
+                      withAnimation(reduceMotion ? nil : .easeOut(duration: 0.25)) {
+                          proxy.scrollTo("answerChoices", anchor: .top)
                       }
-                      feedbackFocused = true
                   }
               }
             }
@@ -203,45 +185,14 @@ struct SessionView: View {
                 }.id(question.id)
             }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            if recallMode && !revealed {
-                Button("選択肢を見る") { revealed = true }
-                    .buttonStyle(PuffyButtonStyle(minHeight: 50))
-                    .frame(maxWidth: 640)
-                    .padding(.horizontal, 16).padding(.vertical, 10).frame(maxWidth: .infinity).background(.bar)
-            } else {
-                let unavailable = selected == nil && !submitted
-                let action = Button {
-                    if submitted { advance() } else { submit() }
-                } label: {
-                    Text(submitted ? (index + 1 == session.questions.count ? (returnsToList ? "問題一覧へ戻る" : "結果を見る") : "次の問題へ") :
-                         (session.timed && index + 1 == session.questions.count ? "回答して採点する" : "回答を確定"))
-                         .font(.headline)
-                }
-                let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) :
-                    AnyLayout(HStackLayout(alignment: .center, spacing: 16))
-                layout {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("\(index + 1) / \(session.questions.count)")
-                            .font(dynamicTypeSize.isAccessibilitySize ? .caption : .subheadline.weight(.semibold)).monospacedDigit()
-                        if !dynamicTypeSize.isAccessibilitySize {
-                            Text(submitted ? "解説を確認" : "回答を選択").font(.caption).foregroundStyle(Palette.muted)
-                        }
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    action.buttonStyle(PuffyButtonStyle(minHeight: 50))
-                        .disabled(unavailable)
-                        .accessibilityIdentifier("submitOrAdvance")
-                }
-                .padding(.horizontal, 16).padding(.vertical, 10).frame(maxWidth: 672).frame(maxWidth: .infinity)
-                .background(.bar)
-                .accessibilityElement(children: .contain).accessibilityIdentifier("studyControls")
-            }
-        }
+        .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
         .overlay {
             if !reduceMotion && !session.timed { FeatherBurst(trigger: featherBurst).allowsHitTesting(false) }
         }
-        .sensoryFeedback(.selection, trigger: selected)
+        // Untimed answers are graded on the tap, so only timed sessions get a separate selection tick.
+        .sensoryFeedback(trigger: selected) { _, value in
+            session.timed && value != nil ? .selection : nil
+        }
         .sensoryFeedback(trigger: submitted) { _, isSubmitted in
             // Timed sessions never reveal correctness before grading.
             guard isSubmitted, !session.timed else { return nil }
@@ -249,38 +200,141 @@ struct SessionView: View {
         }
     }
 
+    /// Untimed answers show the result and explanation right after the tap.
+    private var showsFeedback: Bool { submitted && !session.timed }
+
+    @ViewBuilder private var bottomBar: some View {
+        if recallMode && !revealed {
+            Button("選択肢を見る") { revealed = true }
+                .buttonStyle(PuffyButtonStyle(minHeight: 50))
+                .frame(maxWidth: 640)
+                .padding(.horizontal, 16).padding(.vertical, 10).frame(maxWidth: .infinity).background(.bar)
+        } else if showsFeedback {
+            answerPanel
+                .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+        } else if session.timed {
+            let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) :
+                AnyLayout(HStackLayout(alignment: .center, spacing: 16))
+            layout {
+                Text("\(index + 1) / \(session.questions.count)")
+                    .font(dynamicTypeSize.isAccessibilitySize ? .caption : .subheadline.weight(.semibold)).monospacedDigit()
+                    .fixedSize(horizontal: false, vertical: true)
+                Button(action: submit) {
+                    Text(index + 1 == session.questions.count ? "回答して採点する" : "回答を確定").font(.headline)
+                }
+                .buttonStyle(PuffyButtonStyle(minHeight: 50))
+                .disabled(selected == nil)
+                .accessibilityIdentifier("submitOrAdvance")
+            }
+            .padding(.horizontal, 16).padding(.vertical, 10).frame(maxWidth: 672).frame(maxWidth: .infinity)
+            .background(.bar)
+            .accessibilityElement(children: .contain).accessibilityIdentifier("studyControls")
+        }
+    }
+
+    private var questionHeader: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 8) {
+                Text("\(index + 1) / \(session.questions.count)問").font(.subheadline.bold().monospacedDigit())
+                if !session.timed && combo >= 2 {
+                    Text("\(combo)れんぞく！").font(.caption.weight(.heavy)).foregroundStyle(Palette.onPiyo)
+                        .padding(.horizontal, 10).padding(.vertical, 4)
+                        .background(Palette.beak, in: Capsule())
+                        .transition(.scale.combined(with: .opacity))
+                        .accessibilityIdentifier("comboChip")
+                }
+                Spacer(minLength: 8)
+                if !session.timed { bookmarkButton }
+            }
+            Text(questionMeta).font(.caption).foregroundStyle(Palette.muted)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("questionMeta")
+            if let history {
+                HStack(spacing: 6) {
+                    Text(history.lastCorrect ? "前回○" : "前回×").font(.caption.weight(.heavy))
+                        .foregroundStyle(history.lastCorrect ? Palette.correctText : Palette.oopsText)
+                    Text("\(history.count)回解答・\(history.misses)回ミス").font(.caption.monospacedDigit())
+                        .foregroundStyle(Palette.muted)
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("前回\(history.lastCorrect ? "正解" : "不正解")、\(history.count)回解答、\(history.misses)回ミス")
+                .accessibilityIdentifier("questionHistory")
+            }
+        }
+    }
+
+    private var bookmarkButton: some View {
+        let marked = store.data.bookmarks.contains(question.id)
+        return Button { store.toggleBookmark(question.id) } label: {
+            Image(systemName: marked ? "bookmark.fill" : "bookmark")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(marked ? Palette.piyoDeep : Palette.muted)
+                .frame(minWidth: 44, minHeight: 44)
+        }
+        .buttonStyle(StudyButtonStyle())
+        .padding(.vertical, -10)
+        .accessibilityLabel(marked ? "ブックマークを解除" : "ブックマークに追加")
+    }
+
+    /// Kind and source on one line.
     private var questionMeta: String {
-        let number = question.questionNumber.map { " · 問\($0)" } ?? ""
-        return "\(question.year.formatted(.number.grouping(.never))) · \(question.subject)\(number)"
+        [question.kindTitle, qualification.displaySource(question.source)].compactMap { $0 }.joined(separator: " · ")
+    }
+
+    /// Earlier attempts at this question, not counting the one being made now.
+    private var history: (count: Int, misses: Int, lastCorrect: Bool)? {
+        let past = store.data.answers.filter { $0.questionID == question.id && $0.date < startedAt }
+        guard let last = past.max(by: { $0.date < $1.date }) else { return nil }
+        return (past.count, past.filter { !$0.correct }.count, last.correct)
     }
 
     /// Trailing run of correct answers in this session.
     private var combo: Int { answers.reversed().prefix { $0.correct }.count }
 
     private func choiceButton(_ choice: Int) -> some View {
-        let isCorrect = submitted && choice == question.correctIndex
-        let isWrong = submitted && choice == selected && choice != question.correctIndex
-        let isSelected = !submitted && selected == choice
+        let graded = showsFeedback
+        let isCorrect = graded && choice == question.correctIndex
+        let isWrong = graded && choice == selected && choice != question.correctIndex
+        let picked = graded && choice == selected
+        let isSelected = !graded && selected == choice
+        let reason = graded ? question.choiceExplanations.flatMap { $0.indices.contains(choice) ? $0[choice] : nil } : nil
         let edge = isCorrect ? Palette.correct : isWrong ? Palette.oops : isSelected ? Palette.sky : Palette.border
-        return Button {
-            if !submitted { selected = choice }
-        } label: {
-            HStack(alignment: .top, spacing: 12) {
-                Text(qualification.choiceLabel(choice))
-                    .font(.subheadline.bold())
-                    .frame(width: choiceMarkerSize, height: choiceMarkerSize)
-                    .foregroundStyle(isCorrect || isWrong || isSelected ? Palette.surface : Palette.ink)
-                    .background(isCorrect || isWrong || isSelected ? edge : Palette.piyoTint,
-                                in: RoundedRectangle(cornerRadius: 9))
-                    .accessibilityHidden(true)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(question.choices[choice]).font(largeText ? .title3 : .body)
-                        .fixedSize(horizontal: false, vertical: true)
-                    if isCorrect { Text("正解").font(.caption.bold()) }
-                    if isWrong { Text("あなたの回答").font(.caption.bold()) }
-                }.frame(maxWidth: .infinity, alignment: .leading)
-                if isCorrect { Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.correct).accessibilityHidden(true) }
-                if isWrong { Image(systemName: "xmark.circle.fill").foregroundStyle(Palette.oops).accessibilityHidden(true) }
+        let reasonLabel = reason.map { "、理由：\(InlineMarkup.plainText($0))" } ?? ""
+        return Button { choose(choice) } label: {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(alignment: .top, spacing: 12) {
+                    Text(qualification.choiceLabel(choice))
+                        .font(.subheadline.bold())
+                        .frame(width: choiceMarkerSize, height: choiceMarkerSize)
+                        .foregroundStyle(isCorrect || isWrong || isSelected ? Palette.surface : Palette.ink)
+                        .background(isCorrect || isWrong || isSelected ? edge : Palette.piyoTint,
+                                    in: RoundedRectangle(cornerRadius: 9))
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(question.choices[choice]).font(largeText ? .title3 : .body)
+                            .fixedSize(horizontal: false, vertical: true)
+                        if picked { Text("あなたの回答").font(.caption.bold()) }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    if graded {
+                        Image(systemName: isCorrect ? "checkmark.circle.fill" : isWrong ? "xmark.circle.fill" : "xmark")
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(isCorrect ? Palette.correct : isWrong ? Palette.oops : Palette.muted)
+                            .accessibilityHidden(true)
+                    }
+                }
+                if let reason {
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text(isCorrect ? "○" : "×").font(.subheadline.weight(.heavy))
+                            .foregroundStyle(isCorrect ? Palette.correctText : isWrong ? Palette.oopsText : Palette.muted)
+                            .accessibilityHidden(true)
+                        MarkupText(text: reason, role: .reason, setsFont: true)
+                            .foregroundStyle(Palette.ink)
+                    }
+                    .padding(.top, 10)
+                    .overlay(alignment: .top) { Rectangle().fill(edge.opacity(0.4)).frame(height: 1) }
+                    .padding(.leading, choiceMarkerSize + 12)
+                }
             }
             .padding(15)
             .foregroundStyle(isCorrect ? Palette.correctText : isWrong ? Palette.oopsText : Palette.ink)
@@ -289,7 +343,6 @@ struct SessionView: View {
             .overlay(RoundedRectangle(cornerRadius: 16).strokeBorder(edge, lineWidth: 2))
             .background(RoundedRectangle(cornerRadius: 16).fill(edge.opacity(0.45)).offset(y: 4))
             .padding(.bottom, 4)
-            .opacity(submitted && !isCorrect && !isWrong ? 0.6 : 1)
             .scaleEffect(isSelected && !reduceMotion ? 1.02 : 1)
             .animation(reduceMotion ? nil : .spring(duration: 0.2, bounce: 0.5), value: isSelected)
             .keyframeAnimator(initialValue: 0.0, trigger: wrongShake) { content, offset in
@@ -305,109 +358,73 @@ struct SessionView: View {
         }
         .buttonStyle(StudyButtonStyle())
         .disabled(submitted)
-        .accessibilityLabel("選択肢 \(choice + 1)、\(question.choices[choice])\(isCorrect ? "、正答" : isWrong ? "、あなたの回答" : "")")
+        .accessibilityLabel("選択肢 \(choice + 1)、\(question.choices[choice])\(isCorrect ? "、正答" : "")\(picked ? "、あなたの回答" : "")\(reasonLabel)")
         .accessibilityAddTraits(selected == choice ? .isSelected : [])
     }
 
-    private var confidencePicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(submitted ? "解いた後の手応え · 変更できます" : "手応え · 任意").font(.caption).foregroundStyle(Palette.muted)
-            LazyVGrid(columns: dynamicTypeSize.isAccessibilitySize ? [GridItem(.flexible())] :
-                        Array(repeating: GridItem(.flexible()), count: 3), spacing: 8) {
-                ForEach(Confidence.allCases) { item in
-                    let active = confidence == item
-                    Button {
-                        let next: Confidence? = active ? nil : item
-                        if submitted, var answer = answers.last {
-                            guard store.updateConfidence(next, answerID: answer.id, question: question) else { return }
-                            answer.confidence = next
-                            answers[answers.count - 1] = answer
-                        }
-                        confidence = next
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: active ? "checkmark.circle.fill" : "circle")
-                            Text(item.title).font(.subheadline.weight(active ? .bold : .medium))
-                        }
-                        .frame(maxWidth: .infinity, minHeight: 54).padding(6)
-                        .foregroundStyle(active ? Palette.onAccent(qualification.accentHex) : Palette.ink)
-                        .background(active ? Palette.accent(qualification.accentHex) : Palette.background, in: RoundedRectangle(cornerRadius: 12))
-                        .overlay(RoundedRectangle(cornerRadius: 12).stroke(active ? Palette.accent(qualification.accentHex) : Palette.track, lineWidth: 2))
-                    }
-                    .buttonStyle(StudyButtonStyle()).accessibilityLabel(item.title)
-                    .accessibilityIdentifier("confidence-\(item.rawValue)")
-                    .accessibilityAddTraits(active ? .isSelected : [])
-                }
-            }
-        }
+    /// Untimed sessions grade on the tap; timed ones keep the choice until the answer is confirmed.
+    private func choose(_ choice: Int) {
+        guard !submitted else { return }
+        selected = choice
+        if !session.timed { submit() }
     }
 
-    private var feedback: some View {
+    /// Slides up from the bottom after grading: the mascot's reaction, one short line and the next button.
+    private var answerPanel: some View {
         let correct = selected == question.correctIndex
-        let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8)) :
-            AnyLayout(HStackLayout(alignment: .center, spacing: 8))
-        return VStack(alignment: .leading, spacing: 14) {
-            layout {
-                HStack(spacing: 10) {
-                    Image(systemName: correct ? "checkmark.circle.fill" : "xmark.circle.fill")
-                        .font(.system(size: 32, weight: .semibold)).accessibilityHidden(true)
-                    Text(correct ? "正解です" : "答えを確認")
-                        .font(.title3.bold()).fixedSize(horizontal: false, vertical: true)
+        let label = qualification.choiceLabel(question.correctIndex)
+        let lines = correct ? Self.correctLines : Self.wrongLines
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 14) {
+                TankeiView(state: correct ? .celebrate : .recover, stage: initialGrowthStage,
+                           size: dynamicTypeSize.isAccessibilitySize ? 56 : 76,
+                           animated: true, idle: true, expressive: true, eventID: index)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(correct ? "正解！" : "正解は「\(label)」")
+                        .font(.system(.title2, design: .rounded).weight(.heavy))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityLabel(correct ? "正解" : "不正解。正解は \(label)")
                         .accessibilityFocused($feedbackFocused)
                         .accessibilityIdentifier("answerOutcome")
                         #if DEBUG
                         .accessibilityValue("相棒：\(initialGrowthStage.title)")
                         #endif
+                    Text(lines[index % lines.count])
+                        .font(.subheadline.weight(.semibold))
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 .foregroundStyle(correct ? Palette.correctText : Palette.oopsText)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                TankeiView(state: correct ? .celebrate : .recover,
-                           stage: initialGrowthStage, size: 72, animated: true, idle: true, expressive: true, eventID: index)
             }
-            confidencePicker
-            if question.choiceExplanations != nil {
-                QuestionExplanationView(question: question, qualification: qualification)
+            Button(action: advance) {
+                Text(index + 1 == session.questions.count ? (returnsToList ? "問題一覧へ戻る" : "結果を見る") : "次へ")
+                    .font(.headline)
             }
-            if let steps = question.steps {
-                Text("解き方").font(.headline)
-                ForEach(steps.indices, id: \.self) { step in
-                    Text("\(step + 1). \(steps[step])").font(.subheadline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-
-            }
-            if question.choiceExplanations == nil {
-                MarkupText(text: question.explanation)
-                if let related = question.related {
-                    DisclosureGroup("関連知識") { RichContentView(blocks: related).padding(.top, 8) }
-                        .accessibilityIdentifier("relatedKnowledge")
-                }
-                if let references = question.references { QuestionReferencesView(references: references) }
-                DisclosureGroup("出典") {
-                    Text(qualification.displaySource(question.source)).font(.caption).foregroundStyle(Palette.muted)
-                }
-                .font(.caption)
-            }
-            if let due = store.data.mastery[question.id]?.dueAt {
-                Divider()
-                StudyBadge(title: "復習の目安 · \(ReviewOutlook.label(for: due))", symbol: "calendar", color: Palette.positive)
-            }
+            .buttonStyle(PuffyButtonStyle(kind: correct ? .correct : .oops, minHeight: 50))
+            .accessibilityIdentifier("submitOrAdvance")
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(18)
-        .background(correct ? Palette.correctTint : Palette.oopsTint, in: RoundedRectangle(cornerRadius: 24))
+        .padding(.horizontal, 20).padding(.top, 14).padding(.bottom, 10)
+        .frame(maxWidth: 672)
+        .frame(maxWidth: .infinity)
+        .background(correct ? Palette.correctTint : Palette.oopsTint, ignoresSafeAreaEdges: .bottom)
+        .overlay(alignment: .top) { Rectangle().fill(correct ? Palette.correct : Palette.oops).frame(height: 3) }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("studyControls")
     }
 
+    private static let correctLines = ["その調子！", "さすが！", "バッチリ覚えてる！", "いい流れ！"]
+    private static let wrongLines = ["理由を見れば次は取れる！", "ここで覚えればOK！", "おしい！ 見直そう"]
+
     private func submit() {
-        guard let selected else { return }
+        guard let selected, !submitted else { return }
         let answer = Answer(questionID: question.id, date: .now, selectedIndex: selected,
                             correct: selected == question.correctIndex,
                             duration: max(0, Date().timeIntervalSince(startedAt)),
-                            confidence: session.timed ? nil : confidence, mode: session.mode)
+                            confidence: nil, mode: session.mode)
         answers.append(answer)
         store.record(answer, question: question)
         if session.timed { advance(); return }
-        submitted = true
+        withAnimation(reduceMotion ? nil : .spring(duration: 0.4, bounce: 0.25)) { submitted = true }
         if answer.correct { featherBurst += 1 } else { wrongShake += 1 }
     }
 
@@ -420,7 +437,6 @@ struct SessionView: View {
         if index + 1 == session.questions.count { finish(); return }
         index += 1
         selected = nil
-        confidence = nil
         submitted = false
         revealed = false
         startedAt = .now

@@ -259,6 +259,35 @@ enum ContentResource {
     }
 }
 
+/// One entry of a qualification's `glossary.json`.
+struct GlossaryTerm: Codable, Identifiable, Hashable {
+    let id: String
+    let term: String
+    let keys: [String]
+    var english: String? = nil
+    let description: String
+}
+
+struct Glossary: Codable {
+    let version: Int
+    let terms: [GlossaryTerm]
+
+    /// The bundled glossary, or nil for qualifications without one.
+    static let main: Glossary? = load()
+
+    static func load(bundle: Bundle = .main) -> Glossary? {
+        guard let url = bundle.url(forResource: "glossary", withExtension: "json"),
+              let data = try? Data(contentsOf: url) else { return nil }
+        return try? JSONDecoder().decode(Glossary.self, from: data)
+    }
+
+    /// Terms in the given order; unknown IDs are skipped.
+    func terms(ids: [String]) -> [GlossaryTerm] {
+        let byID = Dictionary(terms.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        return ids.compactMap { byID[$0] }
+    }
+}
+
 /// Optional per-qualification colours keep existing apps' appearance intact.
 /// Per-qualification colours. Since the series-wide Piyo Pop redesign only the state colours
 /// (positive / review / growing) are applied; the surface keys are still decoded so existing files stay valid.

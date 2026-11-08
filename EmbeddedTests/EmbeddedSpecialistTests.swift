@@ -84,4 +84,17 @@ final class EmbeddedSpecialistTests: XCTestCase {
         XCTAssertTrue(qualification.ads.enabled)
         XCTAssertEqual(qualification.theme?.isValid, true)
     }
+
+    /// 用語メモ resolves every precomputed term ID against the bundled glossary.
+    func testGlossaryMemoTermsResolve() throws {
+        let glossary = try XCTUnwrap(Glossary.main)
+        XCTAssertEqual(glossary.terms.count, 993)
+        let questions = try catalog().questions
+        let withTerms = questions.filter { !($0.glossaryTermIDs ?? []).isEmpty }
+        XCTAssertGreaterThan(withTerms.count, 250)
+        for question in withTerms {
+            let ids = question.glossaryTermIDs ?? []
+            XCTAssertEqual(glossary.terms(ids: ids).map(\.id), ids, question.id)
+        }
+    }
 }

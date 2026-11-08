@@ -246,7 +246,6 @@ struct MockResultDetailView: View {
                                         if let blocks = question.choiceBlocks { RichContentView(blocks: blocks[index], wrapsTables: question.subject == "科目B") }
                                     }
                                     QuestionExplanationView(question: question, qualification: catalog.qualification)
-                                    if let steps = question.steps { ForEach(steps.indices, id: \.self) { Text("\($0 + 1). \(steps[$0])") } }
                                 } else { Label("解説の閲覧には全問題解放が必要です", systemImage: "lock") }
                             } label: {
                                 VStack(alignment: .leading, spacing: 4) {

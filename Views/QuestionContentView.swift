@@ -289,39 +289,154 @@ private final class FigureScrollView: UIScrollView {
     }
 }
 
+/// The explanation below the choices: why the answer is right, then one closed line per supplement.
 struct QuestionExplanationView: View {
     let question: Question
     let qualification: Qualification
+    /// Off where each choice already shows its own reason (the question screen).
+    var listsChoiceReasons = true
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            QuestionWhyView(question: question, qualification: qualification)
+            if listsChoiceReasons, let reasons = question.choiceExplanations {
+                ChoiceReasonList(question: question, qualification: qualification, reasons: reasons)
+            }
+            QuestionSupplementsView(question: question, qualification: qualification)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// 「なぜ正解か」: the explanation text, its figures and tables, then the solving steps.
+struct QuestionWhyView: View {
+    let question: Question
+    let qualification: Qualification
+
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("正解: \(qualification.choiceLabel(question.correctIndex))").textRole(.heading)
-            MarkupText(text: question.explanation)
-            if let reasons = question.choiceExplanations {
-                DisclosureGroup("選択肢ごとの理由") {
-                    ForEach(reasons.indices, id: \.self) { index in
-                        HStack(alignment: .top, spacing: 10) {
-                            Label(qualification.choiceLabel(index), systemImage: index == question.correctIndex ? "checkmark.circle" : "xmark.circle")
-                                .foregroundStyle(index == question.correctIndex ? Palette.positive : Palette.review)
-                            MarkupText(text: reasons[index], role: .reason, setsFont: true)
-                        }.padding(.vertical, 6)
+            Text("なぜ「\(qualification.choiceLabel(question.correctIndex))」が正解か")
+                .textRole(.heading)
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityIdentifier("whyCorrectHeading")
+            if !question.explanation.isEmpty { MarkupText(text: question.explanation) }
+            if let blocks = question.explanationBlocks { RichContentView(blocks: blocks, wrapsTables: question.subject == "科目B") }
+            if let steps = question.steps, !steps.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("解き方").textRole(.heading).foregroundStyle(Palette.muted)
+                    ForEach(steps.indices, id: \.self) { step in
+                        HStack(alignment: .firstTextBaseline, spacing: 10) {
+                            Text("\(step + 1)").textRole(.number).font(.subheadline.weight(.heavy))
+                                .foregroundStyle(Palette.piyoDeep)
+                                .accessibilityHidden(true)
+                            MarkupText(text: steps[step], role: .reason, setsFont: true)
+                        }
+                        .accessibilityElement(children: .combine)
                     }
                 }
-            }
-            if let blocks = question.explanationBlocks { RichContentView(blocks: blocks, wrapsTables: question.subject == "科目B") }
-            if let related = question.related {
-                DisclosureGroup("関連知識") { RichContentView(blocks: related).padding(.top, 8) }
-                    .accessibilityIdentifier("relatedKnowledge")
-            }
-            if let references = question.references {
-                QuestionReferencesView(references: references)
-            }
-            DisclosureGroup("出典") {
-                Text(qualification.displaySource(question.source)).textRole(.note).foregroundStyle(Palette.muted)
-                if let source = question.sourceURL, let url = URL(string: source) {
-                    Link("公式の問題PDF", destination: url).frame(minHeight: 44)
-                }
+                .accessibilityIdentifier("solutionSteps")
             }
         }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .popCard(radius: 20)
+    }
+}
+
+/// Reasons for every choice, for screens that list the choices without them.
+struct ChoiceReasonList: View {
+    let question: Question
+    let qualification: Qualification
+    let reasons: [String]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ForEach(reasons.indices, id: \.self) { index in
+                let correct = index == question.correctIndex
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Text("\(qualification.choiceLabel(index)) \(correct ? "○" : "×")")
+                        .font(.subheadline.weight(.heavy))
+                        .foregroundStyle(correct ? Palette.correctText : Palette.oopsText)
+                    MarkupText(text: reasons[index], role: .reason, setsFont: true)
+                }
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .accessibilityIdentifier("choiceReasons")
+    }
+}
+
+/// 関連知識・用語メモ・参考資料 as closed one-line rows, then the official PDF when there is one.
+struct QuestionSupplementsView: View {
+    let question: Question
+    let qualification: Qualification
+
+    private var glossaryTerms: [GlossaryTerm] {
+        guard let ids = question.glossaryTermIDs, !ids.isEmpty else { return [] }
+        return Glossary.main?.terms(ids: ids) ?? []
+    }
+
+    var body: some View {
+        let terms = glossaryTerms
+        VStack(alignment: .leading, spacing: 0) {
+            if let related = question.related {
+                SupplementRow(title: "関連知識", symbol: "lightbulb") {
+                    RichContentView(blocks: related)
+                }
+                .accessibilityIdentifier("relatedKnowledge")
+            }
+            if !terms.isEmpty {
+                SupplementRow(title: "用語メモ", symbol: "character.book.closed") {
+                    VStack(alignment: .leading, spacing: 14) {
+                        ForEach(terms) { term in GlossaryTermRow(term: term) }
+                    }
+                }
+                .accessibilityIdentifier("glossaryMemo")
+            }
+            if let references = question.references { QuestionReferencesView(references: references) }
+            if let source = question.sourceURL, let url = URL(string: source) {
+                Link(destination: url) {
+                    Label("公式の問題PDF", systemImage: "arrow.up.right.square")
+                        .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                }
+                .textRole(.reason)
+            }
+        }
+    }
+}
+
+/// A closed one-line disclosure used for each supplement under the explanation.
+struct SupplementRow<Content: View>: View {
+    let title: String
+    let symbol: String
+    @ViewBuilder let content: Content
+    @State private var expanded = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            DisclosureGroup(isExpanded: $expanded) {
+                content.padding(.top, 8).padding(.bottom, 12)
+            } label: {
+                Label(title, systemImage: symbol).textRole(.heading)
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+            }
+            .tint(Palette.ink)
+            Divider()
+        }
+    }
+}
+
+struct GlossaryTermRow: View {
+    let term: GlossaryTerm
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(term.term).font(.body.bold())
+            if let english = term.english, !english.isEmpty {
+                Text(english).textRole(.note).foregroundStyle(Palette.muted)
+            }
+            MarkupText(text: term.description, role: .reason, setsFont: true)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -329,7 +444,7 @@ struct QuestionExplanationView: View {
 struct QuestionReferencesView: View {
     let references: [QuestionReference]
     var body: some View {
-        DisclosureGroup("参考資料") {
+        SupplementRow(title: "参考資料", symbol: "books.vertical") {
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(references, id: \.self) { reference in
                     if let text = reference.url, let url = URL(string: text) {
