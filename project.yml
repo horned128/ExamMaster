@@ -172,6 +172,39 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: jp.hino.piyotre.denken3.uitests
+  EmbeddedSpecialist:
+    templates: [QualificationApp]
+    templateAttributes:
+      qualificationID: embedded-specialist
+      privacyPolicyPath: Qualifications/embedded-specialist/PrivacyPolicy.txt
+      privacyManifestPath: Qualifications/embedded-specialist/PrivacyInfo.xcprivacy
+      displayName: ピヨトレ！エンベデッドシステムスペシャリスト
+      bundleID: jp.hino.piyotre.embeddedspecialist
+      iconName: EmbeddedSpecialistIcon
+      adMobAppID: ca-app-pub-3940256099942544~1458002511
+    settings:
+      base:
+        CODE_SIGN_IDENTITY: iPhone Developer
+        DEVELOPMENT_TEAM: QZH83KGFVX
+    sources:
+      - path: Qualifications/embedded-specialist/Figures
+        type: folder
+        buildPhase: resources
+      - path: Qualifications/embedded-specialist/glossary.json
+        buildPhase: resources
+    scheme:
+      testTargets: [EmbeddedSpecialistTests]
+      storeKitConfiguration: Qualifications/embedded-specialist/products.storekit
+  EmbeddedSpecialistTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: EmbeddedTests
+    dependencies:
+      - target: EmbeddedSpecialist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.hino.piyotre.embeddedspecialist.tests
   FundamentalInformation:
     templates: [QualificationApp]
     templateAttributes:

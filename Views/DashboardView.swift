@@ -62,7 +62,7 @@ struct DashboardView: View {
                     StudyGrid {
                         Button(action: openSubjects) { FeatureCard(title: "分野別", symbol: "square.grid.2x2") }
                             .accessibilityIdentifier("homeSubjects")
-                        Button(action: openLibrary) { FeatureCard(title: catalog.qualification.libraryTabTitle, symbol: "calendar") }
+                        Button(action: openLibrary) { FeatureCard(title: catalog.qualification.libraryTabTitle, symbol: catalog.qualification.libraryTabSymbol) }
                             .accessibilityIdentifier("homeYears")
                         Button(action: openIncorrect) {
                             FeatureCard(title: "苦手問題", symbol: "arrow.uturn.backward",

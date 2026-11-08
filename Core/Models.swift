@@ -47,6 +47,7 @@ struct Qualification: Codable {
     var resolvedLibraryStyle: LibraryStyle { libraryStyle ?? .years }
     var unit: String { questionUnit ?? "問" }
     var libraryTabTitle: String { resolvedLibraryStyle == .sets ? "セット" : "年度別" }
+    var libraryTabSymbol: String { resolvedLibraryStyle == .sets ? "square.stack" : "calendar" }
     func yearTitle(_ year: Int, includesNonOfficial: Bool) -> String {
         let suffix = yearSuffix ?? YearSuffix(past: "年", prediction: "年予想問題")
         return year.formatted(.number.grouping(.never)) + (includesNonOfficial ? suffix.prediction : suffix.past)

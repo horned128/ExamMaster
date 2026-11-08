@@ -84,7 +84,7 @@ struct StudyAppView: View {
                         destinationView(.years)
                             .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
                     }
-                    .tabItem { Label(catalog.qualification.libraryTabTitle, systemImage: "calendar") }.tag(MainTab.years)
+                    .tabItem { Label(catalog.qualification.libraryTabTitle, systemImage: catalog.qualification.libraryTabSymbol) }.tag(MainTab.years)
                     NavigationStack {
                         destinationView(.subjects)
                             .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }

@@ -13,6 +13,8 @@ struct LibraryView: View {
     let settings: () -> Void
     var paywall: () -> Void = {}
     private var years: [Int] { Array(Set(catalog.questions.map(\.year))).sorted(by: >) }
+    private var usesSets: Bool { catalog.qualification.resolvedLibraryStyle == .sets }
+    private var sets: [MockSet] { catalog.mockSets.sorted { $0.id < $1.id } }
     private var title: String { section == .years ? catalog.qualification.libraryTabTitle + "演習" : "分野別演習" }
 
     var body: some View {
@@ -20,11 +22,13 @@ struct LibraryView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Surface(inset: 16) {
                     HStack(spacing: 12) {
-                        Image(systemName: section == .years ? "calendar" : "square.grid.2x2")
+                        Image(systemName: section == .subjects ? "square.grid.2x2" : catalog.qualification.libraryTabSymbol)
                             .font(.title2).foregroundStyle(Palette.positive).accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(section == .years ? "年度から選ぶ" : "分野から選ぶ").font(.headline)
-                            Text(section == .years ? "過去問・予想問題から選んで取り組もう。" : "分野のマップから、学びたいテーマへ。")
+                            Text(section == .subjects ? "分野から選ぶ" : usesSets ? "セットから選ぶ" : "年度から選ぶ").font(.headline)
+                            Text(section == .subjects ? "分野のマップから、学びたいテーマへ。"
+                                 : usesSets ? "1セット\(catalog.qualification.mockQuestionCount)\(catalog.qualification.unit)。練習にも模擬試験にも。"
+                                 : "過去問・予想問題から選んで取り組もう。")
                                 .font(.caption).foregroundStyle(Palette.muted)
                         }
                         Spacer(minLength: 0)
@@ -35,30 +39,15 @@ struct LibraryView: View {
                 }
                 if section == .years {
                     StudyGrid {
-                        ForEach(years, id: \.self) { year in
-                            let questions = catalog.questions.filter { $0.year == year }
-                            let locked = !purchase.unlocked && !questions.contains { catalog.qualification.freeQuestionIDs.contains($0.id) }
-                            if locked {
-                                Button(action: paywall) {
-                                    VStack(alignment: .leading, spacing: 10) {
-                                        HStack {
-                                            Text(yearTitle(year)).font(.title3.bold())
-                                            Spacer(minLength: 4)
-                                            Image(systemName: "lock.fill").foregroundStyle(Palette.review)
-                                        }
-                                        Text("\(countLabel(questions)) · 有料").font(.caption).foregroundStyle(Palette.muted)
-                                        Label("購入で解放", systemImage: "lock").font(.caption.weight(.semibold)).foregroundStyle(Palette.review)
-                                    }
-                                    .padding(16).frame(maxWidth: .infinity, minHeight: 136, alignment: .leading)
-                                    .background(Palette.surface, in: RoundedRectangle(cornerRadius: 20))
-                                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Palette.track, lineWidth: 1))
-                                }
-                                .accessibilityLabel("\(yearTitle(year))、\(countLabel(questions))、有料、ロック中")
-                                .accessibilityIdentifier("year-\(year)")
-                            } else {
-                                NavigationLink(value: QuestionCollectionRoute.year(year)) {
-                                    progressCard(yearTitle(year), questions: questions)
-                                }.accessibilityIdentifier("year-\(year)")
+                        if usesSets {
+                            ForEach(sets) { set in
+                                libraryCard(set.title, questions: catalog.questions.filter { $0.mockSetID == set.id },
+                                            route: .mockSet(set.id), identifier: "set-\(set.id)")
+                            }
+                        } else {
+                            ForEach(years, id: \.self) { year in
+                                libraryCard(yearTitle(year), questions: catalog.questions.filter { $0.year == year },
+                                            route: .year(year), identifier: "year-\(year)")
                             }
                         }
                     }
@@ -80,6 +69,32 @@ struct LibraryView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button(action: settings) { Image(systemName: "gearshape") }.accessibilityLabel("設定")
             }
+        }
+    }
+
+    @ViewBuilder
+    private func libraryCard(_ title: String, questions: [Question], route: QuestionCollectionRoute, identifier: String) -> some View {
+        let locked = !purchase.unlocked && !questions.contains { catalog.qualification.freeQuestionIDs.contains($0.id) }
+        if locked {
+            Button(action: paywall) {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Text(title).font(.title3.bold())
+                        Spacer(minLength: 4)
+                        Image(systemName: "lock.fill").foregroundStyle(Palette.review)
+                    }
+                    Text("\(countLabel(questions)) · 有料").font(.caption).foregroundStyle(Palette.muted)
+                    Label("購入で解放", systemImage: "lock").font(.caption.weight(.semibold)).foregroundStyle(Palette.review)
+                }
+                .padding(16).frame(maxWidth: .infinity, minHeight: 136, alignment: .leading)
+                .background(Palette.surface, in: RoundedRectangle(cornerRadius: 20))
+                .overlay(RoundedRectangle(cornerRadius: 20).stroke(Palette.track, lineWidth: 1))
+            }
+            .accessibilityLabel("\(title)、\(countLabel(questions))、有料、ロック中")
+            .accessibilityIdentifier(identifier)
+        } else {
+            NavigationLink(value: route) { progressCard(title, questions: questions) }
+                .accessibilityIdentifier(identifier)
         }
     }
 
