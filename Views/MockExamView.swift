@@ -180,7 +180,8 @@ struct MockExamSessionView: View {
                 let item = session.questions[position]
                 Button { move(position); showNavigator = false } label: {
                     HStack {
-                        Text("問\(position + 1)")
+                        Text(catalog.qualification.id == "denken3" ?
+                             String(item.stem.split(separator: "·").first ?? "") : "問\(position + 1)")
                         Spacer()
                         Text(pending?.selections[item.id].map { "回答: \(catalog.qualification.choiceLabel($0))" } ?? "未回答")
                     }.frame(minHeight: 44)
@@ -209,7 +210,8 @@ struct MockResultHistoryView: View {
                 NavigationLink { MockResultDetailView(result: result, catalog: catalog, purchase: purchase) } label: {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(result.title ?? "模擬試験")
-                        Text("\(result.date.formatted(date: .abbreviated, time: .shortened)) · \(result.score) / \(result.total)")
+                        Text("\(result.date.formatted(date: .abbreviated, time: .shortened)) · " +
+                             (result.earnedPoints.map { "\($0) / \(result.possiblePoints ?? 100)点" } ?? "\(result.score) / \(result.total)"))
                             .font(.caption).foregroundStyle(Palette.muted)
                     }
                 }

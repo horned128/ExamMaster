@@ -131,6 +131,47 @@ targetTemplates:
         PRODUCT_NAME: ${target_name}
         ENABLE_USER_SCRIPT_SANDBOXING: NO
 targets:
+  DenkenThird:
+    templates: [QualificationApp]
+    templateAttributes:
+      qualificationID: denken3
+      privacyPolicyPath: Qualifications/denken3/PrivacyPolicy.txt
+      privacyManifestPath: Qualifications/denken3/PrivacyInfo.xcprivacy
+      displayName: ピヨトレ！電験三種
+      bundleID: jp.hino.piyotre.denken3
+      iconName: DenkenThirdIcon
+      adMobAppID: ca-app-pub-3940256099942544~1458002511
+    settings:
+      base:
+        CODE_SIGN_IDENTITY: iPhone Developer
+        DEVELOPMENT_TEAM: QZH83KGFVX
+    sources:
+      - path: Qualifications/denken3/Figures
+        type: folder
+        buildPhase: resources
+    scheme:
+      testTargets: [DenkenThirdTests, DenkenThirdUITests]
+      storeKitConfiguration: Qualifications/denken3/products.storekit
+  DenkenThirdTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: DenkenTests
+    dependencies:
+      - target: DenkenThird
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.hino.piyotre.denken3.tests
+  DenkenThirdUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: DenkenUITests
+    dependencies:
+      - target: DenkenThird
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.hino.piyotre.denken3.uitests
   FundamentalInformation:
     templates: [QualificationApp]
     templateAttributes:

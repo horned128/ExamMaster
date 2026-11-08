@@ -3,10 +3,10 @@
   "bundleID": "jp.hino.piyotre.fundamentalinformation",
   "version": "1.0",
   "build": "2",
-  "observedAt": "2026-10-16T10:13:28.508202+00:00",
-  "source": "App Store Connect / Apple Developer web UI and xcodebuild upload log",
+  "observedAt": "2026-10-18T20:06:20+09:00",
+  "source": "App Store public listing, AdMob web UI and SubmitDock cloud release ledger",
   "releaseMethod": "MANUAL",
-  "appState": "WAITING_FOR_REVIEW",
+  "appState": "PUBLICLY_AVAILABLE",
   "completed": [
     "Explicit App ID registered",
     "App Store record created",
@@ -34,7 +34,10 @@
     "app-ads.txt publisher DIRECT line verified on public page",
     "Public support and privacy pages verified against app behavior and 300 JPY unlock",
     "Marketing URL saved on app version to same app-ads.txt domain",
-    "Submitted once; submission detail verifies both app 1.0(2) and first IAP Waiting for Review"
+    "Submitted once; submission detail verifies both app 1.0(2) and first IAP Waiting for Review",
+    "App Store public listing verified: ピヨトレ！基本情報技術者, free, Japan storefront, Developer Website and privacy link present",
+    "Public IAP listing verified: 全問題解放 ¥300",
+    "AdMob FE app linked to public App Store ID 6823176672"
   ],
   "upload": {
     "state": "UPLOADED_TO_APPLE",
@@ -47,8 +50,7 @@
     "processingVerificationPending": true
   },
   "pending": [
-    "Apple review outcome; manual publication after approval",
-    "After public App Store availability: link public Store ID in AdMob and verify Google readiness review"
+    "AdMob app-ads.txt ownership verification: latest recheck still reports an account-details mismatch although the public seller line matches the generated snippet; investigate publisher-site domain/crawl association, then retry app readiness review"
   ],
   "selectedBuild": {
     "version": "1.0",
@@ -64,9 +66,9 @@
     "scope": "Apple App Privacy publication, seven SDK data types, device ID tracking"
   },
   "submission": {
-    "state": "WAITING_FOR_REVIEW",
-    "source": "App Store Connect web UI; verified submission detail",
-    "checkedAt": "2026-10-16T10:13:28.508202+00:00",
+    "state": "PUBLICLY_AVAILABLE",
+    "source": "App Store public listing; app and public IAP listing observed",
+    "checkedAt": "2026-10-18T20:03:42+09:00",
     "version": "1.0",
     "build": "2",
     "submissionID": "c52939f7-4bf9-4723-b155-c077b19cd8ed",
@@ -77,22 +79,36 @@
         "type": "APP_STORE_VERSION",
         "version": "1.0",
         "build": "2",
-        "state": "WAITING_FOR_REVIEW"
+        "state": "PUBLICLY_AVAILABLE"
       },
       {
         "type": "IN_APP_PURCHASE",
         "id": "6823180216",
         "productID": "jp.hino.piyotre.fundamentalinformation.unlock",
-        "state": "WAITING_FOR_REVIEW"
+        "state": "AVAILABLE_IN_APP_STORE",
+        "priceJPY": 300
       }
     ]
   },
   "cloudRegistrySync": {
-    "state": "REAUTHENTICATION_REQUIRED",
-    "observedAt": "2026-10-16T10:14:46.865395+00:00",
-    "source": "SubmitDock admin login page",
+    "state": "SYNCED",
+    "observedAt": "2026-10-18T20:05:11+09:00",
+    "source": "SubmitDock admin/releases showed saved FE record with PUBLICLY_AVAILABLE and STORE_LINKED_APP_ADS_UNVERIFIED",
     "localManifestUpdated": true,
-    "preparedImport": ".submitdock/piyotre-fundamental-information/manifest-submitted.json",
+    "cloudImportConfirmed": true,
     "publicPagesAlreadyPublishedAndVerified": true
+  },
+  "admobPostRelease": {
+    "observedAt": "2026-10-18T20:06:20+09:00",
+    "appID": "7250744489",
+    "admobAppID": "ca-app-pub-9785585722959806~7250744489",
+    "storeURL": "https://apps.apple.com/jp/app/id6823176672",
+    "storeID": "6823176672",
+    "storeLinkSaved": true,
+    "appAdsURL": "https://submitdock-ios-pages.netlify.app/app-ads.txt",
+    "publishedLine": "google.com, pub-9785585722959806, DIRECT, f08c47fec0942fa0",
+    "googleVerification": "MISMATCH_REPORTED_AFTER_RECHECK",
+    "googleApproval": "REQUIRES_REVIEW",
+    "note": "Exact App Store ID is linked. AdMob manual update check was retried after the public seller line was verified; Google still reports an account-details mismatch. No app-ads.txt edit made because its line matches the generated snippet. Google crawl/review remains pending."
   }
 }

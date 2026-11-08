@@ -1,0 +1,67 @@
+{
+  "brand": "ピヨトレ！電験三種",
+  "accent": "#146C72",
+  "note": "",
+  "panels": [
+    {
+      "image": "home.png",
+      "headline": [
+        "今日の[10問]、",
+        "ピヨといっしょに。"
+      ],
+      "subhead": "復習と新しい問題を、毎日ちょうどよく。",
+      "alt": "今日の学習とあしあとが並ぶホーム画面",
+      "evidence": "SessionPlanner.today count:10 / DashboardView homeTodayStudy"
+    },
+    {
+      "image": "question.png",
+      "headline": [
+        "1問ずつ、",
+        "[サクッと]解ける。"
+      ],
+      "subhead": "理論・電力・機械・法規を、スマホで。",
+      "alt": "4択問題の回答画面",
+      "evidence": "SessionView / QuestionContentView"
+    },
+    {
+      "image": "answer.png",
+      "headline": [
+        "答えたら、",
+        "すぐ[解説]。"
+      ],
+      "subhead": "正解の理由と、まちがえやすい点を確認。",
+      "alt": "回答後に正誤と解説が表示された画面",
+      "evidence": "SessionView answer feedback"
+    },
+    {
+      "image": "years.png",
+      "headline": [
+        "公式問題と",
+        "[予想問題]で練習。"
+      ],
+      "subhead": "令和8年度上期の公式問題＋予想問題3回分。",
+      "alt": "年度別の問題一覧",
+      "evidence": "questions.json 320問 / LibraryView"
+    },
+    {
+      "image": "subjects.png",
+      "headline": [
+        "4科目を、",
+        "[分野別]に。"
+      ],
+      "subhead": "理論・電力・機械・法規の進み具合がひと目で。",
+      "alt": "4科目の進み具合が並ぶ分野別演習画面",
+      "evidence": "qualification.json subjects / LibraryView subject-*"
+    },
+    {
+      "image": "records.png",
+      "headline": [
+        "続けた日が、",
+        "[あしあと]に。"
+      ],
+      "subhead": "学習記録とピヨの成長で、毎日つづく。",
+      "alt": "学習記録と相棒の画面",
+      "evidence": "InsightsView / TankeiGrowth"
+    }
+  ]
+}

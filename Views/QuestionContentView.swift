@@ -254,7 +254,12 @@ struct QuestionExplanationView: View {
                 }
             }
             if let blocks = question.explanationBlocks { RichContentView(blocks: blocks, wrapsTables: question.subject == "科目B") }
-            DisclosureGroup("出典") { Text(qualification.displaySource(question.source)).font(.caption).foregroundStyle(Palette.muted) }
+            DisclosureGroup("出典") {
+                Text(qualification.displaySource(question.source)).font(.caption).foregroundStyle(Palette.muted)
+                if let source = question.sourceURL, let url = URL(string: source) {
+                    Link("公式の問題PDF", destination: url).frame(minHeight: 44)
+                }
+            }
         }
     }
 }

@@ -94,6 +94,7 @@ struct Question: Codable, Identifiable, Hashable {
     var choiceExplanations: [String]? = nil
     /// Official points for exams whose answer fields carry unequal weights.
     var points: Int? = nil
+    var sourceURL: String? = nil
 
     var searchText: String { ([stem, explanation, source, subject, category] + choices + tags + concepts +
         (bodyBlocks ?? []).map(\.searchText)).joined(separator: " ") }
@@ -168,6 +169,7 @@ struct Catalog {
                   (1...5).contains(q.difficulty) && (2...16).contains(q.choices.count) &&
                   q.choices.indices.contains(q.correctIndex) && Set(q.choices).count == q.choices.count && q.choices.allSatisfy { !$0.isBlank } &&
                   (q.points.map { (1...100).contains($0) } ?? true) &&
+                  (q.sourceURL.map { URL(string: $0)?.scheme == "https" } ?? true) &&
                   (q.steps == nil || (!(q.steps?.isEmpty ?? true) && q.steps!.allSatisfy { !$0.isBlank })) &&
                   (qualification.choiceLabels.map { $0.count >= q.choices.count } ?? true) && q.validContent
               }) else { throw CatalogError.invalid("問題ID・科目・正答・無料範囲") }

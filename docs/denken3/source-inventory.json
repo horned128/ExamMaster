@@ -1,0 +1,456 @@
+{
+  "checkedAt": "2026-10-17",
+  "indexURL": "https://www.shiken.or.jp/chief/third/qa/",
+  "entries": [
+    {
+      "examDate": "2026年8月30日（日）実施",
+      "title": "令和8年度第三種電気主任技術者上期試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20260830_ch_third_q01.pdf",
+      "included": true
+    },
+    {
+      "examDate": "2026年8月30日（日）実施",
+      "title": "令和8年度第三種電気主任技術者上期試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20260830_ch_third_q02.pdf",
+      "included": true
+    },
+    {
+      "examDate": "2026年8月30日（日）実施",
+      "title": "令和8年度第三種電気主任技術者上期試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20260830_ch_third_q03.pdf",
+      "included": true
+    },
+    {
+      "examDate": "2026年8月30日（日）実施",
+      "title": "令和8年度第三種電気主任技術者上期試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20260830_ch_third_q04.pdf",
+      "included": true
+    },
+    {
+      "examDate": "2026年8月30日（日）実施",
+      "title": "令和8年度第三種電気主任技術者上期試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20260830_ch_third_a01.pdf",
+      "included": true
+    },
+    {
+      "examDate": "2026年3月22日（日）実施",
+      "title": "令和7年度第三種電気主任技術者下期試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20260322_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2026年3月22日（日）実施",
+      "title": "令和7年度第三種電気主任技術者下期試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20260322_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2026年3月22日（日）実施",
+      "title": "令和7年度第三種電気主任技術者下期試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20260322_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2026年3月22日（日）実施",
+      "title": "令和7年度第三種電気主任技術者下期試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20260322_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2026年3月22日（日）実施",
+      "title": "令和7年度第三種電気主任技術者下期試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20260322_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2025年8月31日（日）実施",
+      "title": "令和7年度第三種電気主任技術者上期試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20250831_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2025年8月31日（日）実施",
+      "title": "令和7年度第三種電気主任技術者上期試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20250831_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2025年8月31日（日）実施",
+      "title": "令和7年度第三種電気主任技術者上期試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20250831_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2025年8月31日（日）実施",
+      "title": "令和7年度第三種電気主任技術者上期試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20250831_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2025年8月31日（日）実施",
+      "title": "令和7年度第三種電気主任技術者上期試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20250831_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2025年3月23日（日）実施",
+      "title": "令和6年度第三種電気主任技術者下期試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20250323_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2025年3月23日（日）実施",
+      "title": "令和6年度第三種電気主任技術者下期試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20250323_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2025年3月23日（日）実施",
+      "title": "令和6年度第三種電気主任技術者下期試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20250323_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2025年3月23日（日）実施",
+      "title": "令和6年度第三種電気主任技術者下期試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20250323_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2025年3月23日（日）実施",
+      "title": "令和6年度第三種電気主任技術者下期試験",
+      "url": "https://www.shiken.or.jp/chief/upload/2024_3_2.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2024年8月18日（日）実施",
+      "title": "令和6年度第三種電気主任技術者上期試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20240818_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2024年8月18日（日）実施",
+      "title": "令和6年度第三種電気主任技術者上期試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20240818_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2024年8月18日（日）実施",
+      "title": "令和6年度第三種電気主任技術者上期試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20240818_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2024年8月18日（日）実施",
+      "title": "令和6年度第三種電気主任技術者上期試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20240818_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2024年8月18日（日）実施",
+      "title": "令和6年度第三種電気主任技術者上期試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20240818_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2024年3月24日（日）実施",
+      "title": "令和5年度第三種電気主任技術者下期試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20240324_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2024年3月24日（日）実施",
+      "title": "令和5年度第三種電気主任技術者下期試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20240324_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2024年3月24日（日）実施",
+      "title": "令和5年度第三種電気主任技術者下期試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20240324_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2024年3月24日（日）実施",
+      "title": "令和5年度第三種電気主任技術者下期試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20240324_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2024年3月24日（日）実施",
+      "title": "令和5年度第三種電気主任技術者下期試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20240324_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2023年8月20日（日）実施",
+      "title": "令和5年度第三種電気主任技術者上期試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20230820_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2023年8月20日（日）実施",
+      "title": "令和5年度第三種電気主任技術者上期試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20230820_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2023年8月20日（日）実施",
+      "title": "令和5年度第三種電気主任技術者上期試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20230820_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2023年8月20日（日）実施",
+      "title": "令和5年度第三種電気主任技術者上期試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20230820_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2023年8月20日（日）実施",
+      "title": "令和5年度第三種電気主任技術者上期試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20230820_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2023年3月26日（日）実施",
+      "title": "令和4年度第三種電気主任技術者下期試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20230326_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2023年3月26日（日）実施",
+      "title": "令和4年度第三種電気主任技術者下期試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20230326_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2023年3月26日（日）実施",
+      "title": "令和4年度第三種電気主任技術者下期試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20230326_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2023年3月26日（日）実施",
+      "title": "令和4年度第三種電気主任技術者下期試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20230326_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2023年3月26日（日）実施",
+      "title": "令和4年度第三種電気主任技術者下期試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20230326_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2022年8月21日（日）実施",
+      "title": "令和4年度第三種電気主任技術者上期試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20220821_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2022年8月21日（日）実施",
+      "title": "令和4年度第三種電気主任技術者上期試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20220821_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2022年8月21日（日）実施",
+      "title": "令和4年度第三種電気主任技術者上期試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20220821_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2022年8月21日（日）実施",
+      "title": "令和4年度第三種電気主任技術者上期試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20220821_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2022年8月21日（日）実施",
+      "title": "令和4年度第三種電気主任技術者上期試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20220821_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2021年8月22日（日）実施",
+      "title": "令和3年度第三種電気主任技術者試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20210822_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2021年8月22日（日）実施",
+      "title": "令和3年度第三種電気主任技術者試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20210822_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2021年8月22日（日）実施",
+      "title": "令和3年度第三種電気主任技術者試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20210822_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2021年8月22日（日）実施",
+      "title": "令和3年度第三種電気主任技術者試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20210822_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2021年8月22日（日）実施",
+      "title": "令和3年度第三種電気主任技術者試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20210822_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2020年9月13日（日）実施",
+      "title": "令和2年度第三種電気主任技術者試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20200913_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2020年9月13日（日）実施",
+      "title": "令和2年度第三種電気主任技術者試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20200913_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2020年9月13日（日）実施",
+      "title": "令和2年度第三種電気主任技術者試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20200913_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2020年9月13日（日）実施",
+      "title": "令和2年度第三種電気主任技術者試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20200913_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2020年9月13日（日）実施",
+      "title": "令和2年度第三種電気主任技術者試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20200913_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2019年9月1日（日）実施",
+      "title": "令和元年度第三種電気主任技術者試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20190901_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2019年9月1日（日）実施",
+      "title": "令和元年度第三種電気主任技術者試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20190901_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2019年9月1日（日）実施",
+      "title": "令和元年度第三種電気主任技術者試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20190901_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2019年9月1日（日）実施",
+      "title": "令和元年度第三種電気主任技術者試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20190901_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2019年9月1日（日）実施",
+      "title": "令和元年度第三種電気主任技術者試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20190901_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2018年9月2日（日）実施",
+      "title": "平成30年度第三種電気主任技術者試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20180902_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2018年9月2日（日）実施",
+      "title": "平成30年度第三種電気主任技術者試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20180902_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2018年9月2日（日）実施",
+      "title": "平成30年度第三種電気主任技術者試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20180902_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2018年9月2日（日）実施",
+      "title": "平成30年度第三種電気主任技術者試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20180902_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2018年9月2日（日）実施",
+      "title": "平成30年度第三種電気主任技術者試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20180902_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2017年9月3日（日）実施",
+      "title": "平成29年度第三種電気主任技術者試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20170903_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2017年9月3日（日）実施",
+      "title": "平成29年度第三種電気主任技術者試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20170903_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2017年9月3日（日）実施",
+      "title": "平成29年度第三種電気主任技術者試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20170903_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2017年9月3日（日）実施",
+      "title": "平成29年度第三種電気主任技術者試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20170903_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2017年9月3日（日）実施",
+      "title": "平成29年度第三種電気主任技術者試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20170903_ch_third_a01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2016年9月4日（日）実施",
+      "title": "平成28年度第三種電気主任技術者試験　理論科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20160904_ch_third_q01.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2016年9月4日（日）実施",
+      "title": "平成28年度第三種電気主任技術者試験　電力科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20160904_ch_third_q02.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2016年9月4日（日）実施",
+      "title": "平成28年度第三種電気主任技術者試験　機械科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20160904_ch_third_q03.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2016年9月4日（日）実施",
+      "title": "平成28年度第三種電気主任技術者試験　法規科目",
+      "url": "https://www.shiken.or.jp/chief/upload/20160904_ch_third_q04.pdf",
+      "included": false
+    },
+    {
+      "examDate": "2016年9月4日（日）実施",
+      "title": "平成28年度第三種電気主任技術者試験",
+      "url": "https://www.shiken.or.jp/chief/upload/20160904_ch_third_a01.pdf",
+      "included": false
+    }
+  ]
+}

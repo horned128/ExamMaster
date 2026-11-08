@@ -15,7 +15,9 @@ struct PrivacyDetailsView: View {
 
             }
             Section("購入と広告") {
-                Text(catalog.qualification.ads.enabled
+                Text(Set(catalog.qualification.freeQuestionIDs).count == catalog.questions.count && !catalog.qualification.ads.enabled
+                     ? "現在の収録問題はすべて無料で利用できます。広告は表示しません。"
+                     : catalog.qualification.ads.enabled
                      ? "買い切り購入はAppleのStoreKitで確認します。無料版にはGoogle AdMobの広告を表示し、購入後は全問題が使え、広告も永久に非表示になります。"
                      : "買い切り購入はAppleのStoreKitで確認します。購入後は全問題を利用できます。このアプリでは現在、広告を表示しません。")
                 if !purchase.unlocked && catalog.qualification.ads.enabled && ads.canShowPrivacyOptions {
@@ -30,7 +32,7 @@ struct PrivacyDetailsView: View {
                    let url = URL(string: text) {
                     Link("正式なプライバシーポリシーを開く", destination: url)
                 } else {
-                    NavigationLink("プライバシーポリシー全文（サンプル）") {
+                    NavigationLink(catalog.qualification.id == "demo-safety" ? "プライバシーポリシー全文（サンプル）" : "プライバシーポリシー全文") {
                         PrivacyPolicySampleView()
                     }
                 }

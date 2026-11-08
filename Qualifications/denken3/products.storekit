@@ -1,0 +1,8 @@
+{
+  "identifier": "DENKEN3-DEV",
+  "nonRenewingSubscriptions": [],
+  "products": [],
+  "settings": { "_locale": "ja_JP", "_storefront": "JPN" },
+  "subscriptionGroups": [],
+  "version": { "major": 4, "minor": 0 }
+}

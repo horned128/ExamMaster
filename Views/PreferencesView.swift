@@ -40,7 +40,9 @@ struct PreferencesView: View {
             } header: {
                 Text("記憶定着")
             } footer: {
-                Text("苦手問題や復習で、まず答えを思い出す。")
+                Text(catalog.qualification.id == "denken3" ?
+                     "苦手問題や復習で、まず答えを思い出す。原問画像内の選択肢は同時に表示されます。" :
+                     "苦手問題や復習で、まず答えを思い出す。")
             }
             Section {
                 Button(action: openCompanion) {
@@ -53,7 +55,8 @@ struct PreferencesView: View {
                     Label("記憶と復習のしくみ", systemImage: "info.circle")
                 }
             }
-            Section {
+            if Set(catalog.qualification.freeQuestionIDs).count < catalog.questions.count {
+              Section {
                 if purchase.unlocked {
                     Label("購入済み · 全問題・広告なし", systemImage: "checkmark.circle")
                         .foregroundStyle(Palette.positive)
@@ -73,6 +76,12 @@ struct PreferencesView: View {
                 Text("全問題の解放")
             } footer: {
                 Text("買い切り · 定期購入なし · オフライン対応")
+              }
+            } else {
+                Section("収録問題") {
+                    Label("全\(catalog.questions.count)問を無料で利用できます", systemImage: "checkmark.circle")
+                        .foregroundStyle(Palette.positive)
+                }
             }
             Section {
                 NavigationLink {

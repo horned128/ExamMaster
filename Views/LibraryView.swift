@@ -84,6 +84,10 @@ struct LibraryView: View {
     }
 
     private func yearTitle(_ year: Int) -> String {
+        if catalog.qualification.id == "denken3" {
+            let predicted = catalog.questions.contains { $0.year == year && $0.kind == .prediction }
+            return year.formatted(.number.grouping(.never)) + (predicted ? "年実施向け予想" : "年度 過去問")
+        }
         if catalog.qualification.id == "fundamental-information" {
             return year.formatted(.number.grouping(.never)) +
                 (catalog.questions.contains { $0.year == year && $0.kind == .prediction } ? "年 過去問・練習" : "年 公開過去問")
@@ -100,6 +104,10 @@ struct LibraryView: View {
 
     private func countLabel(_ questions: [Question]) -> String {
         let setIDs = Set(questions.compactMap(\.mockSetID))
+        if catalog.qualification.id == "denken3", !questions.isEmpty,
+           questions.allSatisfy({ $0.kind == .prediction }) {
+            return "\(setIDs.count / catalog.qualification.subjects.count)回分 · \(questions.count)解答欄"
+        }
         return !questions.isEmpty && questions.allSatisfy { $0.kind == .prediction } && setIDs.count > 1
             ? "\(setIDs.count)セット · \(questions.count)問" : "\(questions.count)問"
     }

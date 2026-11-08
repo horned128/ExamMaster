@@ -66,7 +66,7 @@
     "about": "# ピヨトレ！基本情報技術者\n\n基本情報技術者試験の科目A・科目Bを、学習の相棒と一緒に練習できるアプリです。\n\n【合計1,004問】\n2023〜2026年度のIPA公開問題104問と、現行シラバスVer.9.2を参考に作成したオリジナル練習問題900問を収録。年度別・分野別、苦手問題、ブックマーク、Lv別小テストで取り組めます。同じ学習目標を異なる形式や入力で復習する問題を含みます。\n\n【科目Bの長文を読みやすく】\n問題文・コード・表・設問を区切って表示。コードは画面幅で折り返し、元の行番号と字下げを保ちます。文字サイズを調整でき、本文を別表示しながら回答を保持できます。\n\n【科目ごとの模試】\nオリジナル模試は科目A60問・90分、科目B20問・100分。公開過去問は各年科目A20問・科目B6問の抜粋で、短時間演習として収録しています。\n\n【まずは184問を無料で】\n公開過去問104問と第1回のオリジナル科目A60問・科目B20問は無料。300円の買い切り購入で全問題を解放し、広告を停止します。定期購入はありません。購入の復元にも対応します。\n\nアカウント登録は不要。学習履歴は端末内に保存します。無料版にはバナー広告と、一定の学習回数・時間を空けた学習の区切りで全画面広告を表示する場合があります。\n\n本試験のIRT評価点とアプリの正答率は異なります。アプリの正答率60%は練習の目安で、合格を保証するものではありません。\n\n公開過去問題と解答例の著作権はIPAに帰属します。本文の段落・改行・図表をスマートフォン向けに再構成しています。解説とオリジナル問題は本アプリ独自のもので、IPAが作成・監修したアプリではありません。",
     "support": "# ピヨトレ！基本情報技術者 サポート\n\n科目Aと科目Bの学習に対応したiPhone用アプリです。iOS 17.0以降に対応します。\n\n## 教材と購入\n\n収録数は1,004問（IPA公開問題104問、オリジナル900問）。無料範囲は184問です。全問題解放は300円の買い切りで、購入後は広告を停止します。定期購入はありません。公開過去問は各年度の抜粋で、本試験全問を収録したものではありません。\n\n## 購入の復元\n\n購入時と同じApple Accountでサインインし、アプリ内の設定から「購入を復元」を実行してください。学習情報のリセットと購入権限は別に扱います。\n\n## 科目Bのコード・長文\n\nコードの「表示設定」から文字サイズと折り返しを選べます。「本文を別表示」で読解画面を開き、「本文内を移動」でコードや図表へ進めます。読解画面を閉じても選択中の回答は保持されます。\n\n## 学習履歴の削除\n\n「設定」→「データとプライバシー」→「学習情報をリセット」から回答・習熟度・模試等を削除できます。購入権限・広告同意・表示設定は維持されます。\n\n## 教材の訂正・お問い合わせ\n\n不具合や教材の訂正は hino_lizard581@icloud.com へご連絡ください。問題IDまたは年度・科目・問番号、アプリのバージョン、端末とOS、再現手順を記載してください。パスワードや決済カード情報は送らないでください。\n\n過去問題の著作権はIPAに帰属します。解説・オリジナル問題は本アプリ独自のもので、IPAによる作成・監修ではありません。\n",
     "privacy": "# ピヨトレ！基本情報技術者 プライバシーポリシー\n\n制定日：2026年10月15日\n\n## 1. アプリ内の学習情報\n\n回答履歴、正誤、回答時間、自信度、習熟度、ブックマーク、模擬試験の選択・結果、オンボーディング状態、表示設定、任意で登録した試験日は、学習機能の提供と端末内の表示のために利用者の端末内へ保存します。アカウント登録や運営者の学習サーバーはなく、これらの学習情報を運営者へ送信しません。アプリ独自のクラウド同期もありません。Appleの端末バックアップを利用している場合、その取扱いは利用者のAppleの設定とAppleのポリシーに従います。\n\n## 2. 広告・同意管理\n\n無料版ではGoogle Mobile Ads SDK（AdMob）を使い、画面内にバナー広告を表示します。また、8問以上を解いた学習の区切りで、全画面広告を表示する場合があります。全画面広告には、初回3セッション後から表示し、前回表示から30分以上空ける制限を設けています。診断中には表示しません。300円の買い切り購入で全教材を解放すると、広告表示と新たな広告リクエストを停止します。\n\n広告の表示、測定、不正防止、品質向上のため、Google Mobile Ads SDKがIPアドレス（おおよその位置の推定に使われる場合があります）、端末識別子（広告識別子を含む場合があります）、表示・操作した広告、アプリ内の操作、性能情報、クラッシュ等の診断情報を処理する場合があります。情報はGoogleや広告配信に関わる事業者によって処理・共有されることがあります。学習回答や模試の成績を広告事業者へ送る機能はありません。\n\n同意管理にはGoogle User Messaging Platform（UMP）SDKを使います。対象地域や設定に応じて同意画面を表示し、同意状態を確認してから広告をリクエストします。広告のプライバシー設定が必要な場合は「設定」→「データとプライバシー」に表示される「広告のプライバシー設定を変更」から変更できます。アプリがトラッキング許可を求めた場合、許可は任意であり、許可しなくても無料範囲の学習を続けられます。広告識別子（IDFA）の利用とアプリ・Webサイトを横断したトラッキングは、AppleのApp Tracking Transparencyの許可と広告の同意設定に従います。\n\n広告に関する情報の詳しい取扱いは、[Googleのプライバシーポリシー](https://policies.google.com/privacy?hl=ja)と[Google Mobile Ads SDKのApp Storeデータ開示](https://developers.google.com/admob/ios/privacy/data-disclosure?hl=ja)をご確認ください。\n\n## 3. アプリ内購入\n\n全問題解放の買い切り購入と購入復元にはApple StoreKitを利用します。購入の処理と権限確認に必要な情報はAppleが処理します。運営者が決済カード番号などの決済情報を取得することはありません。購入はアプリ内の学習履歴とは別に扱われます。\n\n## 4. お問い合わせ\n\nメールでお問い合わせいただいた場合、送信者のメールアドレス、お名前（記載された場合）、お問い合わせ内容と添付情報を受け取ります。回答、不具合の確認、教材の修正のために必要な範囲で利用し、対応に必要な期間保管した後、不要になった情報を削除します。パスワードや決済カード情報は送らないでください。\n\n## 5. サポート・プライバシーページ\n\nこのポリシーとサポート情報はNetlify上のSubmitDockを通じて配信します。ページへのアクセス時、ホスティング提供者が配信と安全な運用のためIPアドレスなどのアクセス情報を処理する場合があります。ページ閲覧によりアプリ内の学習履歴が送信されることはありません。\n\n## 6. 保存情報の削除\n\n学習情報はアプリの「設定」→「データとプライバシー」→「学習情報をリセット」から削除できます。アプリを削除すると、端末内に保存した学習情報も削除される場合があります。購入権限はApple Accountに紐づき、学習情報をリセットしても削除されません。広告事業者が処理する情報は、各社のプライバシーポリシーと設定に従って管理されます。\n\n## 7. ポリシーの変更\n\nアプリの機能や利用するサービスが変わった場合、このポリシーを更新します。\n\n## 8. お問い合わせ窓口\n\n運営者：hino\n\nメール：hino_lizard581@icloud.com\n",
-    "storeURL": ""
+    "storeURL": "https://apps.apple.com/jp/app/id6823176672"
   },
   "assets": {
     "screenshots": [
@@ -201,9 +201,9 @@
   },
   "status": {
     "apple": {
-      "state": "WAITING_FOR_REVIEW",
-      "source": "App Store Connect web UI; verified submission detail",
-      "checkedAt": "2026-10-16T10:13:28.508202+00:00",
+      "state": "PUBLICLY_AVAILABLE",
+      "source": "App Store public listing in Chrome; app name, free price, Developer Website, privacy page and IAP 全問題解放 ¥300 observed 2026-10-18 JST",
+      "checkedAt": "2026-10-18T20:03:42+09:00",
       "version": "1.0",
       "build": "2",
       "submissionID": "c52939f7-4bf9-4723-b155-c077b19cd8ed",
@@ -214,22 +214,29 @@
           "type": "APP_STORE_VERSION",
           "version": "1.0",
           "build": "2",
-          "state": "WAITING_FOR_REVIEW"
+          "state": "PUBLICLY_AVAILABLE"
         },
         {
           "type": "IN_APP_PURCHASE",
           "id": "6823180216",
           "productID": "jp.hino.piyotre.fundamentalinformation.unlock",
-          "state": "WAITING_FOR_REVIEW"
+          "state": "AVAILABLE_IN_APP_STORE",
+          "priceJPY": 300
         }
       ]
     },
     "admob": {
-      "state": "CREATED_UNPUBLISHED",
-      "source": "AdMob web UI; FE app and production units created, European consent message published; Store link pending public listing",
-      "checkedAt": "2026-10-16T10:13:28.508202+00:00"
+      "state": "STORE_LINKED_APP_ADS_UNVERIFIED",
+      "source": "AdMob web UI; exact App Store ID 6823176672 linked to app 7250744489; app verification reports app-ads.txt/account mismatch. Public app-ads.txt line matches AdMob-generated publisher snippet; approval status 要審査.",
+      "checkedAt": "2026-10-18T20:03:42+09:00",
+      "appID": "ca-app-pub-9785585722959806~7250744489",
+      "storeURL": "https://apps.apple.com/jp/app/id6823176672",
+      "storeID": "6823176672",
+      "storeLinked": true,
+      "appAdsVerification": "MISMATCH_REPORTED",
+      "approvalState": "REQUIRES_REVIEW"
     },
-    "storePublic": false
+    "storePublic": true
   },
   "local": {
     "projectRoot": "../..",

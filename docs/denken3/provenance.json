@@ -1,0 +1,585 @@
+{
+  "checkedAt": "2026-10-17",
+  "publisher": "一般財団法人電気技術者試験センター",
+  "indexURL": "https://www.shiken.or.jp/chief/third/qa/",
+  "sources": [
+    {
+      "subject": "理論",
+      "path": "docs/denken3/sources/2026-upper-theory.pdf",
+      "sha256": "41a80077e524f47b70625d6a51c2203e2075863d4667d96fbb60fdb937d90cec",
+      "url": "https://www.shiken.or.jp/chief/upload/20260830_ch_third_q01.pdf",
+      "answerFields": 22,
+      "questionPages": {
+        "1": [
+          4
+        ],
+        "2": [
+          5
+        ],
+        "3": [
+          6
+        ],
+        "4": [
+          7
+        ],
+        "5": [
+          8
+        ],
+        "6": [
+          9
+        ],
+        "7": [
+          10
+        ],
+        "8": [
+          11
+        ],
+        "9": [
+          12
+        ],
+        "10": [
+          13
+        ],
+        "11": [
+          14
+        ],
+        "12": [
+          15
+        ],
+        "13": [
+          16
+        ],
+        "14": [
+          17
+        ],
+        "15": [
+          18
+        ],
+        "16": [
+          19
+        ],
+        "17": [
+          20,
+          21
+        ],
+        "18": [
+          22,
+          23
+        ]
+      }
+    },
+    {
+      "subject": "電力",
+      "path": "docs/denken3/sources/2026-upper-power.pdf",
+      "sha256": "bc587eb3b837fd4cadccf54b2d35caf9056a0b3084848efc95a6679c2b25a9cb",
+      "url": "https://www.shiken.or.jp/chief/upload/20260830_ch_third_q02.pdf",
+      "answerFields": 20,
+      "questionPages": {
+        "1": [
+          4
+        ],
+        "2": [
+          5
+        ],
+        "3": [
+          6
+        ],
+        "4": [
+          7
+        ],
+        "5": [
+          8
+        ],
+        "6": [
+          9
+        ],
+        "7": [
+          10
+        ],
+        "8": [
+          11
+        ],
+        "9": [
+          12
+        ],
+        "10": [
+          13
+        ],
+        "11": [
+          14
+        ],
+        "12": [
+          15
+        ],
+        "13": [
+          16
+        ],
+        "14": [
+          17
+        ],
+        "15": [
+          18,
+          19
+        ],
+        "16": [
+          20
+        ],
+        "17": [
+          21
+        ]
+      }
+    },
+    {
+      "subject": "機械",
+      "path": "docs/denken3/sources/2026-upper-machine.pdf",
+      "sha256": "77904e2d2d16ef85dc311f4fbabf1d55c919b9e526f095f31e35a1722c25bb15",
+      "url": "https://www.shiken.or.jp/chief/upload/20260830_ch_third_q03.pdf",
+      "answerFields": 22,
+      "questionPages": {
+        "1": [
+          4
+        ],
+        "2": [
+          5
+        ],
+        "3": [
+          6
+        ],
+        "4": [
+          7
+        ],
+        "5": [
+          8
+        ],
+        "6": [
+          9
+        ],
+        "7": [
+          10
+        ],
+        "8": [
+          11
+        ],
+        "9": [
+          12
+        ],
+        "10": [
+          13
+        ],
+        "11": [
+          14
+        ],
+        "12": [
+          15
+        ],
+        "13": [
+          16
+        ],
+        "14": [
+          17
+        ],
+        "15": [
+          18,
+          19
+        ],
+        "16": [
+          20,
+          21
+        ],
+        "17": [
+          22
+        ],
+        "18": [
+          23
+        ]
+      }
+    },
+    {
+      "subject": "法規",
+      "path": "docs/denken3/sources/2026-upper-law.pdf",
+      "sha256": "bf719af6d3663ede7df107b86c8a68c63fdffdde7d7381c1ab3a76479cbb3776",
+      "url": "https://www.shiken.or.jp/chief/upload/20260830_ch_third_q04.pdf",
+      "answerFields": 16,
+      "questionPages": {
+        "1": [
+          4,
+          5
+        ],
+        "2": [
+          6,
+          7
+        ],
+        "3": [
+          8
+        ],
+        "4": [
+          9
+        ],
+        "5": [
+          10
+        ],
+        "6": [
+          11
+        ],
+        "7": [
+          12
+        ],
+        "8": [
+          13
+        ],
+        "9": [
+          14,
+          15
+        ],
+        "10": [
+          16
+        ],
+        "11": [
+          17
+        ],
+        "12": [
+          18,
+          19
+        ],
+        "13": [
+          20,
+          21
+        ]
+      }
+    }
+  ],
+  "answers": {
+    "url": "https://www.shiken.or.jp/chief/upload/20260830_ch_third_a01.pdf",
+    "sha256": "c6681b942a9a1c57f9563cc33c67a93882c7430ee91237fbf75f836db9663181",
+    "fields": {
+      "theory": {
+        "1": {
+          "answer": 2,
+          "points": 5
+        },
+        "2": {
+          "answer": 4,
+          "points": 5
+        },
+        "3": {
+          "answer": 1,
+          "points": 5
+        },
+        "4": {
+          "answer": 3,
+          "points": 5
+        },
+        "5": {
+          "answer": 5,
+          "points": 5
+        },
+        "6": {
+          "answer": 4,
+          "points": 5
+        },
+        "7": {
+          "answer": 4,
+          "points": 5
+        },
+        "8": {
+          "answer": 1,
+          "points": 5
+        },
+        "9": {
+          "answer": 5,
+          "points": 5
+        },
+        "10": {
+          "answer": 4,
+          "points": 5
+        },
+        "11": {
+          "answer": 2,
+          "points": 5
+        },
+        "12": {
+          "answer": 2,
+          "points": 5
+        },
+        "13": {
+          "answer": 2,
+          "points": 5
+        },
+        "14": {
+          "answer": 4,
+          "points": 5
+        },
+        "15a": {
+          "answer": 5,
+          "points": 5
+        },
+        "15b": {
+          "answer": 3,
+          "points": 5
+        },
+        "16a": {
+          "answer": 2,
+          "points": 5
+        },
+        "16b": {
+          "answer": 1,
+          "points": 5
+        },
+        "17a": {
+          "answer": 4,
+          "points": 5
+        },
+        "17b": {
+          "answer": 4,
+          "points": 5
+        },
+        "18a": {
+          "answer": 2,
+          "points": 5
+        },
+        "18b": {
+          "answer": 2,
+          "points": 5
+        }
+      },
+      "power": {
+        "1": {
+          "answer": 2,
+          "points": 5
+        },
+        "2": {
+          "answer": 5,
+          "points": 5
+        },
+        "3": {
+          "answer": 1,
+          "points": 5
+        },
+        "4": {
+          "answer": 2,
+          "points": 5
+        },
+        "5": {
+          "answer": 4,
+          "points": 5
+        },
+        "6": {
+          "answer": 1,
+          "points": 5
+        },
+        "7": {
+          "answer": 2,
+          "points": 5
+        },
+        "8": {
+          "answer": 5,
+          "points": 5
+        },
+        "9": {
+          "answer": 1,
+          "points": 5
+        },
+        "10": {
+          "answer": 5,
+          "points": 5
+        },
+        "11": {
+          "answer": 4,
+          "points": 5
+        },
+        "12": {
+          "answer": 3,
+          "points": 5
+        },
+        "13": {
+          "answer": 2,
+          "points": 5
+        },
+        "14": {
+          "answer": 2,
+          "points": 5
+        },
+        "15a": {
+          "answer": 5,
+          "points": 5
+        },
+        "15b": {
+          "answer": 3,
+          "points": 5
+        },
+        "16a": {
+          "answer": 1,
+          "points": 5
+        },
+        "16b": {
+          "answer": 4,
+          "points": 5
+        },
+        "17a": {
+          "answer": 3,
+          "points": 5
+        },
+        "17b": {
+          "answer": 5,
+          "points": 5
+        }
+      },
+      "machine": {
+        "1": {
+          "answer": 2,
+          "points": 5
+        },
+        "2": {
+          "answer": 4,
+          "points": 5
+        },
+        "3": {
+          "answer": 1,
+          "points": 5
+        },
+        "4": {
+          "answer": 3,
+          "points": 5
+        },
+        "5": {
+          "answer": 2,
+          "points": 5
+        },
+        "6": {
+          "answer": 2,
+          "points": 5
+        },
+        "7": {
+          "answer": 2,
+          "points": 5
+        },
+        "8": {
+          "answer": 4,
+          "points": 5
+        },
+        "9": {
+          "answer": 3,
+          "points": 5
+        },
+        "10": {
+          "answer": 5,
+          "points": 5
+        },
+        "11": {
+          "answer": 4,
+          "points": 5
+        },
+        "12": {
+          "answer": 3,
+          "points": 5
+        },
+        "13": {
+          "answer": 4,
+          "points": 5
+        },
+        "14": {
+          "answer": 5,
+          "points": 5
+        },
+        "15a": {
+          "answer": 3,
+          "points": 5
+        },
+        "15b": {
+          "answer": 3,
+          "points": 5
+        },
+        "16a": {
+          "answer": 2,
+          "points": 5
+        },
+        "16b": {
+          "answer": 2,
+          "points": 5
+        },
+        "17a": {
+          "answer": 5,
+          "points": 5
+        },
+        "17b": {
+          "answer": 2,
+          "points": 5
+        },
+        "18a": {
+          "answer": 5,
+          "points": 5
+        },
+        "18b": {
+          "answer": 4,
+          "points": 5
+        }
+      },
+      "law": {
+        "1": {
+          "answer": 3,
+          "points": 6
+        },
+        "2": {
+          "answer": 3,
+          "points": 6
+        },
+        "3": {
+          "answer": 2,
+          "points": 6
+        },
+        "4": {
+          "answer": 3,
+          "points": 6
+        },
+        "5": {
+          "answer": 4,
+          "points": 6
+        },
+        "6": {
+          "answer": 2,
+          "points": 6
+        },
+        "7": {
+          "answer": 4,
+          "points": 6
+        },
+        "8": {
+          "answer": 2,
+          "points": 6
+        },
+        "9": {
+          "answer": 2,
+          "points": 6
+        },
+        "10": {
+          "answer": 2,
+          "points": 6
+        },
+        "11a": {
+          "answer": 4,
+          "points": 6
+        },
+        "11b": {
+          "answer": 2,
+          "points": 7
+        },
+        "12a": {
+          "answer": 5,
+          "points": 6
+        },
+        "12b": {
+          "answer": 1,
+          "points": 7
+        },
+        "13a": {
+          "answer": 1,
+          "points": 7
+        },
+        "13b": {
+          "answer": 2,
+          "points": 7
+        }
+      }
+    }
+  }
+}

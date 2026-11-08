@@ -1,10 +1,10 @@
 {
-  "observedAt": "2026-10-16T10:13:28.508202+00:00",
-  "source": "App Store Connect / AdMob web UI",
+  "observedAt": "2026-10-18T20:06:20+09:00",
+  "source": "App Store public listing, AdMob web UI and SubmitDock cloud release ledger",
   "apple": {
-    "state": "WAITING_FOR_REVIEW",
-    "source": "App Store Connect web UI; verified submission detail",
-    "checkedAt": "2026-10-16T10:13:28.508202+00:00",
+    "state": "PUBLICLY_AVAILABLE",
+    "source": "App Store public listing in Chrome; app name, free price, Developer Website, privacy page and IAP 全問題解放 ¥300 observed 2026-10-18 JST",
+    "checkedAt": "2026-10-18T20:03:42+09:00",
     "version": "1.0",
     "build": "2",
     "submissionID": "c52939f7-4bf9-4723-b155-c077b19cd8ed",
@@ -15,22 +15,30 @@
         "type": "APP_STORE_VERSION",
         "version": "1.0",
         "build": "2",
-        "state": "WAITING_FOR_REVIEW"
+        "state": "PUBLICLY_AVAILABLE"
       },
       {
         "type": "IN_APP_PURCHASE",
         "id": "6823180216",
         "productID": "jp.hino.piyotre.fundamentalinformation.unlock",
-        "state": "WAITING_FOR_REVIEW"
+        "state": "AVAILABLE_IN_APP_STORE",
+        "priceJPY": 300
       }
     ]
   },
   "admob": {
-    "state": "CREATED_UNPUBLISHED",
-    "source": "AdMob web UI; FE app and production units created, European consent message published; Store link pending public listing",
-    "checkedAt": "2026-10-16T10:13:28.508202+00:00"
+    "state": "STORE_LINKED_APP_ADS_UNVERIFIED",
+    "source": "AdMob web UI; exact App Store ID 6823176672 linked to app 7250744489; app verification reports app-ads.txt/account mismatch. Public app-ads.txt line matches AdMob-generated publisher snippet; approval status 要審査.",
+    "checkedAt": "2026-10-18T20:06:20+09:00",
+    "appID": "ca-app-pub-9785585722959806~7250744489",
+    "storeURL": "https://apps.apple.com/jp/app/id6823176672",
+    "storeID": "6823176672",
+    "storeLinked": true,
+    "appAdsVerification": "MISMATCH_REPORTED",
+    "approvalState": "REQUIRES_REVIEW",
+    "appVerificationDetails": "AdMob manual update check after linking App Store ID 6823176672 still reports an account-details mismatch. Public seller line exactly matches the generated line; Google verification and app readiness review remain pending."
   },
-  "storePublic": false,
+  "storePublic": true,
   "publicPages": {
     "id": "rls-075c641f9016f2cc33c9fb34",
     "support": "https://submitdock-ios-pages.netlify.app/support/rls-075c641f9016f2cc33c9fb34",
@@ -58,5 +66,13 @@
   "releaseMethod": "MANUAL",
   "warnings": [
     "GoogleMobileAds / UMP dSYM missing; upload completed successfully. SDK crash symbolication may be limited."
-  ]
+  ],
+  "storeURL": "https://apps.apple.com/jp/app/id6823176672",
+  "cloudRegistrySync": {
+    "state": "SYNCED",
+    "checkedAt": "2026-10-18T20:05:11+09:00",
+    "source": "SubmitDock admin/releases saved record",
+    "appState": "PUBLICLY_AVAILABLE",
+    "admobState": "STORE_LINKED_APP_ADS_UNVERIFIED"
+  }
 }
