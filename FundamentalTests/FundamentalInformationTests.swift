@@ -3,6 +3,18 @@ import StoreKitTest
 @testable import FundamentalInformation
 
 final class FundamentalInformationTests: XCTestCase {
+    func testBehaviourComesFromQualificationSettings() throws {
+        let catalog = try Catalog.load(id: "fundamental-information")
+        let qualification = catalog.qualification
+        XCTAssertEqual(qualification.resolvedLibraryStyle, .subjectKinds)
+        XCTAssertEqual(qualification.subcategoryDrill, true)
+        XCTAssertEqual(qualification.pastSetsAreExcerpts, true)
+        XCTAssertEqual(qualification.subjectBalanceTitle, "科目A・科目Bの学習状況")
+        XCTAssertEqual(qualification.yearTitle(2026, includesNonOfficial: true), "2026年 過去問・練習")
+        XCTAssertEqual(catalog.questions.filter { $0.kind == .original }.count, 900)
+        XCTAssertTrue(catalog.mockSets.allSatisfy { [.past, .original].contains($0.kind) })
+    }
+
     func testCompleteBankAndSubjectSpecificMocks() throws {
         let catalog = try Catalog.load(id: "fundamental-information")
         XCTAssertEqual(catalog.questions.count, 1004)
@@ -15,7 +27,7 @@ final class FundamentalInformationTests: XCTestCase {
             let items = QuestionCollections.questions(for: .mockSet(set.id), catalog: catalog, data: StudyData())
             XCTAssertEqual(Set(items.map(\.subject)).count, 1, set.id)
             XCTAssertEqual(items.map(\.questionNumber), Array(1...set.questionCount).map(Optional.some))
-            if set.kind == .prediction {
+            if set.kind == .original {
                 let subjectA = items.first?.subject == "科目A"
                 XCTAssertEqual(set.questionCount, subjectA ? 60 : 20)
                 XCTAssertEqual(set.minutes, subjectA ? 90 : 100)
@@ -46,7 +58,7 @@ final class FundamentalInformationTests: XCTestCase {
         XCTAssertEqual(catalog.qualification.choiceLabel(9), "コ")
         XCTAssertEqual(question.choiceExplanations?.count, 10)
         XCTAssertTrue(catalog.questions.filter { $0.subject == "科目B" }.allSatisfy { !($0.bodyBlocks ?? []).isEmpty })
-        XCTAssertTrue(catalog.questions.filter { $0.subject == "科目B" && $0.kind == .prediction }.contains {
+        XCTAssertTrue(catalog.questions.filter { $0.subject == "科目B" && $0.kind == .original }.contains {
             ($0.bodyBlocks ?? []).contains { $0.type == .monospace }
         })
     }
@@ -84,7 +96,7 @@ final class FundamentalInformationTests: XCTestCase {
         // 2026 contains both public excerpts and original mocks; all stay reachable.
         let current = QuestionCollections.questions(for: .year(2026), catalog: catalog, data: StudyData())
         XCTAssertTrue(current.contains { $0.kind == .past })
-        XCTAssertTrue(current.contains { $0.kind == .prediction })
+        XCTAssertTrue(current.contains { $0.kind == .original })
     }
 
     @MainActor func testDedicatedPurchaseAndRestoreUnlockBothSubjects() async throws {

@@ -377,7 +377,12 @@ struct SessionView: View {
 
             }
             if question.choiceExplanations == nil {
-                Text(question.explanation).font(.body)
+                MarkupText(text: question.explanation)
+                if let related = question.related {
+                    DisclosureGroup("関連知識") { RichContentView(blocks: related).padding(.top, 8) }
+                        .accessibilityIdentifier("relatedKnowledge")
+                }
+                if let references = question.references { QuestionReferencesView(references: references) }
                 DisclosureGroup("出典") {
                     Text(qualification.displaySource(question.source)).font(.caption).foregroundStyle(Palette.muted)
                 }

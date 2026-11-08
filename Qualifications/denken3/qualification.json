@@ -377,5 +377,20 @@
     "positiveDark": "#91DCD2",
     "reviewLight": "#A34528",
     "reviewDark": "#F3B59B"
-  }
+  },
+  "libraryStyle": "subjectPapers",
+  "mockScoring": "subjectPoints",
+  "electiveQuestionNumbers": [
+    17,
+    18
+  ],
+  "questionUnit": "解答欄",
+  "yearSuffix": {
+    "past": "年度 過去問",
+    "prediction": "年実施向け予想"
+  },
+  "mockNavigatorUsesStemPrefix": true,
+  "mockResultNote": "科目別に公式配点で採点。60点を学習の目安にしています。実際の合格基準は各回の公式発表を確認してください。",
+  "mockSetNote": "科目ごとに100点満点で採点します。法規は65分、他の科目は90分です。",
+  "recallNote": "原問画像内の選択肢は同時に表示されます。"
 }

@@ -127,6 +127,17 @@ final class AppliedInformationTests: XCTestCase {
         XCTAssertEqual(grade.result.questionResults?.filter { $0.outcome == .unanswered }.count, 32)
     }
 
+    func testBehaviourAndReferencesComeFromData() throws {
+        let catalog = try Catalog.load(id: "applied-information")
+        XCTAssertEqual(catalog.qualification.resolvedLibraryStyle, .years)
+        XCTAssertEqual(catalog.qualification.subcategoryDrill, true)
+        XCTAssertEqual(catalog.qualification.subjectBalanceTitle, "科目A・3分野のバランス")
+        // The 240 predictions carried references that used to be dropped on decode.
+        let referenced = catalog.questions.filter { $0.references != nil }
+        XCTAssertEqual(referenced.count, 240)
+        XCTAssertTrue(referenced.allSatisfy { $0.kind == .prediction && $0.references!.allSatisfy(\.isValid) })
+    }
+
     func testSubjectAOnlyResourcesAndTheme() throws {
         XCTAssertNil(Bundle.main.url(forResource: "written-booklets", withExtension: "json"))
         XCTAssertNil(Bundle.main.url(forResource: "WrittenResources", withExtension: nil))

@@ -40,9 +40,9 @@ struct DashboardView: View {
                     }
                     if !today.session.questions.isEmpty { todayCard(today) }
                     FootprintWeek(momentum: momentum)
-                    if ["applied-information", "fundamental-information"].contains(catalog.qualification.id) {
+                    if let balanceTitle = catalog.qualification.subjectBalanceTitle {
                         Surface(inset: 14, spacing: 12) {
-                            Label(catalog.qualification.id == "fundamental-information" ? "科目A・科目Bの学習状況" : "科目A・3分野のバランス", systemImage: "chart.bar.doc.horizontal").font(.headline)
+                            Label(balanceTitle, systemImage: "chart.bar.doc.horizontal").font(.headline)
                             ForEach(catalog.qualification.subjects, id: \.self) { subject in
                                 let items = available.filter { $0.subject == subject }
                                 SubjectProgress(subject: subject, score: RetentionSummary(questions: items, data: store.data, now: timeline.date).percent)
@@ -62,7 +62,7 @@ struct DashboardView: View {
                     StudyGrid {
                         Button(action: openSubjects) { FeatureCard(title: "分野別", symbol: "square.grid.2x2") }
                             .accessibilityIdentifier("homeSubjects")
-                        Button(action: openLibrary) { FeatureCard(title: "年度別", symbol: "calendar") }
+                        Button(action: openLibrary) { FeatureCard(title: catalog.qualification.libraryTabTitle, symbol: "calendar") }
                             .accessibilityIdentifier("homeYears")
                         Button(action: openIncorrect) {
                             FeatureCard(title: "苦手問題", symbol: "arrow.uturn.backward",

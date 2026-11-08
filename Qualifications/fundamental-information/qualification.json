@@ -253,5 +253,14 @@
     "growingLight": "#AD7854",
     "growingDark": "#B78F73"
   },
-  "privacyPolicyURL": "https://submitdock-ios-pages.netlify.app/privacy/rls-075c641f9016f2cc33c9fb34"
+  "privacyPolicyURL": "https://submitdock-ios-pages.netlify.app/privacy/rls-075c641f9016f2cc33c9fb34",
+  "libraryStyle": "subjectKinds",
+  "subcategoryDrill": true,
+  "subjectBalanceTitle": "科目A・科目Bの学習状況",
+  "yearSuffix": {
+    "past": "年 公開過去問",
+    "prediction": "年 過去問・練習"
+  },
+  "pastSetsAreExcerpts": true,
+  "mockResultNote": "練習の目安：正答率60%。本試験のIRT評価点（各科目600点）とは異なります。"
 }

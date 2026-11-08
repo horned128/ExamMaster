@@ -180,7 +180,7 @@ struct MockExamSessionView: View {
                 let item = session.questions[position]
                 Button { move(position); showNavigator = false } label: {
                     HStack {
-                        Text(catalog.qualification.id == "denken3" ?
+                        Text(catalog.qualification.mockNavigatorUsesStemPrefix == true ?
                              String(item.stem.split(separator: "·").first ?? "") : "問\(position + 1)")
                         Spacer()
                         Text(pending?.selections[item.id].map { "回答: \(catalog.qualification.choiceLabel($0))" } ?? "未回答")
@@ -230,10 +230,7 @@ struct MockResultDetailView: View {
                 Text(result.earnedPoints.map { "\($0) / \(result.possiblePoints ?? 100)点 · \(result.score) / \(result.total)問正解" } ??
                      "\(result.score) / \(result.total)問 · \(result.percent)%").font(.title.bold()).monospacedDigit()
                 Text(result.passed ? (catalog.qualification.mockPassTitle ?? "設定した基準に到達") : "基準点未到達").font(.headline)
-                Text(catalog.qualification.id == "denken3" ?
-                     "科目別に公式配点で採点。60点を学習の目安にしています。実際の合格基準は各回の公式発表を確認してください。" :
-                     catalog.qualification.id == "fundamental-information" ?
-                     "練習の目安：正答率60%。本試験のIRT評価点（各科目600点）とは異なります。" :
+                Text(catalog.qualification.mockResultNote ??
                      "全体 \(catalog.qualification.passingPercent)%" + (catalog.qualification.minimumSubjectPercent > 0 ? " · 各科目 \(catalog.qualification.minimumSubjectPercent)%" : " · 分野別足切りなし"))
                     .font(.subheadline).foregroundStyle(Palette.muted)
                 if let duration = result.duration { Text("所要時間 \(Int(duration) / 60)分\(Int(duration) % 60)秒").font(.subheadline.monospacedDigit()) }

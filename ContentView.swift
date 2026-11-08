@@ -84,7 +84,7 @@ struct StudyAppView: View {
                         destinationView(.years)
                             .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
                     }
-                    .tabItem { Label("年度別", systemImage: "calendar") }.tag(MainTab.years)
+                    .tabItem { Label(catalog.qualification.libraryTabTitle, systemImage: "calendar") }.tag(MainTab.years)
                     NavigationStack {
                         destinationView(.subjects)
                             .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
@@ -204,15 +204,15 @@ struct StudyAppView: View {
     }
 
     @ViewBuilder private func collection(_ route: QuestionCollectionRoute) -> some View {
-        if case .year(let year) = route, catalog.qualification.id == "denken3" {
+        if case .year(let year) = route, catalog.qualification.resolvedLibraryStyle == .subjectPapers {
             ElectricalSetLibraryView(year: year, catalog: catalog, store: store, purchase: purchase, paywall: openPaywall)
-        } else if case .year(let year) = route, catalog.qualification.id == "fundamental-information" {
+        } else if case .year(let year) = route, catalog.qualification.resolvedLibraryStyle == .subjectKinds {
             FundamentalSetLibraryView(year: year, catalog: catalog, store: store, purchase: purchase, paywall: openPaywall)
         } else if case .year(let year) = route,
-           catalog.mockSets.filter({ set in set.kind == .prediction && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id } }).count > 1 {
+           catalog.mockSets.filter({ set in !set.kind.isOfficial && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id } }).count > 1 {
             PredictionLibraryView(year: year, catalog: catalog, store: store, purchase: purchase, paywall: openPaywall)
         } else if case .year(let year) = route,
-                  catalog.mockSets.filter({ set in set.kind == .past && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id } }).count > 1 {
+                  catalog.mockSets.filter({ set in set.kind.isOfficial && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id } }).count > 1 {
             PastMockLibraryView(year: year, catalog: catalog, store: store, purchase: purchase, paywall: openPaywall)
         } else {
             QuestionCollectionView(route: route, catalog: catalog, store: store, purchase: purchase,

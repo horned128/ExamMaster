@@ -50,17 +50,25 @@ enum MockExam {
         let available = Dictionary(uniqueKeysWithValues: SessionPlanner.available(catalog, unlocked: unlocked).map { ($0.id, $0) })
         let questions = set.questionIDs.compactMap { available[$0] }
         guard questions.count == set.questionCount else { return nil }
-        if catalog.qualification.id == "denken3" {
-            guard [17, 18].contains(electiveQuestionNumber), Set(questions.map(\.subject)).count == 1 else { return nil }
-            let hasElectives = ["理論", "機械"].contains(questions.first?.subject ?? "")
-            let selected = hasElectives ? questions.filter {
-                ($0.questionNumber ?? 0) < 17 || $0.questionNumber == electiveQuestionNumber
-            } : questions
+        if catalog.qualification.mockScoring == .subjectPoints {
+            guard Set(questions.map(\.subject)).count == 1 else { return nil }
+            let electives = electiveNumbers(in: questions, qualification: catalog.qualification)
+            guard electives.isEmpty || electives.contains(electiveQuestionNumber) else { return nil }
+            let selected = electives.isEmpty ? questions : questions.filter {
+                !electives.contains($0.questionNumber ?? 0) || $0.questionNumber == electiveQuestionNumber
+            }
             guard selected.reduce(0, { $0 + ($1.points ?? 0) }) == 100 else { return nil }
-            return StudySession(title: set.title + (hasElectives ? " · 問\(electiveQuestionNumber)選択" : ""),
+            return StudySession(title: set.title + (electives.isEmpty ? "" : " · 問\(electiveQuestionNumber)選択"),
                                 mode: .mock, questions: selected, timed: true, mockSetID: set.id)
         }
         return StudySession(title: set.title, mode: .mock, questions: questions, timed: true, mockSetID: set.id)
+    }
+
+    /// The elective numbers a paper offers, or none when it has no choice to make.
+    static func electiveNumbers(in questions: [Question], qualification: Qualification) -> [Int] {
+        guard let numbers = qualification.electiveQuestionNumbers, let last = numbers.last,
+              questions.contains(where: { $0.questionNumber == last }) else { return [] }
+        return numbers
     }
 
     static func restore(_ pending: PendingMock, catalog: Catalog, unlocked: Bool) -> StudySession? {

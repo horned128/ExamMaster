@@ -104,7 +104,7 @@ def main():
         check(all(q['mockSetID'] == s['id'] for q in members), f'set membership {s["id"]}')
         check(len(set(q['subject'] for q in members)) == 1, f'mixed subject mock {s["id"]}')
         check([q['questionNumber'] for q in members] == list(range(1, len(members)+1)), f'question order {s["id"]}')
-        if members and s['kind'] == 'prediction':
+        if members and s['kind'] == 'original':
             a = members[0]['subject'] == '科目A'
             check((s['questionCount'], s['minutes']) == ((60,90) if a else (20,100)), f'full mock format {s["id"]}')
             if not a:
@@ -113,7 +113,7 @@ def main():
     check(collections.Counter(membership) == collections.Counter(ids), 'questions must occur in exactly one set')
     free = set(config['freeQuestionIDs'])
     check(len(free) == 184 and free.issubset(by_id), f'free scope {len(free)}')
-    originals = [q for q in questions if q['kind'] == 'prediction']
+    originals = [q for q in questions if q['kind'] == 'original']
     fingerprints = collections.defaultdict(list)
     choice_fingerprints = collections.defaultdict(list)
     for q in originals:

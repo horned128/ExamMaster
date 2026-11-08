@@ -366,7 +366,7 @@ def materialize(raw, set_no, local_no, global_no):
       "category":raw["category"],"stem":stem,"choices":options,"correctIndex":ci,
       "explanation":raw["explanation"],"source":f"ピヨトレ！オリジナル 科目A 第{set_no+1}回 問{local_no+1}",
       "questionNumber":local_no+1,"difficulty":raw["difficulty"],"tags":raw["tags"],"concepts":raw["concepts"],
-      "steps":raw["steps"],"administration":f"practice-a-{set_no+1:02d}","kind":"prediction","mockSetID":f"fe-practice-a-{set_no+1:02d}",
+      "steps":raw["steps"],"administration":f"practice-a-{set_no+1:02d}","kind":"original","mockSetID":f"fe-practice-a-{set_no+1:02d}",
       "bodyBlocks":[block("text",stem)],"choiceExplanations":reasons,"explanationBlocks":[block("text",raw["explanation"])]}
 
 def build_calculation(raw, global_no):
@@ -406,7 +406,7 @@ def main():
         for local_no,item in enumerate(batch):
             q=materialize(item,s,local_no,global_no)
             questions.append(q); ids.append(q["id"]); global_no+=1
-        sets.append({"id":f"fe-practice-a-{s+1:02d}","title":f"科目A オリジナル問題 第{s+1}回","kind":"prediction","questionIDs":ids,"questionCount":60,"minutes":90})
+        sets.append({"id":f"fe-practice-a-{s+1:02d}","title":f"科目A オリジナル問題 第{s+1}回","kind":"original","questionIDs":ids,"questionCount":60,"minutes":90})
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps({"questions":questions,"mockSets":sets},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     validate(questions, sets)
@@ -421,7 +421,7 @@ def validate(questions, sets):
         assert q["subject"] == "科目A" and len(q["choices"]) == len(q["choiceExplanations"]) == 4
         assert 0 <= q["correctIndex"] < 4 and q["choices"][q["correctIndex"]]
         assert all(q[k] for k in ("explanation","steps","concepts","bodyBlocks"))
-        assert q["administration"] == q["mockSetID"].replace("fe-", "") and q["kind"] == "prediction"
+        assert q["administration"] == q["mockSetID"].replace("fe-", "") and q["kind"] == "original"
     for s in sets:
         assert all(next(q for q in questions if q["id"] == qid)["mockSetID"] == s["id"] for qid in s["questionIDs"])
     positions = Counter(q["correctIndex"] for q in questions)

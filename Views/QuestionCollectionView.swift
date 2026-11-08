@@ -27,8 +27,8 @@ struct QuestionCollectionView: View {
         if case .mockSet(let id) = route, let set = catalog.mockSets.first(where: { $0.id == id }) {
             return set.title
         }
-        if case .year(let year) = route, candidates.contains(where: { $0.kind == .prediction }) {
-            return "\(year.formatted(.number.grouping(.never)))年予想問題"
+        if case .year(let year) = route, candidates.contains(where: { $0.kind?.isOfficial == false }) {
+            return catalog.qualification.yearTitle(year, includesNonOfficial: true)
         }
         return route.title
     }
@@ -49,11 +49,19 @@ struct QuestionCollectionView: View {
     private var practiceQuestions: [Question] { practiceFilter.questions(in: accessible, data: store.data) }
     private var lockedCount: Int { candidates.filter { !purchase.unlocked && !catalog.qualification.freeQuestionIDs.contains($0.id) }.count }
     private var isPublicExcerpt: Bool {
-        catalog.qualification.id == "fundamental-information" && candidates.allSatisfy { $0.kind == .past }
+        catalog.qualification.pastSetsAreExcerpts == true && candidates.allSatisfy { $0.kind == .past }
     }
-    private var hasElectricalElectives: Bool {
-        catalog.qualification.id == "denken3" && Set(candidates.map(\.subject)).count == 1 &&
-        candidates.contains { $0.questionNumber == 18 }
+    private var mockFooter: String {
+        if let note = catalog.qualification.mockSetNote {
+            let choice = electives.map { "問\($0)" }.joined(separator: "・")
+            return note + (electives.isEmpty ? "" : choice + "は選んだ一方を出題します。")
+        }
+        return isPublicExcerpt ? "公開問題の抜粋を使う時間制限付き演習です。学習状態による絞り込みは適用しません。"
+            : "全\(accessible.count)問を本番形式で出題します。学習状態による絞り込みは適用しません。"
+    }
+    private var electives: [Int] {
+        guard catalog.qualification.mockScoring == .subjectPoints, Set(candidates.map(\.subject)).count == 1 else { return [] }
+        return MockExam.electiveNumbers(in: candidates, qualification: catalog.qualification)
     }
 
     var body: some View {
@@ -133,10 +141,9 @@ struct QuestionCollectionView: View {
                 List {
                     if isYear {
                         Section {
-                            if hasElectricalElectives {
+                            if !electives.isEmpty {
                                 Picker("選択問題", selection: $electiveQuestionNumber) {
-                                    Text("問17").tag(17)
-                                    Text("問18").tag(18)
+                                    ForEach(electives, id: \.self) { Text("問\($0)").tag($0) }
                                 }.pickerStyle(.segmented).accessibilityIdentifier("electricalElectivePicker")
                             }
                             Button {
@@ -148,9 +155,7 @@ struct QuestionCollectionView: View {
                             }
                             .accessibilityIdentifier("practiceMock")
                         } footer: {
-                            Text(catalog.qualification.id == "denken3" ?
-                                 "科目ごとに100点満点で採点します。\(hasElectricalElectives ? "問17・問18は選んだ一方の(a)(b)を出題します。" : "")法規は65分、他の科目は90分です。" :
-                                 isPublicExcerpt ? "公開問題の抜粋を使う時間制限付き演習です。学習状態による絞り込みは適用しません。" : "全\(accessible.count)問を本番形式で出題します。学習状態による絞り込みは適用しません。")
+                            Text(mockFooter)
                         }
                     }
                     Section {
@@ -203,7 +208,8 @@ struct QuestionCollectionView: View {
         let ids = Set(accessible.map(\.id))
         if let set = catalog.mockSets.first(where: { Set($0.questionIDs) == ids }),
            let session = MockExam.session(set: set, catalog: catalog, unlocked: purchase.unlocked,
-                                          electiveQuestionNumber: electiveQuestionNumber) {
+                                          electiveQuestionNumber: electives.contains(electiveQuestionNumber)
+                                              ? electiveQuestionNumber : electives.first ?? electiveQuestionNumber) {
             return session
         }
         return StudySession(title: "\(title) · \(isPublicExcerpt ? "時間制限付き演習" : "模擬試験")",

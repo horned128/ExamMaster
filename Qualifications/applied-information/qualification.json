@@ -218,5 +218,7 @@
     "reviewDark": "#E5B79D",
     "growingLight": "#9B8BAF",
     "growingDark": "#9B87B5"
-  }
+  },
+  "subcategoryDrill": true,
+  "subjectBalanceTitle": "科目A・3分野のバランス"
 }

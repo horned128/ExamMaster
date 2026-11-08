@@ -13,7 +13,7 @@ struct LibraryView: View {
     let settings: () -> Void
     var paywall: () -> Void = {}
     private var years: [Int] { Array(Set(catalog.questions.map(\.year))).sorted(by: >) }
-    private var title: String { section == .years ? "年度別演習" : "分野別演習" }
+    private var title: String { section == .years ? catalog.qualification.libraryTabTitle + "演習" : "分野別演習" }
 
     var body: some View {
         ScrollView {
@@ -84,16 +84,9 @@ struct LibraryView: View {
     }
 
     private func yearTitle(_ year: Int) -> String {
-        if catalog.qualification.id == "denken3" {
-            let predicted = catalog.questions.contains { $0.year == year && $0.kind == .prediction }
-            return year.formatted(.number.grouping(.never)) + (predicted ? "年実施向け予想" : "年度 過去問")
-        }
-        if catalog.qualification.id == "fundamental-information" {
-            return year.formatted(.number.grouping(.never)) +
-                (catalog.questions.contains { $0.year == year && $0.kind == .prediction } ? "年 過去問・練習" : "年 公開過去問")
-        }
-        let suffix = catalog.questions.contains { $0.year == year && $0.kind == .prediction } ? "年予想問題" : "年"
-        return year.formatted(.number.grouping(.never)) + suffix
+        catalog.qualification.yearTitle(year, includesNonOfficial: catalog.questions.contains {
+            $0.year == year && $0.kind?.isOfficial == false
+        })
     }
 
     private func progressCard(_ title: String, questions: [Question], compact: Bool = true) -> some View {
@@ -104,12 +97,12 @@ struct LibraryView: View {
 
     private func countLabel(_ questions: [Question]) -> String {
         let setIDs = Set(questions.compactMap(\.mockSetID))
-        if catalog.qualification.id == "denken3", !questions.isEmpty,
-           questions.allSatisfy({ $0.kind == .prediction }) {
-            return "\(setIDs.count / catalog.qualification.subjects.count)回分 · \(questions.count)解答欄"
+        let unit = catalog.qualification.unit
+        let original = !questions.isEmpty && questions.allSatisfy { $0.kind?.isOfficial == false }
+        if catalog.qualification.resolvedLibraryStyle == .subjectPapers, original {
+            return "\(setIDs.count / catalog.qualification.subjects.count)回分 · \(questions.count)\(unit)"
         }
-        return !questions.isEmpty && questions.allSatisfy { $0.kind == .prediction } && setIDs.count > 1
-            ? "\(setIDs.count)セット · \(questions.count)問" : "\(questions.count)問"
+        return original && setIDs.count > 1 ? "\(setIDs.count)セット · \(questions.count)\(unit)" : "\(questions.count)\(unit)"
     }
 
 }
@@ -123,7 +116,7 @@ struct PredictionLibraryView: View {
 
     private var sets: [MockSet] {
         catalog.mockSets.filter { set in
-            set.kind == .prediction && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id }
+            !set.kind.isOfficial && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id }
         }.sorted { $0.id < $1.id }
     }
 
@@ -186,7 +179,7 @@ struct PastMockLibraryView: View {
     let paywall: () -> Void
     private var sets: [MockSet] {
         catalog.mockSets.filter { set in
-            set.kind == .past && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id }
+            set.kind.isOfficial && catalog.questions.contains { $0.year == year && $0.mockSetID == set.id }
         }.sorted { $0.id > $1.id }
     }
     var body: some View {
@@ -247,7 +240,7 @@ struct SubjectLibraryView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("学びのマップ").font(.headline)
-                        Text(["applied-information", "fundamental-information"].contains(catalog.qualification.id) ? "テーマをタップして、さらに絞り込む" : "テーマをタップして問題へ")
+                        Text(catalog.qualification.subcategoryDrill == true ? "テーマをタップして、さらに絞り込む" : "テーマをタップして問題へ")
                             .font(.caption).foregroundStyle(Palette.muted)
                     }
                     Spacer()
@@ -331,7 +324,7 @@ struct SubjectLibraryView: View {
     }
 
     @ViewBuilder private func topicLink(_ topic: StudyTopic) -> some View {
-        if ["applied-information", "fundamental-information"].contains(catalog.qualification.id) {
+        if catalog.qualification.subcategoryDrill == true {
             NavigationLink(value: StudyDestination.topicSubcategories(subject, topic.title)) {
                 topicCard(topic)
             }

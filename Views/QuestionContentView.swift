@@ -28,11 +28,10 @@ struct RichContentView: View {
                 let block = blocks[index]
                 switch block.type {
                 case .text:
-                    Text(block.text ?? "").fixedSize(horizontal: false, vertical: true)
-                        .textSelection(.enabled).accessibilityIdentifier("contentBodyText")
+                    MarkupText(text: block.text ?? "")
                 case .monospace, .formula:
                     ScrollView(.horizontal) {
-                        Text(block.text ?? "").font(.system(.body, design: .monospaced))
+                        Text(block.text ?? "").font(TextRole.code.font)
                             .textSelection(.enabled).padding(12)
                             .accessibilityIdentifier("contentCodeText")
                     }
@@ -40,7 +39,7 @@ struct RichContentView: View {
                     .accessibilityLabel(block.altText ?? block.text ?? "")
                     .accessibilityIdentifier(block.type == .formula ? "contentFormula" : "contentMonospace")
                     if let caption = block.caption {
-                        Text(caption).font(.caption).foregroundStyle(Palette.muted)
+                        Text(caption).textRole(.note).foregroundStyle(Palette.muted)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 case .image:
@@ -57,6 +56,61 @@ struct RichContentView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+/// Text with the InlineMarkup subset. The font comes from the caller so larger text modes still apply.
+struct MarkupText: View {
+    let text: String
+    var role: TextRole = .body
+    var setsFont = false
+
+    var body: some View {
+        let lines = InlineMarkup.parse(text)
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(lines.indices, id: \.self) { index in
+                switch lines[index] {
+                case .paragraph(let runs):
+                    line(runs)
+                case .bullet(let runs):
+                    HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        Text("•").accessibilityHidden(true)
+                        line(runs)
+                    }
+                }
+            }
+        }
+        .modifier(MarkupTextRole(role: role, setsFont: setsFont))
+    }
+
+    private func line(_ runs: [InlineMarkup.Run]) -> some View {
+        Text(Self.attributed(runs))
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .textSelection(.enabled)
+            .accessibilityIdentifier("contentBodyText")
+    }
+
+    static func attributed(_ runs: [InlineMarkup.Run]) -> AttributedString {
+        runs.reduce(into: AttributedString()) { result, run in
+            var part = AttributedString(run.text)
+            // Marked words are bold as well as red so the cue does not rely on colour alone.
+            if run.bold || run.marked { part.inlinePresentationIntent = .stronglyEmphasized }
+            if run.marked { part.foregroundColor = Palette.mark }
+            if let link = run.link {
+                part.link = link
+                part.underlineStyle = .single
+            }
+            result += part
+        }
+    }
+}
+
+private struct MarkupTextRole: ViewModifier {
+    let role: TextRole
+    let setsFont: Bool
+    func body(content: Content) -> some View {
+        if setsFont { content.textRole(role) } else { content.readingLineSpacing(role) }
     }
 }
 
@@ -240,26 +294,57 @@ struct QuestionExplanationView: View {
     let qualification: Qualification
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("正解: \(qualification.choiceLabel(question.correctIndex))").font(.headline)
-            Text(question.explanation).fixedSize(horizontal: false, vertical: true)
+            Text("正解: \(qualification.choiceLabel(question.correctIndex))").textRole(.heading)
+            MarkupText(text: question.explanation)
             if let reasons = question.choiceExplanations {
                 DisclosureGroup("選択肢ごとの理由") {
                     ForEach(reasons.indices, id: \.self) { index in
                         HStack(alignment: .top, spacing: 10) {
                             Label(qualification.choiceLabel(index), systemImage: index == question.correctIndex ? "checkmark.circle" : "xmark.circle")
                                 .foregroundStyle(index == question.correctIndex ? Palette.positive : Palette.review)
-                            Text(reasons[index]).frame(maxWidth: .infinity, alignment: .leading)
+                            MarkupText(text: reasons[index], role: .reason, setsFont: true)
                         }.padding(.vertical, 6)
                     }
                 }
             }
             if let blocks = question.explanationBlocks { RichContentView(blocks: blocks, wrapsTables: question.subject == "科目B") }
+            if let related = question.related {
+                DisclosureGroup("関連知識") { RichContentView(blocks: related).padding(.top, 8) }
+                    .accessibilityIdentifier("relatedKnowledge")
+            }
+            if let references = question.references {
+                QuestionReferencesView(references: references)
+            }
             DisclosureGroup("出典") {
-                Text(qualification.displaySource(question.source)).font(.caption).foregroundStyle(Palette.muted)
+                Text(qualification.displaySource(question.source)).textRole(.note).foregroundStyle(Palette.muted)
                 if let source = question.sourceURL, let url = URL(string: source) {
                     Link("公式の問題PDF", destination: url).frame(minHeight: 44)
                 }
             }
         }
+    }
+}
+
+/// 参考資料: web sources open in the browser; textbook links are handled by the app.
+struct QuestionReferencesView: View {
+    let references: [QuestionReference]
+    var body: some View {
+        DisclosureGroup("参考資料") {
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(references, id: \.self) { reference in
+                    if let text = reference.url, let url = URL(string: text) {
+                        Link(destination: url) {
+                            Label(reference.title, systemImage: url.scheme == "https" ? "arrow.up.right.square" : "book")
+                                .multilineTextAlignment(.leading)
+                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        }
+                    } else {
+                        Text(reference.title).frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    }
+                }
+            }
+            .textRole(.reason)
+        }
+        .accessibilityIdentifier("questionReferences")
     }
 }

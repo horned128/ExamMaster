@@ -74,6 +74,83 @@ enum Palette {
     }
 }
 
+extension Palette {
+    /// `==mark==` in content: a confusable word the learner should notice.
+    static let mark = adaptive(light: 0xC62828, dark: 0xFF8A80)
+}
+
+/// Reading text follows Dynamic Type; at the default size body is 17pt, choice reasons 15pt and notes 13pt.
+/// Long text uses the system face (SF + Hiragino), headings and numbers the rounded face, code a monospaced face.
+enum TextRole {
+    case body, reason, note, heading, number, code
+
+    var textStyle: Font.TextStyle {
+        switch self {
+        case .body, .code: .body
+        case .reason: .subheadline
+        case .note: .footnote
+        case .heading: .headline
+        case .number: .title3
+        }
+    }
+    var font: Font {
+        switch self {
+        case .body, .reason, .note: .system(textStyle)
+        case .heading: .system(textStyle, design: .rounded).weight(.bold)
+        case .number: .system(textStyle, design: .rounded).weight(.bold).monospacedDigit()
+        case .code: .system(textStyle, design: .monospaced)
+        }
+    }
+    /// Prose lines sit about 1.6 times the font size apart; headings, numbers and code stay compact.
+    var lineHeightMultiple: CGFloat {
+        switch self { case .body, .reason, .note: 1.6; default: 0 }
+    }
+}
+
+enum Reading {
+    /// Lines longer than this tire the eye on iPad.
+    static let maxWidth: CGFloat = 640
+}
+
+private struct TextRoleModifier: ViewModifier {
+    let role: TextRole
+    var setsFont = true
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    func body(content: Content) -> some View {
+        if setsFont { content.font(role.font).lineSpacing(lineSpacing) } else { content.lineSpacing(lineSpacing) }
+    }
+
+    private var lineSpacing: CGFloat {
+        guard role.lineHeightMultiple > 0 else { return 0 }
+        let traits = UITraitCollection(preferredContentSizeCategory: UIContentSizeCategory(dynamicTypeSize))
+        let font = UIFont.preferredFont(forTextStyle: role.uiTextStyle, compatibleWith: traits)
+        return max(0, font.pointSize * role.lineHeightMultiple - font.lineHeight)
+    }
+}
+
+private extension TextRole {
+    var uiTextStyle: UIFont.TextStyle {
+        switch textStyle {
+        case .subheadline: .subheadline
+        case .footnote: .footnote
+        case .headline: .headline
+        case .title3: .title3
+        default: .body
+        }
+    }
+}
+
+extension View {
+    func textRole(_ role: TextRole) -> some View { modifier(TextRoleModifier(role: role)) }
+    /// The role's line spacing only, for text whose font the caller chooses (larger text modes).
+    func readingLineSpacing(_ role: TextRole = .body) -> some View { modifier(TextRoleModifier(role: role, setsFont: false)) }
+    /// Centres content and caps its width for comfortable reading on iPad.
+    func readingWidth() -> some View {
+        frame(maxWidth: Reading.maxWidth, alignment: .leading).frame(maxWidth: .infinity)
+    }
+}
+
 struct Surface<Content: View>: View {
     var inset: CGFloat = 20
     var spacing: CGFloat = 16

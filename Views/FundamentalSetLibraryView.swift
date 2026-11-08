@@ -25,7 +25,7 @@ struct FundamentalSetLibraryView: View {
                         .font(.caption).foregroundStyle(Palette.muted)
                 }
                 ForEach([selectedSubject], id: \.self) { subject in
-                    ForEach([QuestionKind.past, .prediction], id: \.self) { kind in
+                    ForEach([QuestionKind.past, .original], id: \.self) { kind in
                         let items = sets(subject: subject, kind: kind)
                         if !items.isEmpty {
                             Text("\(subject) · \(kind == .past ? "公開過去問" : "オリジナル模試")")

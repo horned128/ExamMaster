@@ -32,7 +32,7 @@ struct PrivacyDetailsView: View {
                    let url = URL(string: text) {
                     Link("正式なプライバシーポリシーを開く", destination: url)
                 } else {
-                    NavigationLink(catalog.qualification.id == "demo-safety" ? "プライバシーポリシー全文（サンプル）" : "プライバシーポリシー全文") {
+                    NavigationLink(catalog.qualification.sampleData == true ? "プライバシーポリシー全文（サンプル）" : "プライバシーポリシー全文") {
                         PrivacyPolicySampleView()
                     }
                 }

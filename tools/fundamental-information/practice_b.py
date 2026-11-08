@@ -299,7 +299,7 @@ def question(s, q, category, stem, code, answer, trace, explanation, choices, wr
     return {'id':f'fe-practice-b-{s+1:02}-q{q:02}','year':2026,'subject':'科目B','category':category,'stem':stem,
       'choices':ordered,'correctIndex':ci,'explanation':explanation,'source':f'ピヨトレ！オリジナル 科目B 第{s+1}回 問{q}',
       'questionNumber':q,'difficulty':2+(q%3),'tags':tags,'concepts':tags,'administration':f'practice-b-{s+1:02}',
-      'kind':'prediction','mockSetID':f'fe-practice-b-{s+1:02}','bodyBlocks':blocks,
+      'kind':'original','mockSetID':f'fe-practice-b-{s+1:02}','bodyBlocks':blocks,
       'explanationBlocks':[{'type':'text','text':explanation},{'type':'table','headers':trace[0],'rows':trace[1:] or [['—']*len(trace[0])]}],
       'choiceExplanations':ex,
       'steps':[f'擬似コードを要素番号1始まりで初期化から順に追跡する。',explanation,'境界を確認する。配列参照と繰返し回数は設問で与えた範囲内で、再帰またはループは必ず終了する。']}
@@ -661,7 +661,7 @@ def make_security(s,q):
     steps=['設問で示された資産、脅威、期限、業務制約を対応付ける。','候補ごとに残るリスクと必要な承認・記録を比較する。',why]
     return {'id':f'fe-practice-b-{s+1:02}-q{q:02}','year':2026,'subject':'科目B','category':'情報セキュリティ／'+title,'stem':stem,'choices':choices,'correctIndex':ci,
       'explanation':why,'source':f'ピヨトレ！オリジナル 科目B 第{s+1}回 問{q}','questionNumber':q,'difficulty':3,'tags':[title,'情報セキュリティ'],'concepts':[title],
-      'administration':f'practice-b-{s+1:02}','kind':'prediction','mockSetID':f'fe-practice-b-{s+1:02}',
+      'administration':f'practice-b-{s+1:02}','kind':'original','mockSetID':f'fe-practice-b-{s+1:02}',
       'bodyBlocks':[{'type':'text','text':context},{'type':'text','text':stem}], 'choiceExplanations':explanations,'steps':steps}
 
 def build():
@@ -671,7 +671,7 @@ def build():
         for q in range(1,21):
             item=make_algo(s,q) if q<=16 else make_security(s,q)
             qs.append(item); ids.append(item['id'])
-        sets.append({'id':f'fe-practice-b-{s+1:02}','title':f'科目B オリジナル 第{s+1}回','kind':'prediction','questionIDs':ids,'questionCount':20,'minutes':100})
+        sets.append({'id':f'fe-practice-b-{s+1:02}','title':f'科目B オリジナル 第{s+1}回','kind':'original','questionIDs':ids,'questionCount':20,'minutes':100})
     return {'version':2,'isDraft':True,'questions':qs,'mockSets':sets}
 
 def verify(bank):
@@ -687,7 +687,7 @@ def verify(bank):
     assert len({q['stem'] for q in bank['questions']})==240
     for s,mock in enumerate(bank['mockSets']):
         qset=bank['questions'][s*20:(s+1)*20]
-        assert mock['questionCount']==20 and mock['minutes']==100 and mock['kind']=='prediction'
+        assert mock['questionCount']==20 and mock['minutes']==100 and mock['kind']=='original'
         assert mock['questionIDs']==[q['id'] for q in qset]
     for s in range(12):
         qset=bank['questions'][s*20:(s+1)*20]

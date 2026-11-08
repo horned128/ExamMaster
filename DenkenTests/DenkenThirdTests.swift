@@ -29,6 +29,21 @@ final class DenkenThirdTests: XCTestCase {
         }
     }
 
+    func testBehaviourComesFromQualificationSettings() throws {
+        let catalog = try catalog()
+        let qualification = catalog.qualification
+        XCTAssertEqual(qualification.resolvedLibraryStyle, .subjectPapers)
+        XCTAssertEqual(qualification.mockScoring, .subjectPoints)
+        XCTAssertEqual(qualification.unit, "解答欄")
+        XCTAssertEqual(qualification.libraryTabTitle, "年度別")
+        XCTAssertEqual(qualification.yearTitle(2027, includesNonOfficial: true), "2027年実施向け予想")
+        XCTAssertEqual(qualification.yearTitle(2026, includesNonOfficial: false), "2026年度 過去問")
+        let papers = Dictionary(grouping: catalog.questions.filter { $0.kind == .past }, by: \.subject)
+        XCTAssertEqual(MockExam.electiveNumbers(in: try XCTUnwrap(papers["理論"]), qualification: qualification), [17, 18])
+        XCTAssertEqual(MockExam.electiveNumbers(in: try XCTUnwrap(papers["電力"]), qualification: qualification), [])
+        XCTAssertEqual(MockExam.electiveNumbers(in: try XCTUnwrap(papers["法規"]), qualification: qualification), [])
+    }
+
     func testElectivePairsProduceExactlyOneHundredPointsAndRestore() throws {
         let catalog = try catalog()
         for set in catalog.mockSets where set.id.hasSuffix("theory") || set.id.hasSuffix("machine") {

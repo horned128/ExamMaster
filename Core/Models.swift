@@ -24,6 +24,33 @@ struct Qualification: Codable {
     var brandName: String? = nil
     var chickBaseHex: String? = nil
     var theme: QualificationTheme? = nil
+    // Per-qualification behaviour, so views never branch on the qualification ID.
+    var libraryStyle: LibraryStyle? = nil
+    /// Map topics open a list of subcategories instead of the questions.
+    var subcategoryDrill: Bool? = nil
+    /// Home shows per-subject progress under this heading.
+    var subjectBalanceTitle: String? = nil
+    var mockScoring: MockScoring? = nil
+    /// Mock papers containing the last of these numbers ask which one to answer.
+    var electiveQuestionNumbers: [Int]? = nil
+    var questionUnit: String? = nil
+    var yearSuffix: YearSuffix? = nil
+    /// Official sets are partial excerpts, so they run as timed practice rather than mocks.
+    var pastSetsAreExcerpts: Bool? = nil
+    /// The mock navigator shows the stem up to the first "·" instead of 問n.
+    var mockNavigatorUsesStemPrefix: Bool? = nil
+    var mockResultNote: String? = nil
+    var mockSetNote: String? = nil
+    var recallNote: String? = nil
+    var sampleData: Bool? = nil
+
+    var resolvedLibraryStyle: LibraryStyle { libraryStyle ?? .years }
+    var unit: String { questionUnit ?? "問" }
+    var libraryTabTitle: String { resolvedLibraryStyle == .sets ? "セット" : "年度別" }
+    func yearTitle(_ year: Int, includesNonOfficial: Bool) -> String {
+        let suffix = yearSuffix ?? YearSuffix(past: "年", prediction: "年予想問題")
+        return year.formatted(.number.grouping(.never)) + (includesNonOfficial ? suffix.prediction : suffix.past)
+    }
 
     var appDisplayName: String { (brandName ?? "") + name }
     var originalContentLabel: String { "\(brandName ?? "ExamMaster") オリジナル" }
@@ -37,6 +64,29 @@ struct Qualification: Codable {
         if let labels = choiceLabels, labels.indices.contains(index) { return labels[index] }
         return String(UnicodeScalar(65 + index)!)
     }
+}
+
+enum LibraryStyle: String, Codable {
+    /// Years, then the mock sets of each year.
+    case years
+    /// Numbered sets without years (the tab reads セット).
+    case sets
+    /// Each subject is its own paper, with its own time and points (電験).
+    case subjectPapers
+    /// Per subject, official excerpts and original mocks side by side (基本情報).
+    case subjectKinds
+}
+
+enum MockScoring: String, Codable {
+    case questions
+    /// Each subject is a separate paper scored to 100 by official points.
+    case subjectPoints
+}
+
+struct YearSuffix: Codable {
+    let past: String
+    /// Used when a year contains predictions or originals.
+    let prediction: String
 }
 
 struct AdsConfiguration: Codable {
@@ -95,6 +145,12 @@ struct Question: Codable, Identifiable, Hashable {
     /// Official points for exams whose answer fields carry unequal weights.
     var points: Int? = nil
     var sourceURL: String? = nil
+    /// 関連知識: background worth knowing beyond why the answer is right.
+    var related: [ContentBlock]? = nil
+    /// 参考資料
+    var references: [QuestionReference]? = nil
+    /// Precomputed by the import tools so the app need not scan text for terms.
+    var glossaryTermIDs: [String]? = nil
 
     var searchText: String { ([stem, explanation, source, subject, category] + choices + tags + concepts +
         (bodyBlocks ?? []).map(\.searchText)).joined(separator: " ") }
@@ -112,6 +168,10 @@ struct Catalog {
     let qualification: Qualification
     let questions: [Question]
     let mockSets: [MockSet]
+
+    /// Optional modules are present when their file is bundled, not by qualification.
+    var hasTextbook: Bool { ContentResource.exists("textbook") }
+    var hasGlossary: Bool { ContentResource.exists("glossary") }
 
     static func load(id: String) throws -> Catalog {
         guard let config = Bundle.main.url(forResource: "qualification", withExtension: "json"),
@@ -153,7 +213,9 @@ struct Catalog {
               qualification.choiceLabels.map({ labels in
                   (2...16).contains(labels.count) && Set(labels).count == labels.count && labels.allSatisfy { !$0.isBlank }
               }) ?? true,
-              qualification.privacyPolicyURL.map({ URL(string: $0)?.scheme == "https" }) ?? true else {
+              qualification.privacyPolicyURL.map({ URL(string: $0)?.scheme == "https" }) ?? true,
+              qualification.electiveQuestionNumbers.map({ $0.count >= 2 && Set($0).count == $0.count }) ?? true,
+              qualification.questionUnit.map({ !$0.isBlank }) ?? true else {
             throw CatalogError.invalid("資格設定・広告設定・プライバシーポリシーURL")
         }
         let ids = bank.questions.map(\.id)
@@ -187,6 +249,12 @@ struct Catalog {
         self.qualification = qualification
         self.questions = bank.questions
         self.mockSets = sets
+    }
+}
+
+enum ContentResource {
+    static func exists(_ name: String, bundle: Bundle = .main) -> Bool {
+        bundle.url(forResource: name, withExtension: "json") != nil
     }
 }
 

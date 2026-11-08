@@ -575,3 +575,87 @@ final class EngineTests: XCTestCase {
         XCTAssertEqual(comparison.weakest, weakest)
     }
 }
+
+final class ContentModelTests: XCTestCase {
+    func testInlineMarkupParsesBoldMarksLinksAndBullets() throws {
+        let lines = InlineMarkup.parse("**割込み**は==ポーリング==と違う。[教科書](exammaster://textbook/ch2#s3)\n- 一つ目\n- **二つ目**")
+        XCTAssertEqual(lines.count, 3)
+        XCTAssertEqual(lines[0].runs, [
+            .init(text: "割込み", bold: true),
+            .init(text: "は"),
+            .init(text: "ポーリング", marked: true),
+            .init(text: "と違う。"),
+            .init(text: "教科書", link: URL(string: "exammaster://textbook/ch2#s3")),
+        ])
+        XCTAssertEqual(lines[1], .bullet([.init(text: "一つ目")]))
+        XCTAssertEqual(lines[2], .bullet([.init(text: "二つ目", bold: true)]))
+        XCTAssertEqual(InlineMarkup.plainText("**A**と==B==\n- C"), "AとB\n・C")
+    }
+
+    func testInlineMarkupLeavesCodeAndFormulasLiteral() {
+        // Existing banks use single * and _ in formulas and identifiers, and == in code.
+        for text in ["a＝1..*）。b＝1..*", "x_1 * y_2", "if a == b then", "[未閉じ", "[外部](javascript:alert(1))"] {
+            XCTAssertEqual(InlineMarkup.parse(text), [.paragraph([.init(text: text)])], text)
+        }
+        XCTAssertEqual(InlineMarkup.parse("行1\n行2"), [.paragraph([.init(text: "行1\n行2")])])
+    }
+
+    func testTextbookLinksAndReferences() throws {
+        let location = try XCTUnwrap(TextbookLocation(url: XCTUnwrap(URL(string: "exammaster://textbook/circuits#ohm"))))
+        XCTAssertEqual(location.chapter, "circuits")
+        XCTAssertEqual(location.section, "ohm")
+        XCTAssertNil(TextbookLocation(url: URL(string: "exammaster://glossary/x")!))
+        XCTAssertNil(TextbookLocation(url: URL(string: "https://example.com/textbook/x")!))
+        XCTAssertTrue(QuestionReference(title: "IPA シラバス", url: "https://www.ipa.go.jp/").isValid)
+        XCTAssertTrue(QuestionReference(title: "教科書", url: "exammaster://textbook/ch1").isValid)
+        XCTAssertFalse(QuestionReference(title: "古いリンク", url: "http://example.com").isValid)
+        XCTAssertFalse(QuestionReference(title: " ", url: nil).isValid)
+    }
+
+    func testQuestionDecodesNewFieldsAndValidatesThem() throws {
+        let json = """
+        {"id":"es-1","year":2025,"subject":"午前II","category":"組込み","stem":"問","choices":["a","b","c","d"],
+         "correctIndex":1,"explanation":"**b** が正しい","source":"オリジナル","questionNumber":1,"imageName":null,
+         "difficulty":2,"tags":[],"concepts":[],"steps":null,"kind":"original",
+         "related":[{"type":"text","text":"==ウォッチドッグ==の役割"}],
+         "references":[{"title":"教科書 2章","url":"exammaster://textbook/ch2"}],
+         "glossaryTermIDs":["watchdog","interrupt"]}
+        """
+        var question = try JSONDecoder().decode(Question.self, from: Data(json.utf8))
+        XCTAssertEqual(question.kind, .original)
+        XCTAssertEqual(question.kindTitle, "オリジナル")
+        XCTAssertFalse(QuestionKind.original.isOfficial)
+        XCTAssertEqual(question.related?.count, 1)
+        XCTAssertEqual(question.references?.first?.title, "教科書 2章")
+        XCTAssertEqual(question.glossaryTermIDs, ["watchdog", "interrupt"])
+        XCTAssertTrue(question.validContent)
+        XCTAssertEqual(question.allBlocks.last?.text, "==ウォッチドッグ==の役割")
+        question.glossaryTermIDs = ["watchdog", "watchdog"]
+        XCTAssertFalse(question.validContent)
+        question.glossaryTermIDs = nil
+        question.related = []
+        XCTAssertFalse(question.validContent)
+        question.related = nil
+        question.references = [QuestionReference(title: "x", url: "ftp://example.com")]
+        XCTAssertFalse(question.validContent)
+        XCTAssertEqual(QuestionKind.prediction.title, "予想問題")
+    }
+
+    func testQualificationDefaultsWithoutBehaviourKeys() throws {
+        let catalog = try Catalog.load(id: "demo-safety")
+        let qualification = catalog.qualification
+        XCTAssertEqual(qualification.resolvedLibraryStyle, .years)
+        XCTAssertEqual(qualification.libraryTabTitle, "年度別")
+        XCTAssertEqual(qualification.unit, "問")
+        XCTAssertNil(qualification.subjectBalanceTitle)
+        XCTAssertEqual(qualification.sampleData, true)
+        XCTAssertEqual(qualification.yearTitle(2026, includesNonOfficial: false), "2026年")
+        XCTAssertEqual(qualification.yearTitle(2026, includesNonOfficial: true), "2026年予想問題")
+        XCTAssertFalse(catalog.hasTextbook)
+        XCTAssertFalse(catalog.hasGlossary)
+
+        var sets = qualification
+        sets.libraryStyle = .sets
+        XCTAssertEqual(sets.libraryTabTitle, "セット")
+    }
+}

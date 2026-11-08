@@ -1,5 +1,6 @@
 {
   "id": "demo-safety",
+  "sampleData": true,
   "name": "設備安全管理士",
   "subtitle": "架空の資格・学習体験用",
   "examMinutes": 40,

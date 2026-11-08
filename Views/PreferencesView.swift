@@ -40,9 +40,7 @@ struct PreferencesView: View {
             } header: {
                 Text("記憶定着")
             } footer: {
-                Text(catalog.qualification.id == "denken3" ?
-                     "苦手問題や復習で、まず答えを思い出す。原問画像内の選択肢は同時に表示されます。" :
-                     "苦手問題や復習で、まず答えを思い出す。")
+                Text("苦手問題や復習で、まず答えを思い出す。" + (catalog.qualification.recallNote ?? ""))
             }
             Section {
                 Button(action: openCompanion) {
