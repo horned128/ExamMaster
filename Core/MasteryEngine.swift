@@ -117,3 +117,101 @@ struct StudyStats {
         readiness = Int((coverage * 0.20 + recall * 0.34 + weakest * 0.14 + recentScore * 0.12 + mockScore * 0.20) * 100)
     }
 }
+
+/// How well a group of questions is known, for the 弱点マップ and the 全体図 chips.
+enum MasteryLevel: Int, CaseIterable, Comparable {
+    case new, weak, growing, solid
+
+    var title: String {
+        switch self {
+        case .new: "未学習"
+        case .weak: "苦手"
+        case .growing: "学習中"
+        case .solid: "定着"
+        }
+    }
+
+    static func < (a: Self, b: Self) -> Bool { a.rawValue < b.rawValue }
+
+    /// Weak while fewer than 60% of the answered questions were last answered right;
+    /// solid once 60% of all of them are mastered.
+    init(questions: [Question], data: StudyData, now: Date) {
+        let answered = questions.compactMap { data.mastery[$0.id] }
+        guard !answered.isEmpty else { self = .new; return }
+        let right = answered.filter { $0.lastCorrect && !$0.misconception }.count
+        let mastered = answered.filter { MasteryEngine.isMastered($0, now: now) }.count
+        if Double(right) < Double(answered.count) * 0.6 { self = .weak }
+        else if Double(mastered) >= Double(questions.count) * 0.6 { self = .solid }
+        else { self = .growing }
+    }
+}
+
+/// One theme of the 弱点マップ with what it is ranked by.
+struct ThemeInsight: Identifiable {
+    let topic: StudyTopic
+    /// The questions this user can open.
+    let available: [Question]
+    let level: MasteryLevel
+    let memory: RetentionSummary
+    /// Correct answers over all answers in the theme; nil before the first answer.
+    let accuracy: Double?
+    /// Answered questions that are due, last wrong or a misconception.
+    let reviewCount: Int
+    /// The theme's share of the past questions, relative to the most asked theme (0...1).
+    let examShare: Double
+    let priority: Double
+
+    var id: String { topic.id }
+    var title: String { topic.title }
+    var locked: Bool { available.isEmpty }
+
+    /// Three steps for display: 3 = among the most asked.
+    var examFrequency: Int { examShare >= 0.67 ? 3 : examShare >= 0.34 ? 2 : 1 }
+
+    /// Highest priority first: weak accuracy counts half, the review backlog 30%, how often the exam asks it 20%.
+    static func ranked(_ topics: [StudyTopic], data: StudyData, freeIDs: Set<String>, unlocked: Bool,
+                       now: Date = .now) -> [Self] {
+        let answersByQuestion = Dictionary(grouping: data.answers, by: \.questionID)
+        let past = topics.map { topic in topic.questions.filter { $0.kind == .past }.count }
+        let counts = past.reduce(0, +) > 0 ? past : topics.map(\.questions.count)
+        let most = Double(max(1, counts.max() ?? 1))
+        let insights = zip(topics, counts).map { topic, count -> Self in
+            let available = unlocked ? topic.questions : topic.questions.filter { freeIDs.contains($0.id) }
+            let answers = available.flatMap { answersByQuestion[$0.id] ?? [] }
+            let accuracy = answers.isEmpty ? nil : Double(answers.filter(\.correct).count) / Double(answers.count)
+            let review = available.filter { question in
+                guard let state = data.mastery[question.id] else { return false }
+                return !state.lastCorrect || state.misconception || (state.dueAt.map { $0 <= now } ?? false)
+            }.count
+            let share = Double(count) / most
+            let weakness: Double = 1 - (accuracy ?? 0.5)
+            let backlog: Double = Double(review) / Double(max(1, available.count))
+            let priority: Double = available.isEmpty ? -1 : weakness * 0.5 + backlog * 0.3 + share * 0.2
+            let shown = available.isEmpty ? topic.questions : available
+            return Self(topic: topic, available: available,
+                        level: MasteryLevel(questions: shown, data: data, now: now),
+                        memory: RetentionSummary(questions: shown, data: data, now: now),
+                        accuracy: accuracy, reviewCount: review, examShare: share, priority: priority)
+        }
+        let order: [(offset: Int, element: Self)] = Array(insights.enumerated())
+        return order.sorted { (a: (offset: Int, element: Self), b: (offset: Int, element: Self)) -> Bool in
+            if a.element.priority != b.element.priority { return a.element.priority > b.element.priority }
+            return a.offset < b.offset
+        }.map { $0.element }
+    }
+
+    /// Up to `count` of the theme's questions, the most urgent first by the same order as 今日の学習.
+    func weakSession(data: StudyData, now: Date = .now, count: Int = 10) -> StudySession? {
+        var score: [String: Double] = [:]
+        for question in available {
+            score[question.id] = SessionPlanner.priority(question, state: data.mastery[question.id], now: now)
+        }
+        let sorted = available.sorted { (a: Question, b: Question) -> Bool in
+            let pa = score[a.id] ?? 0, pb = score[b.id] ?? 0
+            return pa == pb ? a.id < b.id : pa > pb
+        }
+        let chosen = Array(sorted.prefix(count))
+        guard !chosen.isEmpty else { return nil }
+        return StudySession(title: "\(title)の弱点", mode: .recommended, questions: chosen, timed: false)
+    }
+}

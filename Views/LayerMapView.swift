@@ -10,6 +10,8 @@ struct LayerMapView: View {
                 if let intro = map.intro {
                     RichContentView(blocks: intro).textRole(.reason).foregroundStyle(Palette.muted)
                 }
+                MasteryLegend(levels: [.weak, .growing, .solid])
+                    .accessibilityIdentifier("layerMapLegend")
                 ForEach(map.zones) { zone in
                     Text(zone.name).font(.headline).fontDesign(.rounded)
                         .foregroundStyle(Palette.accent(zone.colorHex))
@@ -83,20 +85,60 @@ struct LayerRowCard: View {
 }
 
 /// Chips with exam questions are solid; the rest are dashed, as on the web page.
+/// Once one of its questions is answered, a chip takes the colour of how well they are known.
 struct LayerChipLabel: View {
+    @Environment(\.layerChipLevels) private var levels
     let chip: LayerMap.Chip
     let color: Color
     var body: some View {
-        let practised = !(chip.questionIDs ?? []).isEmpty
-        Text(chip.term)
-            .font(.footnote.weight(.semibold)).foregroundStyle(Palette.ink)
-            .multilineTextAlignment(.leading)
-            .padding(.horizontal, 10).padding(.vertical, 7)
-            .background(color.opacity(practised ? 0.18 : 0.06), in: Capsule())
-            .overlay(Capsule().strokeBorder(color.opacity(0.7), style: StrokeStyle(lineWidth: 1, dash: practised ? [] : [3, 2])))
-            .frame(minHeight: 44)
-            .contentShape(Rectangle())
-            .accessibilityHint(practised ? "関連問題あり" : "")
+        let practised = !(chip.questionIDs ?? []).isEmpty || levels[chip.id] != nil
+        let level = levels[chip.id].flatMap { $0 == .new ? nil : $0 }
+        HStack(spacing: 5) {
+            if let level {
+                Image(systemName: level.symbol).font(.caption2.bold()).foregroundStyle(level.color)
+                    .accessibilityHidden(true)
+            }
+            Text(chip.term)
+                .font(.footnote.weight(.semibold)).foregroundStyle(Palette.ink)
+                .multilineTextAlignment(.leading)
+        }
+        .padding(.horizontal, 10).padding(.vertical, 7)
+        .background((level?.color ?? color).opacity(level != nil ? 0.22 : practised ? 0.18 : 0.06), in: Capsule())
+        .overlay(Capsule().strokeBorder(color.opacity(0.7), style: StrokeStyle(lineWidth: 1, dash: practised ? [] : [3, 2])))
+        .frame(minHeight: 44)
+        .contentShape(Rectangle())
+        .accessibilityValue(level?.title ?? "")
+        .accessibilityHint(practised ? "関連問題あり" : "")
+    }
+}
+
+private struct LayerChipLevelsKey: EnvironmentKey {
+    static let defaultValue: [String: MasteryLevel] = [:]
+}
+
+extension EnvironmentValues {
+    /// 全体図 chip ID → mastery of its related questions.
+    var layerChipLevels: [String: MasteryLevel] {
+        get { self[LayerChipLevelsKey.self] }
+        set { self[LayerChipLevelsKey.self] = newValue }
+    }
+}
+
+extension TextbookContext {
+    /// The chip's own questions, then those whose explanations link to it.
+    func chipQuestionIDs(_ chip: LayerMap.Chip) -> [String] {
+        let ids = (chip.questionIDs ?? []) + backlinks.ids(chapter: LayerMap.chapterID, section: chip.id)
+        return ids.reduce(into: []) { if !$0.contains($1) { $0.append($1) } }
+    }
+
+    func chipLevels(_ map: LayerMap, now: Date = .now) -> [String: MasteryLevel] {
+        let byID = Dictionary(catalog.questions.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        var levels: [String: MasteryLevel] = [:]
+        for chip in map.chips {
+            let questions = chipQuestionIDs(chip).compactMap { byID[$0] }
+            if !questions.isEmpty { levels[chip.id] = MasteryLevel(questions: questions, data: store.data, now: now) }
+        }
+        return levels
     }
 }
 
@@ -108,8 +150,7 @@ struct LayerChipView: View {
     var body: some View {
         let row = map.row(chip.row)
         let journeys = map.journeys.filter { $0.steps.contains { $0.chipIDs?.contains(chip.id) == true } }
-        let ids = (chip.questionIDs ?? []) + context.backlinks.ids(chapter: LayerMap.chapterID, section: chip.id)
-        let questions = context.questions(ids: ids.reduce(into: []) { if !$0.contains($1) { $0.append($1) } })
+        let questions = context.questions(ids: context.chipQuestionIDs(chip))
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 6) {

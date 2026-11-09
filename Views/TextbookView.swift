@@ -120,6 +120,7 @@ struct TextbookStack: View {
             path.append(route)
             return .handled
         })
+        .environment(\.layerChipLevels, LayerMap.main.map { context.chipLevels($0) } ?? [:])
     }
 }
 

@@ -100,6 +100,13 @@ struct ReviewOutlook {
     }
 }
 
+extension Catalog {
+    /// The 弱点マップ themes of one subject.
+    func topics(subject: String) -> [StudyTopic] {
+        StudyTopic.grouped(subject: subject, questions: questions, themes: qualification.themes)
+    }
+}
+
 enum QuestionCollections {
     static func questions(for route: QuestionCollectionRoute, catalog: Catalog, data: StudyData,
                           now: Date = .now) -> [Question] {
@@ -125,9 +132,9 @@ enum QuestionCollections {
         case .subjectCategory(let subject, let category):
             return newestFirst(questions.filter { $0.subject == subject && $0.category == category }, sourceOrder: sourceOrder)
         case .subjectTopic(let subject, let title):
-            return newestFirst(StudyTopic.grouped(subject: subject, questions: questions).first { $0.title == title }?.questions ?? [], sourceOrder: sourceOrder)
+            return newestFirst(catalog.topics(subject: subject).first { $0.title == title }?.questions ?? [], sourceOrder: sourceOrder)
         case .subjectSubtopic(let subject, let topicTitle, let subtopicTitle):
-            let topic = StudyTopic.grouped(subject: subject, questions: questions).first { $0.title == topicTitle }
+            let topic = catalog.topics(subject: subject).first { $0.title == topicTitle }
             let selected = topic.flatMap { topic in
                 StudySubtopic.grouped(topic: topic).first { $0.title == subtopicTitle }?.questions
             } ?? []
@@ -180,10 +187,23 @@ enum QuestionCollections {
 struct StudyTopic: Identifiable {
     let title: String
     let questions: [Question]
+    /// Set when qualification.json defines the theme; nil for the built-in grouping.
+    var theme: StudyTheme? = nil
     var id: String { title }
 
-    static func grouped(subject: String, questions: [Question]) -> [Self] {
+    static func grouped(subject: String, questions: [Question], themes: [StudyTheme]? = nil) -> [Self] {
         let items = questions.filter { $0.subject == subject }
+        let configured = (themes ?? []).filter { $0.subject == subject }
+        if !configured.isEmpty {
+            var buckets: [String: [Question]] = [:]
+            for question in items {
+                guard let theme = configured.first(where: { $0.covers(question) }) else { continue }
+                buckets[theme.title, default: []].append(question)
+            }
+            return configured.compactMap { theme in
+                buckets[theme.title].map { Self(title: theme.title, questions: $0, theme: theme) }
+            }
+        }
         let grouped = Dictionary(grouping: items, by: { theme(subject: subject, category: $0.category) })
         return grouped.keys.sorted().map { Self(title: $0, questions: grouped[$0] ?? []) }
     }
@@ -275,6 +295,18 @@ struct StudySubtopic: Identifiable {
     static let unreviewedTitle = "2015年以前・詳細分類なし"
 
     static func grouped(topic: StudyTopic) -> [Self] {
+        if topic.theme != nil {
+            // 「大分類／中分類」: the part after the theme's own category, in the order questions first use it.
+            var order: [String] = []
+            var groups: [String: [Question]] = [:]
+            for question in topic.questions {
+                let title = question.category.components(separatedBy: "／").dropFirst().joined(separator: "／")
+                let key = title.isEmpty ? question.category : title
+                if groups[key] == nil { order.append(key) }
+                groups[key, default: []].append(question)
+            }
+            return order.map { Self(title: $0, questions: groups[$0] ?? []) }
+        }
         if topic.questions.allSatisfy({ ["科目A", "科目B"].contains($0.subject) }) {
             let groups = Dictionary(grouping: topic.questions) { question in
                 question.category.components(separatedBy: "／").last ?? question.category

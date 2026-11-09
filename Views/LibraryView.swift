@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum StudyDestination: Hashable { case years, subjects, records, quiz, subjectCategories(String), topicSubcategories(String, String) }
+enum StudyDestination: Hashable { case years, subjects, records, quiz, subjectCategories(String), theme(String, String) }
 enum LibrarySection { case years, subjects }
 
 struct LibraryView: View {
@@ -26,7 +26,7 @@ struct LibraryView: View {
                             .font(.title2).foregroundStyle(Palette.positive).accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 4) {
                             Text(section == .subjects ? "分野から選ぶ" : usesSets ? "セットから選ぶ" : "年度から選ぶ").font(.headline)
-                            Text(section == .subjects ? "分野のマップから、学びたいテーマへ。"
+                            Text(section == .subjects ? "苦手なテーマほど上に並びます。"
                                  : usesSets ? "1セット\(catalog.qualification.mockQuestionCount)\(catalog.qualification.unit)。練習にも模擬試験にも。"
                                  : "過去問・予想問題から選んで取り組もう。")
                                 .font(.caption).foregroundStyle(Palette.muted)
@@ -50,6 +50,13 @@ struct LibraryView: View {
                                             route: .year(year), identifier: "year-\(year)")
                             }
                         }
+                    }
+                } else if catalog.qualification.subjects.count == 1, let subject = catalog.qualification.subjects.first {
+                    WeakPointMap(subject: subject, catalog: catalog, store: store, purchase: purchase,
+                                 start: start, paywall: paywall)
+                    NavigationLink(value: QuestionCollectionRoute.subject(subject)) {
+                        FeatureCard(title: "この分野の全問題", symbol: "list.bullet",
+                                    detail: "\(catalog.questions.filter { $0.subject == subject }.count)問")
                     }
                 } else {
                     ForEach(catalog.qualification.subjects, id: \.self) { subject in
@@ -238,185 +245,288 @@ struct PastMockLibraryView: View {
 }
 
 struct SubjectLibraryView: View {
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let subject: String
     let catalog: Catalog
     let store: StudyStore
     let purchase: PurchaseManager
-    @State private var zoom: CGFloat = 1
-    @State private var gestureZoom: CGFloat = 1
-    private var questions: [Question] { catalog.questions.filter { $0.subject == subject } }
-    private var topics: [StudyTopic] { StudyTopic.grouped(subject: subject, questions: questions) }
-    private var mapHeight: CGFloat { topics.count <= 2 ? 320 : 480 }
+    let start: (StudySession) -> Void
+    let paywall: () -> Void
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("学びのマップ").font(.headline)
-                        Text(catalog.qualification.subcategoryDrill == true ? "テーマをタップして、さらに絞り込む" : "テーマをタップして問題へ")
-                            .font(.caption).foregroundStyle(Palette.muted)
-                    }
-                    Spacer()
-                    if !dynamicTypeSize.isAccessibilitySize {
-                        Button { zoom = max(1, zoom - 0.25); gestureZoom = zoom } label: { Image(systemName: "minus.magnifyingglass").frame(width: 44, height: 44) }.accessibilityLabel("マップを縮小")
-                        Button { zoom = min(2, zoom + 0.25); gestureZoom = zoom } label: { Image(systemName: "plus.magnifyingglass").frame(width: 44, height: 44) }.accessibilityLabel("マップを拡大")
-                    }
-                }
-                if dynamicTypeSize.isAccessibilitySize {
-                    ForEach(topics) { topic in topicLink(topic) }
-                } else {
-                    GeometryReader { geometry in
-                        let width = max(340, geometry.size.width)
-                        ScrollView([.horizontal, .vertical]) {
-                            map(width: width)
-                                .scaleEffect(zoom, anchor: .topLeading)
-                                .frame(width: width * zoom, height: mapHeight * zoom, alignment: .topLeading)
-                        }
-                        .simultaneousGesture(MagnificationGesture().onChanged { zoom = min(2, max(1, gestureZoom * $0)) }.onEnded { _ in gestureZoom = zoom })
-                    }
-                    .frame(height: mapHeight)
-                    .background(Palette.surface, in: RoundedRectangle(cornerRadius: 20))
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .accessibilityIdentifier("subjectMap")
-                }
+                WeakPointMap(subject: subject, catalog: catalog, store: store, purchase: purchase,
+                             start: start, paywall: paywall)
                 NavigationLink(value: QuestionCollectionRoute.subject(subject)) {
-                    FeatureCard(title: "この分野の全問題", symbol: "list.bullet", detail: "\(questions.count)問")
+                    FeatureCard(title: "この分野の全問題", symbol: "list.bullet",
+                                detail: "\(catalog.questions.filter { $0.subject == subject }.count)問")
                 }
             }
             .buttonStyle(StudyButtonStyle()).padding(16).frame(maxWidth: 640).frame(maxWidth: .infinity)
         }
         .background(Palette.background).navigationTitle(subject).navigationBarTitleDisplayMode(.inline)
     }
-
-    private func position(_ index: Int, width: CGFloat) -> CGPoint {
-        let center = width / 2
-        let positions: [CGPoint]
-        switch topics.count {
-        case 1: positions = [CGPoint(x: center, y: 56)]
-        case 2: positions = [CGPoint(x: center, y: 52), CGPoint(x: center, y: mapHeight - 52)]
-        case 3: positions = [CGPoint(x: center, y: 56), CGPoint(x: width - 64, y: 350), CGPoint(x: 64, y: 350)]
-        case 4: positions = [CGPoint(x: center, y: 56), CGPoint(x: width - 64, y: 240), CGPoint(x: center, y: 424), CGPoint(x: 64, y: 240)]
-        case 5: positions = [CGPoint(x: center, y: 56), CGPoint(x: width - 64, y: 166), CGPoint(x: width - 64, y: 350), CGPoint(x: 64, y: 350), CGPoint(x: 64, y: 166)]
-        default: positions = [CGPoint(x: center, y: 56), CGPoint(x: width - 64, y: 166), CGPoint(x: width - 64, y: 314), CGPoint(x: center, y: 424), CGPoint(x: 64, y: 314), CGPoint(x: 64, y: 166)]
-        }
-        // Dense catalogs are grouped into at most six themes. Generic subjects may use more categories.
-        if positions.indices.contains(index) { return positions[index] }
-        let angle = -Double.pi / 2 + Double(index) * 2 * Double.pi / Double(topics.count)
-        return CGPoint(x: center + cos(angle) * width * 0.30, y: mapHeight / 2 + sin(angle) * (mapHeight / 2 - 56))
-    }
-
-    private func map(width: CGFloat) -> some View {
-        ZStack {
-            Canvas { context, size in
-                // Subtle graph dots establish space; links show the real subject/theme hierarchy.
-                for x in stride(from: 12.0, through: size.width, by: 20) {
-                    for y in stride(from: 12.0, through: size.height, by: 20) {
-                        context.fill(Path(ellipseIn: CGRect(x: x, y: y, width: 2, height: 2)), with: .color(Palette.track.opacity(0.55)))
-                    }
-                }
-                for index in topics.indices {
-                    var path = Path()
-                    path.move(to: CGPoint(x: width / 2, y: mapHeight / 2))
-                    path.addLine(to: position(index, width: width))
-                    context.stroke(path, with: .color(Palette.positive.opacity(0.35)), lineWidth: 2)
-                }
-            }.accessibilityHidden(true)
-            VStack(spacing: 6) {
-                Image(systemName: "point.3.connected.trianglepath.dotted").font(.title2)
-                Text(subject).font(.caption.bold()).multilineTextAlignment(.center)
-            }
-            .foregroundStyle(Palette.positive).padding(10).frame(width: 82, height: 82)
-            .background(Palette.background, in: Circle())
-            .overlay(Circle().stroke(Palette.positive.opacity(0.5), lineWidth: 2))
-            .position(x: width / 2, y: mapHeight / 2)
-            ForEach(Array(topics.enumerated()), id: \.element.id) { index, topic in
-                topicLink(topic).frame(width: 122).position(position(index, width: width))
-            }
-        }
-        .frame(width: width, height: mapHeight)
-    }
-
-    @ViewBuilder private func topicLink(_ topic: StudyTopic) -> some View {
-        if catalog.qualification.subcategoryDrill == true {
-            NavigationLink(value: StudyDestination.topicSubcategories(subject, topic.title)) {
-                topicCard(topic)
-            }
-            .accessibilityLabel("\(topic.title)、\(topic.questions.count)問")
-            .accessibilityIdentifier("category-\(topic.title)")
-        } else {
-            NavigationLink(value: QuestionCollectionRoute.subjectTopic(subject, topic.title)) {
-                topicCard(topic)
-            }
-            .accessibilityLabel("\(topic.title)、\(topic.questions.count)問")
-            .accessibilityIdentifier("category-\(topic.title)")
-        }
-    }
-
-    private func topicCard(_ topic: StudyTopic) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(topic.title).font(.subheadline.weight(.semibold)).fixedSize(horizontal: false, vertical: true)
-            let available = topic.questions.filter { purchase.unlocked || catalog.qualification.freeQuestionIDs.contains($0.id) }
-            let answered = available.filter { store.data.mastery[$0.id] != nil }.count
-            Text("\(topic.questions.count)問").font(.caption).foregroundStyle(Palette.muted)
-            if available.isEmpty { Label("有料", systemImage: "lock").font(.caption).foregroundStyle(Palette.review) }
-            else { Text("学習済み \(answered)問").font(.caption2).foregroundStyle(Palette.positive) }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading).padding(12)
-        .background(Palette.surface, in: RoundedRectangle(cornerRadius: 16))
-        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Palette.positive.opacity(0.4), lineWidth: 1.5))
-    }
 }
 
-struct StudySubtopicLibraryView: View {
+/// One theme of the 弱点マップ: how it stands, what the field is and how the exam asks it, then its subcategories.
+struct ThemeDetailView: View {
     let subject: String
     let topicTitle: String
     let catalog: Catalog
     let store: StudyStore
     let purchase: PurchaseManager
-
-    private var topic: StudyTopic? {
-        StudyTopic.grouped(subject: subject, questions: catalog.questions).first { $0.title == topicTitle }
-    }
-    private var subtopics: [StudySubtopic] {
-        topic.map { StudySubtopic.grouped(topic: $0) } ?? []
-    }
+    let start: (StudySession) -> Void
+    let paywall: () -> Void
 
     var body: some View {
+        let insights = ThemeInsight.ranked(catalog.topics(subject: subject), data: store.data,
+                                           freeIDs: Set(catalog.qualification.freeQuestionIDs), unlocked: purchase.unlocked)
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Surface(inset: 16) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Label("サブカテゴリから選ぶ", systemImage: "square.grid.2x2").font(.headline)
-                        Text("\(topic?.questions.count ?? 0)問を、もう一段階テーマで絞れます。")
-                            .font(.caption).foregroundStyle(Palette.muted)
-                    }.frame(maxWidth: .infinity, alignment: .leading)
-                }
-                if let topic {
-                    NavigationLink(value: QuestionCollectionRoute.subjectTopic(subject, topicTitle)) {
-                        FeatureCard(title: "このテーマの全問題", symbol: "list.bullet", detail: "\(topic.questions.count)問")
-                    }
-                    .accessibilityIdentifier("topic-all-\(topicTitle)")
-                }
-                ForEach(subtopics) { subtopic in
-                    NavigationLink(value: QuestionCollectionRoute.subjectSubtopic(subject, topicTitle, subtopic.title)) {
-                        CollectionProgressCard(title: subtopic.title, questions: subtopic.questions, data: store.data,
-                                               freeIDs: Set(catalog.qualification.freeQuestionIDs), unlocked: purchase.unlocked,
-                                               compact: false)
-                    }
-                    .accessibilityIdentifier("subcategory-\(subtopic.title)")
-                }
-                if subtopics.contains(where: { $0.title == StudySubtopic.unreviewedTitle }) {
-                    Text("2015年以前の未校閲問題は、誤った細分類を付けないよう、この一覧ではまとめて表示しています。")
-                        .font(.caption).foregroundStyle(Palette.muted)
-                        .padding(.horizontal, 4)
+                if let insight = insights.first(where: { $0.title == topicTitle }) {
+                    content(insight)
+                } else {
+                    ContentUnavailableView("テーマが見つかりません", systemImage: "questionmark.folder")
                 }
             }
             .buttonStyle(StudyButtonStyle()).padding(16).frame(maxWidth: 640).frame(maxWidth: .infinity)
         }
         .background(Palette.background)
         .navigationTitle(topicTitle).navigationBarTitleDisplayMode(.inline)
+    }
+
+    @ViewBuilder private func content(_ insight: ThemeInsight) -> some View {
+        let topic = insight.topic
+        Surface(inset: 16, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                MasteryBadge(level: insight.level)
+                Spacer(minLength: 8)
+                ExamFrequencyDots(level: insight.examFrequency)
+            }
+            Text(insight.statusLine).font(.subheadline.monospacedDigit()).foregroundStyle(Palette.muted)
+                .accessibilityIdentifier("themeStatus")
+            MemoryBreakdown(summary: insight.memory, identifier: "themeMemory", compact: true)
+            Button {
+                if let session = insight.weakSession(data: store.data) { start(session) } else { paywall() }
+            } label: {
+                Label(insight.locked ? "購入で解放" : "弱点を解く", systemImage: insight.locked ? "lock" : "bolt.fill")
+            }
+            .buttonStyle(PuffyButtonStyle(kind: insight.locked ? .plain : .primary))
+            .accessibilityIdentifier("themeWeakDrill")
+        }
+        if let about = topic.theme?.about {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("どんな分野か").font(.headline).accessibilityAddTraits(.isHeader)
+                MarkupText(text: about, role: .body, setsFont: true)
+            }
+            .accessibilityIdentifier("themeAbout")
+        }
+        if let exam = topic.theme?.exam {
+            CalloutView(style: .exam, title: "試験での問われ方", text: exam)
+        }
+        if let links = topic.theme?.links, !links.isEmpty {
+            VStack(alignment: .leading, spacing: 0) {
+                ForEach(links, id: \.self) { link in
+                    if let value = link.url, let url = URL(string: value) {
+                        Link(destination: url) {
+                            Label(link.title, systemImage: "book")
+                                .multilineTextAlignment(.leading)
+                                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                        }
+                        .accessibilityIdentifier("themeLink")
+                    }
+                }
+            }
+        }
+        let subtopics = catalog.qualification.subcategoryDrill == true ? StudySubtopic.grouped(topic: topic) : []
+        NavigationLink(value: QuestionCollectionRoute.subjectTopic(subject, topicTitle)) {
+            FeatureCard(title: "このテーマの全問題", symbol: "list.bullet", detail: "\(topic.questions.count)問")
+        }
+        .accessibilityIdentifier("topic-all-\(topicTitle)")
+        if subtopics.count > 1 {
+            ForEach(subtopics) { subtopic in
+                NavigationLink(value: QuestionCollectionRoute.subjectSubtopic(subject, topicTitle, subtopic.title)) {
+                    CollectionProgressCard(title: subtopic.title, questions: subtopic.questions, data: store.data,
+                                           freeIDs: Set(catalog.qualification.freeQuestionIDs), unlocked: purchase.unlocked,
+                                           compact: false)
+                }
+                .accessibilityIdentifier("subcategory-\(subtopic.title)")
+            }
+            if subtopics.contains(where: { $0.title == StudySubtopic.unreviewedTitle }) {
+                Text("2015年以前の未校閲問題は、誤った細分類を付けないよう、この一覧ではまとめて表示しています。")
+                    .font(.caption).foregroundStyle(Palette.muted)
+                    .padding(.horizontal, 4)
+            }
+        }
+    }
+}
+
+extension MasteryLevel {
+    var color: Color {
+        switch self {
+        case .new: Palette.muted
+        case .weak: Palette.review
+        case .growing: Palette.growing
+        case .solid: Palette.positive
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .new: "circle.dashed"
+        case .weak: "exclamationmark.circle.fill"
+        case .growing: "circle.lefthalf.filled"
+        case .solid: "checkmark.circle.fill"
+        }
+    }
+}
+
+struct MasteryLegend: View {
+    var levels: [MasteryLevel] = MasteryLevel.allCases
+
+    var body: some View {
+        FlowLayout(spacing: 12, lineSpacing: 4) {
+            ForEach(levels, id: \.self) { level in
+                Label { Text(level.title) } icon: { Image(systemName: level.symbol).foregroundStyle(level.color) }
+                    .font(.caption).foregroundStyle(Palette.muted)
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("色の意味：" + levels.map(\.title).joined(separator: "、"))
+    }
+}
+
+struct MasteryBadge: View {
+    let level: MasteryLevel
+
+    var body: some View {
+        Label { Text(level.title) } icon: { Image(systemName: level.symbol) }
+            .font(.caption.bold()).foregroundStyle(level.color)
+            .padding(.horizontal, 8).padding(.vertical, 3)
+            .background(level.color.opacity(0.12), in: Capsule())
+            .fixedSize()
+    }
+}
+
+/// 本番での出題の多さ as three dots.
+struct ExamFrequencyDots: View {
+    let level: Int
+
+    var body: some View {
+        HStack(spacing: 3) {
+            Text("出題").font(.caption).foregroundStyle(Palette.muted)
+            ForEach(1...3, id: \.self) { step in
+                Circle().fill(step <= level ? Palette.beak : Palette.track).frame(width: 7, height: 7)
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("本番での出題")
+        .accessibilityValue(["少なめ", "普通", "多い"][max(0, min(2, level - 1))])
+    }
+}
+
+extension ThemeInsight {
+    /// Free users see how many of the theme's questions they can open.
+    var countLabel: String {
+        let total = topic.questions.count
+        return locked || available.count == total ? "\(total)問" : "無料 \(available.count) / \(total)問"
+    }
+
+    var statusLine: String {
+        guard let accuracy else { return countLabel }
+        return "正答率 \(Int((accuracy * 100).rounded()))% · 復習 \(reviewCount)問 · \(countLabel)"
+    }
+}
+
+/// 弱点マップ: one subject's themes coloured by mastery, the most urgent first, each one tap from a drill.
+struct WeakPointMap: View {
+    let subject: String
+    let catalog: Catalog
+    let store: StudyStore
+    let purchase: PurchaseManager
+    let start: (StudySession) -> Void
+    let paywall: () -> Void
+
+    var body: some View {
+        let insights = ThemeInsight.ranked(catalog.topics(subject: subject), data: store.data,
+                                           freeIDs: Set(catalog.qualification.freeQuestionIDs), unlocked: purchase.unlocked)
+        VStack(alignment: .leading, spacing: 12) {
+            Text("弱点マップ").font(.headline).accessibilityAddTraits(.isHeader)
+            MasteryLegend()
+            ForEach(insights) { insight in
+                ThemeCard(insight: insight, subject: subject,
+                          opensDetail: catalog.qualification.subcategoryDrill == true || insight.topic.theme != nil,
+                          solve: { solve(insight) })
+            }
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("subjectMap")
+    }
+
+    private func solve(_ insight: ThemeInsight) {
+        guard let session = insight.weakSession(data: store.data) else { paywall(); return }
+        start(session)
+    }
+}
+
+struct ThemeCard: View {
+    let insight: ThemeInsight
+    let subject: String
+    let opensDetail: Bool
+    let solve: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            if opensDetail {
+                NavigationLink(value: StudyDestination.theme(subject, insight.title)) { summary }
+                    .accessibilityIdentifier("category-\(insight.title)")
+            } else {
+                NavigationLink(value: QuestionCollectionRoute.subjectTopic(subject, insight.title)) { summary }
+                    .accessibilityIdentifier("category-\(insight.title)")
+            }
+            HStack {
+                ExamFrequencyDots(level: insight.examFrequency)
+                Spacer(minLength: 8)
+                Button(action: solve) {
+                    Label(insight.locked ? "購入で解放" : "弱点を解く", systemImage: insight.locked ? "lock" : "bolt.fill")
+                        .font(.subheadline.bold())
+                        .foregroundStyle(insight.locked ? Palette.muted : Palette.onPiyo)
+                        .padding(.horizontal, 14).frame(minHeight: 44)
+                        .background(insight.locked ? Palette.track : Palette.piyo, in: Capsule())
+                        .contentShape(Capsule())
+                }
+                .buttonStyle(StudyButtonStyle())
+                .accessibilityIdentifier("weakDrill-\(insight.title)")
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(alignment: .leading) {
+            UnevenRoundedRectangle(topLeadingRadius: 22, bottomLeadingRadius: 22)
+                .fill(insight.level == .new ? Palette.border : insight.level.color).frame(width: 6).accessibilityHidden(true)
+        }
+        .popCard(radius: 22)
+        .clipShape(RoundedRectangle(cornerRadius: 22))
+    }
+
+    private var summary: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(insight.title).font(.headline).foregroundStyle(Palette.ink)
+                    .multilineTextAlignment(.leading).fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 4)
+                MasteryBadge(level: insight.level)
+                Image(systemName: "chevron.right").font(.caption.weight(.semibold))
+                    .foregroundStyle(Palette.muted).accessibilityHidden(true)
+            }
+            Text(insight.statusLine).font(.caption.monospacedDigit()).foregroundStyle(Palette.muted)
+            MemoryBar(stable: insight.memory.stable, growing: insight.memory.growing, new: insight.memory.new)
+                .accessibilityHidden(true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(insight.title)、\(insight.level.title)、\(insight.statusLine)")
     }
 }
 

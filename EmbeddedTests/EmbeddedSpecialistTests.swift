@@ -175,4 +175,81 @@ final class EmbeddedSpecialistTests: XCTestCase {
         XCTAssertTrue(StudySearch.run("ＭＥＳＩ", questions: try catalog().questions, glossary: Glossary.main,
                                       textbook: nil, map: nil).terms.contains { $0.id == "t:mesi" })
     }
+
+    // MARK: 弱点マップ
+
+    func testThemesSplitTheBankIntoTenFieldsWithMidCategories() throws {
+        let catalog = try catalog()
+        let topics = catalog.topics(subject: "午前II")
+        XCTAssertEqual(topics.count, 10)
+        XCTAssertEqual(topics.map(\.questions.count).reduce(0, +), catalog.questions.count)
+        XCTAssertTrue(topics.allSatisfy { $0.theme?.about != nil && $0.theme?.exam != nil && !($0.theme?.links ?? []).isEmpty })
+        let hardware = try XCTUnwrap(topics.first { $0.title == "ハードウェア" })
+        XCTAssertEqual(StudySubtopic.grouped(topic: hardware).map(\.title).sorted(),
+                       ["センサ・アクチュエータ・AD/DA", "論理回路", "通信インタフェース", "電子回路・電源・低消費電力"].sorted())
+        let network = try XCTUnwrap(topics.first { $0.title == "ネットワーク" })
+        XCTAssertEqual(StudySubtopic.grouped(topic: network).map(\.title), ["ネットワーク"])
+        let route = QuestionCollections.questions(for: .subjectSubtopic("午前II", "ハードウェア", "論理回路"),
+                                                  catalog: catalog, data: StudyData())
+        XCTAssertEqual(route.count, catalog.questions.filter { $0.category == "ハードウェア／論理回路" }.count)
+    }
+
+    func testThemeLinksResolve() throws {
+        let textbook = try XCTUnwrap(Textbook.main)
+        let map = try XCTUnwrap(LayerMap.main)
+        let links = try catalog().qualification.themes?.flatMap { $0.links ?? [] }.compactMap(\.url) ?? []
+        XCTAssertGreaterThan(links.count, 20)
+        let unresolved = links.filter { value in
+            guard let url = URL(string: value), let location = TextbookLocation(url: url) else { return true }
+            return !textbook.resolves(location, map: map) || TextbookRoute(url: url) == nil
+        }
+        XCTAssertEqual(unresolved, [])
+    }
+
+    func testWeakThemesRankFirstAndDrillTheirMisses() throws {
+        let catalog = try catalog()
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let topics = catalog.topics(subject: "午前II")
+        let free = Set(catalog.qualification.freeQuestionIDs)
+        var data = StudyData()
+        let fresh = ThemeInsight.ranked(topics, data: data, freeIDs: free, unlocked: false, now: now)
+        XCTAssertTrue(fresh.allSatisfy { $0.level == .new && $0.accuracy == nil })
+        // With nothing answered, the most asked theme leads.
+        XCTAssertEqual(fresh.first?.examShare, 1)
+
+        let weak = try XCTUnwrap(topics.first { $0.title == "ユーザーインタフェース" })
+        let missed = try XCTUnwrap(weak.questions.first { free.contains($0.id) })
+        data.answers.append(Answer(questionID: missed.id, date: now, selectedIndex: 0, correct: false, duration: 10, mode: .subject))
+        data.mastery[missed.id] = Mastery(attempts: 1, lastAnswered: now, dueAt: now, lastCorrect: false)
+        let solid = try XCTUnwrap(topics.first { $0.title == "ストラテジ" })
+        for question in solid.questions where free.contains(question.id) {
+            data.answers.append(Answer(questionID: question.id, date: now, selectedIndex: question.correctIndex, correct: true,
+                                       duration: 10, mode: .subject))
+            data.mastery[question.id] = Mastery(attempts: 3, distinctSuccessDays: 3, lastAnswered: now, stabilityDays: 30,
+                                                dueAt: now.addingTimeInterval(86_400 * 20), lastCorrect: true)
+        }
+        let ranked = ThemeInsight.ranked(topics, data: data, freeIDs: free, unlocked: false, now: now)
+        let first = try XCTUnwrap(ranked.first)
+        XCTAssertEqual(first.title, "ユーザーインタフェース")
+        XCTAssertEqual(first.level, .weak)
+        XCTAssertEqual(first.reviewCount, 1)
+        XCTAssertEqual(ranked.last?.title, "ストラテジ")
+        XCTAssertEqual(ranked.last?.level, .solid)
+        let session = try XCTUnwrap(first.weakSession(data: data, now: now))
+        XCTAssertEqual(session.questions.first?.id, missed.id)
+        XCTAssertTrue(session.questions.allSatisfy { free.contains($0.id) && weak.questions.contains($0) })
+    }
+
+    func testChipsTakeTheMasteryOfTheirQuestions() throws {
+        let catalog = try catalog()
+        let map = try XCTUnwrap(LayerMap.main)
+        let chip = try XCTUnwrap(map.chips.first { !($0.questionIDs ?? []).isEmpty })
+        let ids = chip.questionIDs ?? []
+        var data = StudyData()
+        let now = Date()
+        for id in ids { data.mastery[id] = Mastery(attempts: 1, lastAnswered: now, lastCorrect: false) }
+        let questions = catalog.questions.filter { ids.contains($0.id) }
+        XCTAssertEqual(MasteryLevel(questions: questions, data: data, now: now), .weak)
+        XCTAssertEqual(MasteryLevel(questions: questions, data: StudyData(), now: now), .new)
+    }
 }

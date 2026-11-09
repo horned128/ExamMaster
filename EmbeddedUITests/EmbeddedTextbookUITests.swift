@@ -80,6 +80,64 @@ final class EmbeddedTextbookUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["answerLine"].waitForExistence(timeout: 5))
     }
 
+    /// 分野別 opens straight on the 弱点マップ; a theme drills its weak questions, explains itself and links to the textbook.
+    func testWeakPointMapDrillsThemesAndColoursChips() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestResetStudy", "-UITestDisableAds"]
+        app.launch()
+        let skip = app.buttons["skipDiagnosis"]
+        if skip.waitForExistence(timeout: 5) { skip.tap() }
+
+        app.tabBars.buttons["分野別"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["subjectMap"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertEqual(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "category-")).count, 10)
+        capture(app, name: "弱点マップ")
+
+        // 1問解いて中断すると、そのテーマに正答率が付く
+        let drill = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "weakDrill-")).firstMatch
+        XCTAssertTrue(drill.waitForExistence(timeout: 5))
+        let theme = String(drill.identifier.dropFirst("weakDrill-".count))
+        drill.tap()
+        XCTAssertTrue(app.navigationBars[theme + "の弱点"].waitForExistence(timeout: 5))
+        let reveal = app.buttons["選択肢を見る"]
+        if reveal.waitForExistence(timeout: 2) { reveal.tap() }
+        let choice = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch
+        XCTAssertTrue(choice.waitForExistence(timeout: 5))
+        scrollTo(choice, in: app)
+        choice.tap()
+        XCTAssertTrue(app.staticTexts["answerLine"].waitForExistence(timeout: 5))
+        app.buttons["学習を中断"].tap()
+        app.buttons["問題一覧へ戻る"].tap()
+        let card = app.buttons["category-" + theme]
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        XCTAssertTrue(card.label.contains("正答率"), card.label)
+
+        // テーマの解説 → 中分類 → 教科書へのリンクはシートで開く
+        let hardware = app.buttons["category-ハードウェア"]
+        scrollTo(hardware, in: app)
+        hardware.tap()
+        XCTAssertTrue(app.descendants(matching: .any)["themeAbout"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["themeWeakDrill"].exists)
+        capture(app, name: "弱点マップ・テーマの解説")
+        let logic = app.buttons["subcategory-論理回路"]
+        scrollTo(logic, in: app)
+        XCTAssertTrue(logic.exists)
+        let link = app.descendants(matching: .any)["themeLink"].firstMatch
+        scrollTo(link, in: app)
+        link.tap()
+        let close = app.buttons["閉じる"]
+        XCTAssertTrue(close.waitForExistence(timeout: 5))
+        close.tap()
+
+        // 全体図には習熟度の凡例が出る
+        app.tabBars.buttons["教科書"].tap()
+        XCTAssertTrue(app.buttons["textbookShelf-overview"].waitForExistence(timeout: 5))
+        app.buttons["textbookShelf-overview"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["layerMapLegend"].firstMatch.waitForExistence(timeout: 5))
+        capture(app, name: "全体図・習熟度の色分け")
+    }
+
     private func scrollTo(_ element: XCUIElement, in app: XCUIApplication) {
         let tabTop = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame.minY : app.frame.maxY
         for _ in 0..<25 {

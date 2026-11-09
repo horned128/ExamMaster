@@ -215,10 +215,11 @@ struct StudyAppView: View {
             InsightsView(catalog: catalog, store: store, purchase: purchase, ads: ads, start: start,
                          paywall: openPaywall, settings: { showSettings = true })
         case .subjectCategories(let subject):
-            SubjectLibraryView(subject: subject, catalog: catalog, store: store, purchase: purchase)
-        case .topicSubcategories(let subject, let topic):
-            StudySubtopicLibraryView(subject: subject, topicTitle: topic, catalog: catalog,
-                                     store: store, purchase: purchase)
+            SubjectLibraryView(subject: subject, catalog: catalog, store: store, purchase: purchase,
+                               start: start, paywall: openPaywall)
+        case .theme(let subject, let topic):
+            ThemeDetailView(subject: subject, topicTitle: topic, catalog: catalog, store: store, purchase: purchase,
+                            start: start, paywall: openPaywall)
         case .quiz:
             QuickQuizView(catalog: catalog, store: store, purchase: purchase, start: start)
         }

@@ -77,7 +77,7 @@ enum SessionPlanner {
         return TodayPlan(session: session, reviewCount: session.questions.count - newCount, newCount: newCount)
     }
 
-    private static func priority(_ q: Question, state: Mastery?, now: Date) -> Double {
+    static func priority(_ q: Question, state: Mastery?, now: Date) -> Double {
         guard let state else { return 35 + Double(q.difficulty) }
         if state.misconception { return 110 }
         if state.lastCorrect == false { return 95 }

@@ -145,7 +145,7 @@ final class AppliedStudyUITests: XCTestCase {
         app.buttons["subject-テクノロジ"].tap()
         let security = app.buttons["category-セキュリティ"]
         XCTAssertTrue(security.waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["学びのマップ"].exists)
+        XCTAssertTrue(app.staticTexts["弱点マップ"].exists)
         capture("AP分野マップ・テーマから選択")
         security.tap()
         let authentication = app.buttons["subcategory-認証・アクセス制御"]

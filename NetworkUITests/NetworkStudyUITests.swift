@@ -262,7 +262,7 @@ final class NetworkStudyUITests: XCTestCase {
         app.tabBars.buttons["分野別"].tap()
         capture("リデザイン・ネットワーク分野")
         app.buttons["subject-ネットワーク"].tap()
-        XCTAssertTrue(app.staticTexts["学びのマップ"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["弱点マップ"].waitForExistence(timeout: 5))
         let category = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "category-")).firstMatch
         XCTAssertTrue(category.exists)
         capture("リデザイン・ネットワーク中分類")

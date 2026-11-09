@@ -43,6 +43,8 @@ struct Qualification: Codable {
     var mockSetNote: String? = nil
     var recallNote: String? = nil
     var sampleData: Bool? = nil
+    /// 弱点マップのテーマ。書いた科目はこの区切りと解説を使い、書いていない科目はコードの分け方のまま。
+    var themes: [StudyTheme]? = nil
 
     var resolvedLibraryStyle: LibraryStyle { libraryStyle ?? .years }
     var unit: String { questionUnit ?? "問" }
@@ -236,6 +238,15 @@ struct Catalog {
                   (q.steps == nil || (!(q.steps?.isEmpty ?? true) && q.steps!.allSatisfy { !$0.isBlank })) &&
                   (qualification.choiceLabels.map { $0.count >= q.choices.count } ?? true) && q.validContent
               }) else { throw CatalogError.invalid("問題ID・科目・正答・無料範囲") }
+        if let themes = qualification.themes {
+            let keys = themes.map { $0.subject + "/" + $0.title }
+            guard Set(keys).count == keys.count, themes.allSatisfy(\.isValid),
+                  themes.allSatisfy({ qualification.subjects.contains($0.subject) }),
+                  // A themed subject must place every question, so none drops off the map.
+                  bank.questions.allSatisfy({ q in
+                      !themes.contains { $0.subject == q.subject } || themes.contains { $0.covers(q) }
+                  }) else { throw CatalogError.invalid("弱点マップのテーマ") }
+        }
         let sets = bank.mockSets ?? []
         guard Set(sets.map(\.id)).count == sets.count else { throw CatalogError.invalid("模試セットID重複") }
         for set in sets {
@@ -285,6 +296,29 @@ struct Glossary: Codable {
     func terms(ids: [String]) -> [GlossaryTerm] {
         let byID = Dictionary(terms.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         return ids.compactMap { byID[$0] }
+    }
+}
+
+/// One theme of the 弱点マップ: the categories it covers, and the explanation on its page.
+struct StudyTheme: Codable, Hashable {
+    let title: String
+    let subject: String
+    /// A question belongs to the first theme listing its category, or the part of it before "／".
+    let categories: [String]
+    /// どんな分野か (inline markup).
+    var about: String? = nil
+    /// 試験での問われ方 (inline markup).
+    var exam: String? = nil
+    var links: [QuestionReference]? = nil
+
+    func covers(_ question: Question) -> Bool {
+        question.subject == subject && categories.contains { question.category == $0 || question.category.hasPrefix($0 + "／") }
+    }
+
+    var isValid: Bool {
+        !title.isBlank && !categories.isEmpty && categories.allSatisfy { !$0.isBlank } &&
+            (about.map { !$0.isBlank } ?? true) && (exam.map { !$0.isBlank } ?? true) &&
+            (links ?? []).allSatisfy { $0.isValid && $0.url != nil }
     }
 }
 
