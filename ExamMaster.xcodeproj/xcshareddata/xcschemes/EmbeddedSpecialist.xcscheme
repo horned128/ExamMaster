@@ -50,6 +50,17 @@
                ReferencedContainer = "container:ExamMaster.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A0CA18D4F467BE5E6A39FE74"
+               BuildableName = "EmbeddedSpecialistUITests.xctest"
+               BlueprintName = "EmbeddedSpecialistUITests"
+               ReferencedContainer = "container:ExamMaster.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

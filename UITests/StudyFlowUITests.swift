@@ -163,9 +163,12 @@ final class StudyFlowUITests: XCTestCase {
         app.buttons["ブックマークに追加"].tap()
         answerChoice(app, number: 1, revealChoices: false)
         app.buttons["submitOrAdvance"].tap()
-        for tab in ["苦手問題", "ブックマーク"] {
-            XCTAssertTrue(app.tabBars.buttons[tab].waitForExistence(timeout: 5))
-            app.tabBars.buttons[tab].tap()
+        for list in ["苦手問題", "ブックマーク"] {
+            XCTAssertTrue(app.tabBars.buttons["復習"].waitForExistence(timeout: 5))
+            app.tabBars.buttons["復習"].tap()
+            let picker = app.segmentedControls["reviewListPicker"]
+            XCTAssertTrue(picker.waitForExistence(timeout: 5))
+            picker.buttons[list].tap()
             XCTAssertTrue(app.buttons["solveQuestions"].waitForExistence(timeout: 5))
             XCTAssertFalse(app.searchFields.firstMatch.exists)
             XCTAssertFalse(app.buttons["ランダム出題"].exists)
@@ -771,7 +774,8 @@ final class StudyFlowUITests: XCTestCase {
         app.launchArguments = ["-UITestDisableAds"]
         app.launch()
         XCTAssertFalse(app.buttons["resumeStudy"].exists)
-        app.tabBars.buttons["ブックマーク"].tap()
+        app.tabBars.buttons["復習"].tap()
+        app.segmentedControls["reviewListPicker"].buttons["ブックマーク"].tap()
         XCTAssertTrue(app.buttons["question-p01"].waitForExistence(timeout: 5))
         app.tabBars.buttons["年度別"].tap()
         app.buttons["year-2023"].tap()

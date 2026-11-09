@@ -592,6 +592,23 @@ final class ContentModelTests: XCTestCase {
         XCTAssertEqual(InlineMarkup.plainText("**A**と==B==\n- C"), "AとB\n・C")
     }
 
+    func testCalloutAndQuizBlocksNeedTheirParts() throws {
+        let json = #"[{"type":"callout","style":"practice","title":"組込みでは","text":"**割込み**の入口"},{"type":"quiz","text":"Q1","answer":"A1"}]"#
+        let blocks = try JSONDecoder().decode([ContentBlock].self, from: Data(json.utf8))
+        XCTAssertEqual(blocks.map(\.type), [.callout, .quiz])
+        XCTAssertTrue(blocks.allSatisfy(\.isValid))
+        XCTAssertEqual(blocks[0].style?.defaultTitle, "実務では")
+        XCTAssertTrue(blocks[1].searchText.contains("A1"))
+        XCTAssertFalse(ContentBlock(type: .callout, text: "本文").isValid)
+        XCTAssertFalse(ContentBlock(type: .quiz, text: "問い").isValid)
+        XCTAssertEqual(ContentBlock(type: .table, headers: ["用語", "要点"], rows: [["A", "==赤字=="]]).searchText, "用語 要点 A 赤字")
+    }
+
+    func testTextbookWithoutBundleIsAbsent() {
+        XCTAssertNil(Textbook.load(bundle: Bundle(for: EngineTests.self)))
+        XCTAssertNil(LayerMap.load(bundle: Bundle(for: EngineTests.self)))
+    }
+
     func testInlineMarkupLeavesCodeAndFormulasLiteral() {
         // Existing banks use single * and _ in formulas and identifiers, and == in code.
         for text in ["a＝1..*）。b＝1..*", "x_1 * y_2", "if a == b then", "[未閉じ", "[外部](javascript:alert(1))"] {

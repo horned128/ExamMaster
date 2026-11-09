@@ -44,6 +44,8 @@ struct LongQuestionBodyView: View {
         case .table: return "表・条件"
         case .image: return "図・資料"
         case .formula: return "式"
+        case .callout: return block.title ?? block.style?.defaultTitle ?? "補足"
+        case .quiz: return "確認問題"
         case .text: return index == blocks.count - 1 && index > 0 ? "設問" : "問題文"
         }
     }
@@ -54,6 +56,8 @@ struct LongQuestionBodyView: View {
         case .table: return "tablecells"
         case .image: return "doc.richtext"
         case .formula: return "function"
+        case .callout: return "lightbulb"
+        case .quiz: return "questionmark.circle"
         case .text: return "text.alignleft"
         }
     }

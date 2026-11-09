@@ -219,9 +219,17 @@ class NoLinks:
 
 # ---------------------------------------------------------------- figures
 
+TEXTBOOK_FIGURE_PREFIX = "tb-"
+
+
 class Figures:
-    def __init__(self, skip: bool):
+    """PNG jobs for one importer. `owns` limits stale-file cleanup to that importer's files
+    (questions own everything except tb-*, the textbook owns tb-*)."""
+
+    def __init__(self, skip: bool, page: str | None = None, owns=lambda name: not name.startswith(TEXTBOOK_FIGURE_PREFIX)):
         self.skip = skip
+        self.page = page
+        self.owns = owns
         self.jobs: list[tuple[str, str]] = []
 
     def add(self, name: str, html: str) -> str:
@@ -238,12 +246,12 @@ class Figures:
         from PIL import Image, ImageChops
         wanted = {n for n, _ in self.jobs}
         for stale in FIGURES.glob("*.png"):
-            if stale.name not in wanted:
+            if self.owns(stale.name) and stale.name not in wanted:
                 stale.unlink()
         with tempfile.TemporaryDirectory() as tmp:
             for index, (name, body) in enumerate(self.jobs):
                 page = Path(tmp) / f"fig{index}.html"
-                page.write_text(FIGURE_PAGE.replace("{{BODY}}", body), encoding="utf-8")
+                page.write_text((self.page or FIGURE_PAGE).replace("{{BODY}}", body), encoding="utf-8")
                 shot = Path(tmp) / f"fig{index}.png"
                 subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars",
                                 "--force-device-scale-factor=3", "--window-size=900,1400",

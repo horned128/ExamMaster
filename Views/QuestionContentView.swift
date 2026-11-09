@@ -22,6 +22,8 @@ struct QuestionBodyView: View {
 struct RichContentView: View {
     let blocks: [ContentBlock]
     var wrapsTables = false
+    /// Two-column tables (term ⇔ point) read as a list so long Japanese text wraps; used by the textbook.
+    var definitionTables = false
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             ForEach(blocks.indices, id: \.self) { index in
@@ -45,8 +47,14 @@ struct RichContentView: View {
                 case .image:
                     QuestionFigureView(image: block.assetName.flatMap { ContentAsset.url(name: $0) }.flatMap { UIImage(contentsOfFile: $0.path) },
                                        altText: block.altText ?? "図版", caption: block.caption)
+                case .callout:
+                    CalloutView(style: block.style ?? .exam, title: block.title, text: block.text ?? "")
+                case .quiz:
+                    QuizBlockView(question: block.text ?? "", answer: block.answer ?? "")
                 case .table:
-                    if wrapsTables, let rows = block.rows,
+                    if definitionTables, let headers = block.headers, headers.count == 2, let rows = block.rows {
+                        ContentDefinitionTableView(headers: headers, rows: rows)
+                    } else if wrapsTables, let rows = block.rows,
                        rows.contains(where: { $0.contains { $0.count > 18 } }) {
                         ContentRecordTableView(headers: block.headers ?? [], rows: rows)
                     } else {
@@ -91,6 +99,9 @@ struct MarkupText: View {
             .accessibilityIdentifier("contentBodyText")
     }
 
+    /// A table cell: inline markup only, no bullets.
+    static func cell(_ text: String) -> AttributedString { attributed(InlineMarkup.runs(text)) }
+
     static func attributed(_ runs: [InlineMarkup.Run]) -> AttributedString {
         runs.reduce(into: AttributedString()) { result, run in
             var part = AttributedString(run.text)
@@ -127,7 +138,7 @@ struct ContentRecordTableView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(headers.indices.contains(column) ? headers[column] : "項目\(column + 1)")
                                 .font(.caption.bold()).foregroundStyle(Palette.muted)
-                            Text(rows[row][column])
+                            Text(MarkupText.cell(rows[row][column]))
                                 .font(largeText ? .title3 : .body).lineSpacing(7)
                                 .fixedSize(horizontal: false, vertical: true).textSelection(.enabled)
                         }
@@ -151,7 +162,7 @@ private struct ContentTableView: View {
             Grid(alignment: .leading, horizontalSpacing: 0, verticalSpacing: 0) {
                 GridRow {
                     ForEach(headers.indices, id: \.self) { column in
-                        Text(headers[column]).font(.body.bold()).padding(12)
+                        Text(MarkupText.cell(headers[column])).font(.body.bold()).padding(12)
                             .textSelection(.enabled)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .background(Palette.track).border(Palette.border, width: 0.5)
@@ -160,17 +171,138 @@ private struct ContentTableView: View {
                 ForEach(rows.indices, id: \.self) { row in
                     GridRow {
                         ForEach(rows[row].indices, id: \.self) { column in
-                            Text(rows[row][column]).font(.system(.body, design: .monospaced)).padding(12)
+                            Text(MarkupText.cell(rows[row][column])).font(.system(.body, design: .monospaced)).padding(12)
                                 .textSelection(.enabled)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .border(Palette.border, width: 0.5)
-                                .accessibilityLabel("\(headers[column]): \(rows[row][column])")
+                                .accessibilityLabel("\(InlineMarkup.plainText(headers[column])): \(InlineMarkup.plainText(rows[row][column]))")
                         }
                     }
                 }
             }
         }
         .accessibilityIdentifier("contentTable")
+    }
+}
+
+/// 用語 ⇔ 要点 tables: the term on its own line, the point wrapping under it.
+struct ContentDefinitionTableView: View {
+    let headers: [String]
+    let rows: [[String]]
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(MarkupText.cell(headers[0])).font(.subheadline.bold()).foregroundStyle(Palette.muted)
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Palette.track)
+            ForEach(rows.indices, id: \.self) { index in
+                let row = rows[index]
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(MarkupText.cell(row.first ?? "")).font(.body.bold())
+                        .fixedSize(horizontal: false, vertical: true)
+                    if row.count > 1 {
+                        Text(MarkupText.cell(row[1])).textRole(.reason)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .textSelection(.enabled)
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .combine)
+                if index < rows.count - 1 { Divider().padding(.leading, 14) }
+            }
+        }
+        .background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Palette.border, lineWidth: 1))
+        .accessibilityIdentifier("definitionTable")
+    }
+}
+
+/// 試験に出る・組込みでは・物理的には・よくある誤解
+struct CalloutView: View {
+    let style: ContentBlock.CalloutStyle
+    var title: String? = nil
+    let text: String
+
+    private var color: Color {
+        switch style {
+        case .exam: Palette.beakText
+        case .practice: Palette.positive
+        case .physical: Palette.sky
+        case .caution: Palette.mark
+        }
+    }
+    private var tint: Color {
+        switch style {
+        case .exam: Palette.piyoTint
+        case .practice: Palette.correctTint
+        case .physical: Palette.skyTint
+        case .caution: Palette.oopsTint
+        }
+    }
+    private var symbol: String {
+        switch style {
+        case .exam: "pencil.line"
+        case .practice: "cpu"
+        case .physical: "bolt"
+        case .caution: "exclamationmark.triangle"
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label(title ?? style.defaultTitle, systemImage: symbol)
+                .font(.subheadline.bold()).foregroundStyle(color)
+            MarkupText(text: text, role: .reason, setsFont: true)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(tint, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(alignment: .leading) {
+            UnevenRoundedRectangle(topLeadingRadius: 12, bottomLeadingRadius: 12).fill(color).frame(width: 4)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("callout-\(style.rawValue)")
+    }
+}
+
+/// 確認問題: the answer stays hidden until the reader has thought about it.
+struct QuizBlockView: View {
+    let question: String
+    let answer: String
+    @State private var open = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Button {
+                withAnimation(.snappy) { open.toggle() }
+            } label: {
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Image(systemName: "questionmark.circle.fill").foregroundStyle(Palette.sky)
+                        .accessibilityHidden(true)
+                    Text(MarkupText.cell(question)).textRole(.body).foregroundStyle(Palette.ink)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Image(systemName: "chevron.down").rotationEffect(.degrees(open ? 180 : 0))
+                        .foregroundStyle(Palette.muted).accessibilityHidden(true)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityHint(open ? "答えを隠す" : "答えを見る")
+            .accessibilityIdentifier("textbookQuiz")
+            if open {
+                Divider()
+                MarkupText(text: answer, role: .reason, setsFont: true)
+                    .transition(.opacity)
+                    .accessibilityIdentifier("textbookQuizAnswer")
+            }
+        }
+        .padding(14)
+        .background(Palette.surface, in: RoundedRectangle(cornerRadius: 12))
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Palette.border, lineWidth: 1))
     }
 }
 

@@ -192,8 +192,12 @@ targets:
         buildPhase: resources
       - path: Qualifications/embedded-specialist/glossary.json
         buildPhase: resources
+      - path: Qualifications/embedded-specialist/textbook.json
+        buildPhase: resources
+      - path: Qualifications/embedded-specialist/layermap.json
+        buildPhase: resources
     scheme:
-      testTargets: [EmbeddedSpecialistTests]
+      testTargets: [EmbeddedSpecialistTests, EmbeddedSpecialistUITests]
       storeKitConfiguration: Qualifications/embedded-specialist/products.storekit
   EmbeddedSpecialistTests:
     type: bundle.unit-test
@@ -205,6 +209,16 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: jp.hino.piyotre.embeddedspecialist.tests
+  EmbeddedSpecialistUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: EmbeddedUITests
+    dependencies:
+      - target: EmbeddedSpecialist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.hino.piyotre.embeddedspecialist.uitests
   FundamentalInformation:
     templates: [QualificationApp]
     templateAttributes:

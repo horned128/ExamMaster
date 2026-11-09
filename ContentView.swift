@@ -31,7 +31,7 @@ struct ContentView: View {
 struct StudyAppView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.requestReview) private var requestReview
-    private enum MainTab: Hashable { case home, years, subjects, incorrect, bookmarks }
+    private enum MainTab: Hashable { case home, years, subjects, review, textbook }
     let catalog: Catalog
     @State private var store: StudyStore
     @State private var purchase: PurchaseManager
@@ -44,10 +44,13 @@ struct StudyAppView: View {
     @State private var queuedRecords = false
     @State private var queuedPaywall = false
     @State private var selectedTab: MainTab = .home
+    @State private var reviewList: ReviewList = .incorrect
+    private let backlinks: TextbookBacklinks
 
     init(catalog: Catalog) {
         self.catalog = catalog
         _store = State(initialValue: StudyStore(qualificationID: catalog.qualification.id))
+        backlinks = TextbookBacklinks(questions: catalog.questions)
         _purchase = State(initialValue: PurchaseManager(productID: catalog.qualification.productID))
         _ads = State(initialValue: AdsService(configuration: catalog.qualification.ads,
                                               qualificationID: catalog.qualification.id,
@@ -73,8 +76,9 @@ struct StudyAppView: View {
                     NavigationStack(path: $homePath) {
                         DashboardView(catalog: catalog, store: store, purchase: purchase, ads: ads, start: start,
                                       openLibrary: { selectedTab = .years },
-                                      openSubjects: { selectedTab = .subjects }, openIncorrect: { selectedTab = .incorrect },
-                                      openBookmarks: { selectedTab = .bookmarks }, paywall: openPaywall,
+                                      openSubjects: { selectedTab = .subjects },
+                                      openIncorrect: { reviewList = .incorrect; selectedTab = .review },
+                                      openBookmarks: { reviewList = .bookmarks; selectedTab = .review }, paywall: openPaywall,
                                       settings: { showSettings = true })
                             .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
                             .navigationDestination(for: StudyDestination.self) { destination in destinationView(destination) }
@@ -92,16 +96,27 @@ struct StudyAppView: View {
                     }
                     .tabItem { Label("分野別", systemImage: "square.grid.2x2") }.tag(MainTab.subjects)
                     NavigationStack {
-                        collection(.incorrect)
+                        collection(reviewList.route)
+                            .id(reviewList)
+                            .toolbar {
+                                ToolbarItem(placement: .principal) {
+                                    Picker("復習", selection: $reviewList) {
+                                        ForEach(ReviewList.allCases) { Text($0.title).tag($0) }
+                                    }
+                                    .pickerStyle(.segmented)
+                                    .fixedSize()
+                                    .accessibilityIdentifier("reviewListPicker")
+                                }
+                            }
                             .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
                     }
-                    .tabItem { Label("苦手問題", systemImage: "arrow.uturn.backward") }.tag(MainTab.incorrect)
-                    NavigationStack {
-                        collection(.favorites)
-                            .navigationDestination(for: QuestionCollectionRoute.self) { route in collection(route) }
+                    .tabItem { Label("復習", systemImage: "arrow.uturn.backward") }.tag(MainTab.review)
+                    if let shelf = TextbookShelf.current {
+                        TextbookStack(context: textbookContext(start: start), root: shelf.root)
+                            .tabItem { Label(shelf.title, systemImage: shelf.symbol) }.tag(MainTab.textbook)
                     }
-                    .tabItem { Label("ブックマーク", systemImage: "bookmark") }.tag(MainTab.bookmarks)
                 }
+                .textbookLinks(textbookContext(start: start))
             }
         }
         .environment(\.mascotMotionEnabled, session == nil && !showPaywall && !showSettings)
@@ -133,6 +148,7 @@ struct StudyAppView: View {
                     completedForAds = (active.mode, answered, nil)
                     session = nil
                 }
+                .textbookLinks(textbookContext(start: nil))
             } else {
               SessionView(session: active, qualification: catalog.qualification, store: store, purchase: purchase,
                         ads: ads, growthQuestions: SessionPlanner.available(catalog, unlocked: purchase.unlocked)) { answered, correct in
@@ -141,6 +157,7 @@ struct StudyAppView: View {
                 session = nil
             }
             .environment(\.mascotMotionEnabled, true)
+            .textbookLinks(textbookContext(start: nil))
             }
         }
         .sheet(isPresented: $showPaywall) { PaywallView(catalog: catalog, purchase: purchase) }
@@ -164,6 +181,10 @@ struct StudyAppView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { Task { await purchase.refreshIfNeeded() } }
         }
+    }
+
+    private func textbookContext(start: ((StudySession) -> Void)?) -> TextbookContext {
+        TextbookContext(catalog: catalog, store: store, purchase: purchase, start: start, backlinks: backlinks)
     }
 
     private func start(_ newSession: StudySession) {
@@ -243,4 +264,25 @@ struct StudyAppView: View {
             homePath.append(StudyDestination.records)
         }
     }
+}
+
+/// 復習 tab: one list at a time, switched at the top.
+enum ReviewList: String, CaseIterable, Identifiable {
+    case incorrect, bookmarks
+    var id: Self { self }
+    var title: String { self == .incorrect ? "苦手問題" : "ブックマーク" }
+    var route: QuestionCollectionRoute { self == .incorrect ? .incorrect : .favorites }
+}
+
+/// The fifth tab: the textbook when the app has one, otherwise the glossary, otherwise none.
+struct TextbookShelf {
+    let title: String
+    let symbol: String
+    let root: TextbookRoute?
+
+    static let current: TextbookShelf? = {
+        if Textbook.main != nil || LayerMap.main != nil { return TextbookShelf(title: "教科書", symbol: "book", root: nil) }
+        if Glossary.main != nil { return TextbookShelf(title: "用語集", symbol: "character.book.closed", root: .glossary) }
+        return nil
+    }()
 }

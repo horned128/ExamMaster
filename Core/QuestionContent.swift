@@ -144,7 +144,27 @@ enum InlineMarkup {
 
 /// Ordered blocks preserve the relationship between prose, diagrams and tables.
 struct ContentBlock: Codable, Hashable {
-    enum Kind: String, Codable { case text, image, table, monospace, formula }
+    enum Kind: String, Codable { case text, image, table, monospace, formula, callout, quiz }
+    /// A boxed aside in the textbook.
+    enum CalloutStyle: String, Codable {
+        /// 試験に出る
+        case exam
+        /// 組込みでは: where it shows up in real development
+        case practice
+        /// 物理的には: what happens electrically
+        case physical
+        /// よくある誤解
+        case caution
+
+        var defaultTitle: String {
+            switch self {
+            case .exam: "試験に出る"
+            case .practice: "実務では"
+            case .physical: "物理的には"
+            case .caution: "よくある誤解"
+            }
+        }
+    }
     let type: Kind
     var text: String? = nil
     var assetName: String? = nil
@@ -152,13 +172,21 @@ struct ContentBlock: Codable, Hashable {
     var caption: String? = nil
     var headers: [String]? = nil
     var rows: [[String]]? = nil
+    var style: CalloutStyle? = nil
+    /// A callout's label when the style's default does not fit, e.g. 「組込みでは」 for 実務では.
+    var title: String? = nil
+    /// 確認問題: `text` is the question and this the answer, hidden until opened.
+    var answer: String? = nil
 
     var searchText: String {
-        ([text.map(InlineMarkup.plainText), altText, caption].compactMap { $0 } + (headers ?? []) + (rows ?? []).flatMap { $0 }).joined(separator: " ")
+        ([text.map(InlineMarkup.plainText), answer.map(InlineMarkup.plainText), altText, caption].compactMap { $0 } +
+            (headers ?? []) + (rows ?? []).flatMap { $0 }.map(InlineMarkup.plainText)).joined(separator: " ")
     }
     var isValid: Bool {
         switch type {
         case .text, .monospace, .formula: return text.map { !$0.isBlank } ?? false
+        case .callout: return style != nil && (text.map { !$0.isBlank } ?? false)
+        case .quiz: return (text.map { !$0.isBlank } ?? false) && (answer.map { !$0.isBlank } ?? false)
         case .image:
             return (assetName.map { !$0.isBlank && !$0.contains("/") && !$0.contains("..") } ?? false) &&
                 (altText.map { !$0.isBlank } ?? false)
