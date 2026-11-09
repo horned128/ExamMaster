@@ -31,6 +31,12 @@ struct SessionView: View {
     @State private var remaining: TimeInterval
     @State private var featherBurst = 0
     @State private var wrongShake = 0
+    @State private var comboMilestone = 0
+    @State private var featherShown = 0
+    @State private var ringShown = 0.0
+    @State private var stampShown = false
+    @State private var completionHaptic = 0
+    @State private var lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled
     @State private var initialStreak: Int
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -106,6 +112,10 @@ struct SessionView: View {
             Button("学習を続ける", role: .cancel) { }
         } message: {
             Text("途中の出題位置は削除します。回答済みの学習記録は残ります。")
+        }
+        .task { SoundEffects.shared.preload() }
+        .onReceive(NotificationCenter.default.publisher(for: .NSProcessInfoPowerStateDidChange).receive(on: RunLoop.main)) { _ in
+            lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled
         }
         .onReceive(timer) { _ in
             guard session.timed, !finished else { return }
@@ -187,18 +197,24 @@ struct SessionView: View {
         }
         .safeAreaInset(edge: .bottom, spacing: 0) { bottomBar }
         .overlay {
-            if !reduceMotion && !session.timed { FeatherBurst(trigger: featherBurst).allowsHitTesting(false) }
+            if !still && !session.timed {
+                FeatherBurst(trigger: featherBurst, count: TankeiCombo(streak: combo).featherCount).allowsHitTesting(false)
+            }
         }
         // Untimed answers are graded on the tap, so only timed sessions get a separate selection tick.
         .sensoryFeedback(trigger: selected) { _, value in
             session.timed && value != nil ? .selection : nil
         }
+        .sensoryFeedback(.impact(weight: .heavy, intensity: 1), trigger: comboMilestone)
         .sensoryFeedback(trigger: submitted) { _, isSubmitted in
             // Timed sessions never reveal correctness before grading.
             guard isSubmitted, !session.timed else { return nil }
             return selected == question.correctIndex ? .success : .warning
         }
     }
+
+    /// Reduce Motion or Low Power Mode: still mascot and no particles; haptics and sounds stay.
+    private var still: Bool { reduceMotion || lowPower }
 
     /// Untimed answers show the result and explanation right after the tap.
     private var showsFeedback: Bool { submitted && !session.timed }
@@ -370,15 +386,30 @@ struct SessionView: View {
     }
 
     /// Slides up from the bottom after grading: the mascot's reaction, one short line and the next button.
+    /// The mascot grows with the combo (3, 5, 10 in a row) and leaps out over the panel's top edge.
     private var answerPanel: some View {
         let correct = selected == question.correctIndex
         let label = qualification.choiceLabel(question.correctIndex)
+        let streak = correct ? combo : 0
+        let tier = TankeiCombo(streak: streak)
         let lines = correct ? Self.correctLines : Self.wrongLines
+        let line = TankeiCombo.isMilestone(streak) ? tier.line(streak: streak) : lines[index % lines.count]
+        let base: CGFloat = dynamicTypeSize.isAccessibilitySize ? 56 : 76
         return VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 14) {
                 TankeiView(state: correct ? .celebrate : .recover, stage: initialGrowthStage,
-                           size: dynamicTypeSize.isAccessibilitySize ? 56 : 76,
-                           animated: true, idle: true, expressive: true, eventID: index)
+                           size: base * tier.mascotScale, animated: true, idle: true, expressive: true,
+                           eventID: index, dancing: tier >= .hot)
+                    .keyframeAnimator(initialValue: 1.0, trigger: index) { content, scale in
+                        content.scaleEffect(still ? 1 : scale, anchor: .bottom)
+                    } keyframes: { _ in
+                        KeyframeTrack {
+                            CubicKeyframe(correct ? 0.6 : 0.9, duration: 0.01)
+                            SpringKeyframe(correct ? 1 + 0.15 * tier.mascotScale : 1, duration: 0.3, spring: .bouncy)
+                            SpringKeyframe(1, duration: 0.4, spring: .bouncy)
+                        }
+                    }
+                    .frame(width: base, height: base, alignment: .bottom)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(correct ? "正解！" : "正解は「\(label)」")
                         .font(.system(.title2, design: .rounded).weight(.heavy))
@@ -389,9 +420,10 @@ struct SessionView: View {
                         #if DEBUG
                         .accessibilityValue("相棒：\(initialGrowthStage.title)")
                         #endif
-                    Text(lines[index % lines.count])
-                        .font(.subheadline.weight(.semibold))
+                    Text(line)
+                        .font(.subheadline.weight(tier > .none ? .heavy : .semibold))
                         .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("answerLine")
                 }
                 .foregroundStyle(correct ? Palette.correctText : Palette.oopsText)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -425,7 +457,18 @@ struct SessionView: View {
         store.record(answer, question: question)
         if session.timed { advance(); return }
         withAnimation(reduceMotion ? nil : .spring(duration: 0.4, bounce: 0.25)) { submitted = true }
-        if answer.correct { featherBurst += 1 } else { wrongShake += 1 }
+        if answer.correct {
+            featherBurst += 1
+            if TankeiCombo.isMilestone(combo) {
+                comboMilestone += 1
+                SoundEffects.shared.play(.combo(TankeiCombo(streak: combo)))
+            } else {
+                SoundEffects.shared.play(.correct)
+            }
+        } else {
+            wrongShake += 1
+            SoundEffects.shared.play(.wrong)
+        }
     }
 
     private func advance() {
@@ -459,80 +502,21 @@ struct SessionView: View {
         dismiss()
     }
 
+    /// Practice results are numbers and one word around a dancing mascot. Mock exams and the
+    /// diagnostic keep their detailed report.
+    private var celebratesCompletion: Bool { !session.timed && session.mode != .diagnostic }
+
     private var summary: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                summaryHeading
-                if !session.timed && session.mode != .diagnostic { momentumSummary }
-                Surface {
-                    HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text("\(answers.filter(\.correct).count)")
-                            .font(.system(.largeTitle, design: .rounded).bold()).monospacedDigit()
-                        Text("/ \(session.questions.count)問 正解").font(.headline).foregroundStyle(Palette.muted)
-                    }
-                    ProgressView(value: Double(answers.filter(\.correct).count), total: Double(max(1, session.questions.count)))
-                        .tint(Palette.positive)
-                    if answers.count < session.questions.count {
-                        Text("未回答 \(session.questions.count - answers.count)問").font(.caption).foregroundStyle(Palette.muted)
-                    }
+                if celebratesCompletion {
+                    completionHero
+                    momentumSummary
+                    if Set(session.questions.map(\.subject)).count > 1 { subjectResults }
+                } else {
+                    summaryHeading
+                    detailedResults
                 }
-                if !session.timed { nextReviewSummary }
-                if session.timed {
-                    let result = SessionPlanner.mockResult(answers, questions: session.questions, qualification: qualification)
-                    Surface {
-                        Text(result.passed ? "設定した基準に到達" : "見直すところが見つかりました")
-                            .font(.headline)
-                        Text("全体 \(qualification.passingPercent)% · 各科目 \(qualification.minimumSubjectPercent)%")
-                            .font(.subheadline).foregroundStyle(Palette.muted)
-                        Text("架空試験の設定基準").font(.caption).foregroundStyle(Palette.muted)
-                    }
-                }
-                if session.mode == .diagnostic,
-                   let strengths = SessionPlanner.diagnosticComparison(answers, questions: session.questions, subjects: qualification.subjects) {
-                    Surface {
-                        Label("得意 · \(strengths.best)", systemImage: "checkmark.circle").font(.headline)
-                        Label("伸びしろ · \(strengths.weakest)", systemImage: "pencil.line").font(.headline)
-                    }
-                }
-                if session.timed {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("問題ごとの振り返り").font(.headline)
-                        ForEach(session.questions) { item in
-                            DisclosureGroup {
-                                Text("正答: \(item.choices[item.correctIndex])").font(.subheadline.bold())
-                                Text(item.explanation).font(.subheadline)
-                                Text(qualification.displaySource(item.source)).font(.caption).foregroundStyle(.secondary)
-                            } label: {
-                                let answer = answers.first { $0.questionID == item.id }
-                                Label(item.stem, systemImage: answer == nil ? "minus.circle" : (answer?.correct == true ? "checkmark.circle" : "xmark.circle"))
-                                    .font(.subheadline).lineLimit(2)
-                            }
-                        }
-                    }
-                    .padding(18)
-                    .background(Palette.surface, in: RoundedRectangle(cornerRadius: 18))
-                }
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("分野別の結果").font(.headline)
-                    ForEach(qualification.subjects, id: \.self) { subject in
-                        let items = session.questions.filter { $0.subject == subject }
-                        if !items.isEmpty {
-                            let correct = answers.filter { answer in items.contains { $0.id == answer.questionID } && answer.correct }.count
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack {
-                                    Text(subject).font(.subheadline)
-                                    Spacer()
-                                    Text("\(correct) / \(items.count)")
-                                        .font(.subheadline.monospacedDigit()).foregroundStyle(Palette.muted)
-                                }
-                                ProgressView(value: Double(correct), total: Double(items.count)).tint(Palette.positive)
-                            }
-                            .accessibilityElement(children: .combine)
-                        }
-                    }
-                }
-                .padding(18)
-                .background(Palette.surface, in: RoundedRectangle(cornerRadius: 18))
                 if !purchase.unlocked && !purchase.purchasing {
                     AdBannerPlacement(ads: ads, placement: .sessionResult)
                 }
@@ -543,29 +527,196 @@ struct SessionView: View {
             }
             .padding(24).frame(maxWidth: 640).frame(maxWidth: .infinity)
         }
+        .overlay {
+            if celebratesCompletion && !still { FeatherBurst(trigger: featherBurst, count: 30).allowsHitTesting(false) }
+        }
+        .sensoryFeedback(.success, trigger: completionHaptic)
+        .task { await playCompletion() }
     }
 
-    /// はね・あしあとの獲得をその場で見せる。あしあとは今日初めての学習なら「+1」のスタンプ。
+    /// Feathers count up, the goal ring fills and the footprint stamp lands, one after another.
+    private func playCompletion() async {
+        // An evolution already had its own sound and haptic just before this screen.
+        if growth.stage.rawValue <= initialGrowthStage.rawValue {
+            SoundEffects.shared.play(.complete)
+            completionHaptic += 1
+        }
+        let earned = earnedFeathers
+        let ring = todayGoalFraction
+        guard celebratesCompletion, !still else {
+            featherShown = earned; ringShown = ring; stampShown = true
+            return
+        }
+        featherBurst += 1
+        do {
+            try await Task.sleep(for: .milliseconds(300))
+            let steps = min(earned, 24)
+            for step in 1...max(1, steps) {
+                withAnimation(.snappy(duration: 0.05)) { featherShown = steps == 0 ? earned : earned * step / steps }
+                try await Task.sleep(for: .milliseconds(35))
+            }
+            withAnimation(.easeOut(duration: 0.8)) { ringShown = ring }
+            try await Task.sleep(for: .milliseconds(500))
+            withAnimation(.spring(duration: 0.45, bounce: 0.55)) { stampShown = true }
+        } catch {
+            featherShown = earned; ringShown = ring; stampShown = true
+        }
+    }
+
+    private var completionWord: String {
+        let correct = answers.filter(\.correct).count
+        if answers.count > 0 && correct == session.questions.count { return "パーフェクト！" }
+        if session.questions.count > 0 && Double(correct) / Double(session.questions.count) >= 0.7 { return "ナイス！" }
+        return "おつかれさま！"
+    }
+
+    private var completionHero: some View {
+        let correct = answers.filter(\.correct).count
+        let size: CGFloat = dynamicTypeSize.isAccessibilitySize ? 128 : 176
+        return VStack(spacing: 8) {
+            TankeiView(state: completionState, stage: growth.stage, size: size, animated: true, idle: true,
+                       expressive: true, dancing: completionState != .rest && completionState != .recover)
+            Text(completionWord)
+                .font(.system(.title, design: .rounded).weight(.heavy))
+                .accessibilityAddTraits(.isHeader)
+                .accessibilityIdentifier("resultWord")
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text("\(correct)")
+                    .font(.system(size: 64, weight: .heavy, design: .rounded)).monospacedDigit()
+                    .foregroundStyle(Palette.correctText)
+                Text("/ \(session.questions.count)")
+                    .font(.system(.title2, design: .rounded).weight(.bold)).monospacedDigit()
+                    .foregroundStyle(Palette.muted)
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("\(session.questions.count)問中\(correct)問正解")
+            .accessibilityIdentifier("resultScore")
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var earnedFeathers: Int {
+        answers.reduce(0) { $0 + ($1.correct ? StudyMomentum.feathersPerCorrect : StudyMomentum.feathersPerAttempt) }
+    }
+
+    private var todayGoalFraction: Double {
+        min(1, Double(StudyMomentum(answers: store.data.answers).todayAnswers) / Double(StudyMomentum.dailyGoal))
+    }
+
+    @ViewBuilder private var detailedResults: some View {
+        Surface {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("\(answers.filter(\.correct).count)")
+                    .font(.system(.largeTitle, design: .rounded).bold()).monospacedDigit()
+                Text("/ \(session.questions.count)問 正解").font(.headline).foregroundStyle(Palette.muted)
+            }
+            ProgressView(value: Double(answers.filter(\.correct).count), total: Double(max(1, session.questions.count)))
+                .tint(Palette.positive)
+            if answers.count < session.questions.count {
+                Text("未回答 \(session.questions.count - answers.count)問").font(.caption).foregroundStyle(Palette.muted)
+            }
+        }
+        if session.timed {
+            let result = SessionPlanner.mockResult(answers, questions: session.questions, qualification: qualification)
+            Surface {
+                Text(result.passed ? "設定した基準に到達" : "見直すところが見つかりました")
+                    .font(.headline)
+                Text("全体 \(qualification.passingPercent)% · 各科目 \(qualification.minimumSubjectPercent)%")
+                    .font(.subheadline).foregroundStyle(Palette.muted)
+                Text("架空試験の設定基準").font(.caption).foregroundStyle(Palette.muted)
+            }
+        }
+        if session.mode == .diagnostic,
+           let strengths = SessionPlanner.diagnosticComparison(answers, questions: session.questions, subjects: qualification.subjects) {
+            Surface {
+                Label("得意 · \(strengths.best)", systemImage: "checkmark.circle").font(.headline)
+                Label("伸びしろ · \(strengths.weakest)", systemImage: "pencil.line").font(.headline)
+            }
+        }
+        if session.timed {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("問題ごとの振り返り").font(.headline)
+                ForEach(session.questions) { item in
+                    DisclosureGroup {
+                        Text("正答: \(item.choices[item.correctIndex])").font(.subheadline.bold())
+                        Text(item.explanation).font(.subheadline)
+                        Text(qualification.displaySource(item.source)).font(.caption).foregroundStyle(.secondary)
+                    } label: {
+                        let answer = answers.first { $0.questionID == item.id }
+                        Label(item.stem, systemImage: answer == nil ? "minus.circle" : (answer?.correct == true ? "checkmark.circle" : "xmark.circle"))
+                            .font(.subheadline).lineLimit(2)
+                    }
+                }
+            }
+            .padding(18)
+            .background(Palette.surface, in: RoundedRectangle(cornerRadius: 18))
+        }
+        subjectResults
+    }
+
+    private var subjectResults: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("分野別の結果").font(.headline)
+            ForEach(qualification.subjects, id: \.self) { subject in
+                let items = session.questions.filter { $0.subject == subject }
+                if !items.isEmpty {
+                    let correct = answers.filter { answer in items.contains { $0.id == answer.questionID } && answer.correct }.count
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text(subject).font(.subheadline)
+                            Spacer()
+                            Text("\(correct) / \(items.count)")
+                                .font(.subheadline.monospacedDigit()).foregroundStyle(Palette.muted)
+                        }
+                        ProgressView(value: Double(correct), total: Double(items.count)).tint(Palette.positive)
+                    }
+                    .accessibilityElement(children: .combine)
+                }
+            }
+        }
+        .padding(18)
+        .background(Palette.surface, in: RoundedRectangle(cornerRadius: 18))
+    }
+
+    /// はねのカウントアップ・あしあとの「+1」スタンプ・今日の目標リング。文字は数字と見出しだけ。
     private var momentumSummary: some View {
         let momentum = StudyMomentum(answers: store.data.answers)
-        let earned = answers.reduce(0) { $0 + ($1.correct ? StudyMomentum.feathersPerCorrect : StudyMomentum.feathersPerAttempt) }
         let grew = momentum.streak > initialStreak
         return HStack(spacing: 10) {
-            momentumTile("はね", value: "+\(earned)", tint: Palette.beakText)
+            momentumTile("はね", value: "+\(featherShown)", tint: Palette.beakText)
+                .accessibilityValue("+\(earnedFeathers)")
                 .accessibilityIdentifier("resultFeathers")
             momentumTile("あしあと", value: "\(momentum.streak)日", tint: Palette.ink)
                 .overlay(alignment: .topTrailing) {
-                    if grew {
+                    if grew && stampShown {
                         Text("+1").font(.caption.weight(.heavy)).foregroundStyle(Palette.onPiyo)
                             .padding(.horizontal, 8).padding(.vertical, 4)
                             .background(Palette.beak, in: Capsule())
+                            .rotationEffect(.degrees(-12))
                             .offset(x: 6, y: -10)
-                            .transition(.scale(scale: 2.2).combined(with: .opacity))
+                            .transition(.scale(scale: 2.6).combined(with: .opacity))
                             .accessibilityHidden(true)
                     }
                 }
                 .accessibilityValue(grew ? "今日で1日のびました" : "")
                 .accessibilityIdentifier("resultStreak")
+            VStack(spacing: 2) {
+                Text("今日").font(.caption.weight(.bold)).foregroundStyle(Palette.muted)
+                ZStack {
+                    Circle().stroke(Palette.piyoTint, lineWidth: 6)
+                    Circle().trim(from: 0, to: ringShown)
+                        .stroke(ringShown >= 1 ? Palette.positive : Palette.piyo, style: StrokeStyle(lineWidth: 6, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
+                    Text("\(momentum.todayAnswers)").font(.headline.weight(.heavy).monospacedDigit())
+                }
+                .frame(width: 44, height: 44)
+            }
+            .frame(maxWidth: .infinity).padding(.vertical, 8)
+            .popCard(radius: 20)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("今日")
+            .accessibilityValue("\(momentum.todayAnswers)問、目標 \(StudyMomentum.dailyGoal)問")
+            .accessibilityIdentifier("resultTodayGoal")
         }
     }
 
@@ -573,6 +724,7 @@ struct SessionView: View {
         VStack(spacing: 2) {
             Text(title).font(.caption.weight(.bold)).foregroundStyle(Palette.muted)
             Text(value).font(.title2.weight(.heavy).monospacedDigit()).foregroundStyle(tint)
+                .contentTransition(.numericText())
         }
         .frame(maxWidth: .infinity).padding(.vertical, 12)
         .popCard(radius: 20)
@@ -596,21 +748,6 @@ struct SessionView: View {
                 .accessibilityAddTraits(.isHeader)
             TankeiView(state: completionState, stage: growth.stage,
                        size: dynamicTypeSize.isAccessibilitySize ? 96 : 120, animated: true, idle: true, expressive: true)
-        }
-    }
-
-    private var nextReviewSummary: some View {
-        let answeredIDs = Set(answers.map(\.questionID))
-        let outlook = ReviewOutlook(questions: session.questions.filter { answeredIDs.contains($0.id) }, data: store.data)
-        return Surface {
-            Label("次に出会う目安", systemImage: "calendar").font(.headline)
-            if let next = outlook.nextDate {
-                Text("\(ReviewOutlook.label(for: next)) · \(outlook.nextCount)問")
-                    .font(.title3.bold()).foregroundStyle(Palette.positive)
-            }
-            if outlook.dueCount > 0 {
-                Text("今、復習にいい頃 · \(outlook.dueCount)問").font(.subheadline).foregroundStyle(Palette.review)
-            }
         }
     }
 

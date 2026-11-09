@@ -9,6 +9,7 @@ struct PreferencesView: View {
     let onReset: () -> Void
     let openCompanion: () -> Void
     @State private var showLearningGuide = false
+    @AppStorage(SoundEffects.enabledKey) private var soundEnabled = true
 
     private var recallBinding: Binding<Bool> {
         Binding(get: { store.data.recallFirst }, set: { store.setRecallFirst($0) })
@@ -41,6 +42,14 @@ struct PreferencesView: View {
                 Text("記憶定着")
             } footer: {
                 Text("苦手問題や復習で、まず答えを思い出す。" + (catalog.qualification.recallNote ?? ""))
+            }
+            Section {
+                Toggle(isOn: $soundEnabled) {
+                    Label("効果音", systemImage: "speaker.wave.2")
+                }
+                .accessibilityIdentifier("settingsSound")
+            } footer: {
+                Text("消音モードでは鳴りません。")
             }
             Section {
                 Button(action: openCompanion) {

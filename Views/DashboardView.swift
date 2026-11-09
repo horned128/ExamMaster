@@ -134,21 +134,24 @@ struct DashboardView: View {
             AnyLayout(HStackLayout(alignment: .center, spacing: 12))
         let goal = StudyMomentum.dailyGoal
         return layout {
-            NavigationLink(value: StudyDestination.records) {
-                ZStack {
-                    Circle().stroke(Palette.piyoTint, lineWidth: 9)
-                    Circle().trim(from: 0, to: min(1, Double(momentum.todayAnswers) / Double(goal)))
-                        .stroke(Palette.piyo, style: StrokeStyle(lineWidth: 9, lineCap: .round))
-                        .rotationEffect(.degrees(-90))
-                    TankeiView(state: dueCount > 0 ? .review : .ready, stage: growth.stage, size: 96,
-                               animated: true, idle: true, expressive: true, eventID: greetingReplay)
+            VStack(spacing: 6) {
+                NavigationLink(value: StudyDestination.records) {
+                    ZStack {
+                        Circle().stroke(Palette.piyoTint, lineWidth: 9)
+                        Circle().trim(from: 0, to: min(1, Double(momentum.todayAnswers) / Double(goal)))
+                            .stroke(Palette.piyo, style: StrokeStyle(lineWidth: 9, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                        TankeiView(state: dueCount > 0 ? .review : .ready, stage: growth.stage, size: 96,
+                                   animated: true, idle: true, expressive: true, eventID: greetingReplay)
+                    }
+                    .frame(width: 128, height: 128)
+                    .contentShape(Rectangle())
                 }
-                .frame(width: 128, height: 128)
-                .contentShape(Rectangle())
+                .accessibilityLabel("学習記録と相棒の成長を見る")
+                .accessibilityValue("今日 \(momentum.todayAnswers)問、目標 \(goal)問")
+                .accessibilityIdentifier("openCompanion")
+                TankeiEvolutionGaugeView(gauge: TankeiEvolutionGauge(data: store.data))
             }
-            .accessibilityLabel("学習記録と相棒の成長を見る")
-            .accessibilityValue("今日 \(momentum.todayAnswers)問、目標 \(goal)問")
-            .accessibilityIdentifier("openCompanion")
             VStack(alignment: .leading, spacing: 6) {
                 Button {
                     greetingReplay += 1

@@ -569,6 +569,7 @@ struct SessionProgressBar: View {
 /// Feathers drift down for about a second each time `trigger` changes. Callers skip it under Reduce Motion.
 struct FeatherBurst: View {
     let trigger: Int
+    var count = 14
     @State private var start: Date?
 
     var body: some View {
@@ -578,8 +579,8 @@ struct FeatherBurst: View {
                 let elapsed = timeline.date.timeIntervalSince(start)
                 guard elapsed < 1.1 else { return }
                 let colors = [Palette.piyo, Palette.beak, Palette.piyoTint]
-                for index in 0..<14 {
-                    let x = size.width * (Double(index) + 0.5) / 14 + sin(Double(index) * 1.7 + elapsed * 6) * 10
+                for index in 0..<count {
+                    let x = size.width * (Double(index) + 0.5) / Double(count) + sin(Double(index) * 1.7 + elapsed * 6) * 10
                     let y = -20 + elapsed * elapsed * (420 + Double(index % 4) * 70)
                     var feather = context
                     feather.opacity = max(0, 1 - elapsed / 1.1)

@@ -1,4 +1,5 @@
 import XCTest
+import UIKit
 @testable import ExamMaster
 
 final class TankeiTests: XCTestCase {
@@ -387,5 +388,91 @@ final class TankeiTests: XCTestCase {
         XCTAssertEqual(TankeiState.completion(mode: .mock, answered: 12, correct: 11, total: 12, mockPassed: false), .recover)
         XCTAssertEqual(TankeiState.completion(mode: .mock, answered: 12, correct: 10, total: 12, mockPassed: true), .celebrate)
         XCTAssertEqual(TankeiState.completion(mode: .mock, answered: 0, correct: 0, total: 12, mockPassed: true), .rest)
+    }
+
+    func testEvolutionGaugeFillsWithinTheEarnedStageAndFlagsAlmostNext() {
+        let start = TankeiEvolutionGauge(highestStage: 0, highestScore: 0)
+        XCTAssertEqual(start.stage, .chick)
+        XCTAssertEqual(start.progress, 0)
+        XCTAssertFalse(start.almostNext)
+
+        let mid = TankeiEvolutionGauge(highestStage: 1, highestScore: 0.425)
+        XCTAssertEqual(mid.stage, .growingChick)
+        XCTAssertEqual(mid.progress, 0.5, accuracy: 0.0001)
+        XCTAssertEqual(mid.fill(segment: 0), 1)
+        XCTAssertEqual(mid.fill(segment: 1), 0.5, accuracy: 0.0001)
+        XCTAssertEqual(mid.fill(segment: 2), 0)
+
+        XCTAssertTrue(TankeiEvolutionGauge(highestStage: 0, highestScore: 0.21).almostNext)
+        XCTAssertFalse(TankeiEvolutionGauge(highestStage: 0, highestScore: 0.19).almostNext)
+
+        // A stage earned before scores were saved starts its gauge empty, never behind the stage.
+        let legacy = TankeiEvolutionGauge(highestStage: 2, highestScore: 0)
+        XCTAssertEqual(legacy.stage, .youngChicken)
+        XCTAssertEqual(legacy.progress, 0)
+
+        let top = TankeiEvolutionGauge(highestStage: 3, highestScore: 0.9)
+        XCTAssertEqual(top.progress, 1)
+        XCTAssertFalse(top.almostNext)
+        XCTAssertEqual((0..<3).map(top.fill(segment:)), [1, 1, 1])
+        XCTAssertEqual(TankeiEvolutionGauge(highestStage: 0, highestScore: .nan).progress, 0)
+    }
+
+    func testStageThresholdsMatchTheGrowthBands() {
+        XCTAssertEqual(TankeiStage.at(0.249), .chick)
+        XCTAssertEqual(TankeiStage.at(0.25), .growingChick)
+        XCTAssertEqual(TankeiStage.at(0.6), .youngChicken)
+        XCTAssertEqual(TankeiStage.at(0.85), .chicken)
+        XCTAssertEqual(TankeiStage.at(.infinity), .chick)
+        XCTAssertNil(TankeiStage.chicken.next)
+    }
+
+    func testComboTiersGrowAtThreeFiveAndTen() {
+        XCTAssertEqual([0, 2, 3, 4, 5, 9, 10, 25].map { TankeiCombo(streak: $0) },
+                       [.none, .none, .warm, .warm, .hot, .hot, .blazing, .blazing])
+        XCTAssertEqual((1...30).filter(TankeiCombo.isMilestone), [3, 5, 10, 20, 30])
+        XCTAssertLessThan(TankeiCombo.warm.mascotScale, TankeiCombo.blazing.mascotScale)
+        XCTAssertLessThan(TankeiCombo.none.featherCount, TankeiCombo.blazing.featherCount)
+        XCTAssertEqual(SoundEffect.combo(.none), .correct)
+        XCTAssertEqual(SoundEffect.combo(.blazing), .combo10)
+        XCTAssertTrue(TankeiCombo.hot.line(streak: 5).hasPrefix("5れんぞく"))
+    }
+
+    func testEverySoundEffectIsBundled() {
+        for effect in SoundEffect.allCases {
+            XCTAssertNotNil(NSDataAsset(name: effect.rawValue), effect.rawValue)
+        }
+    }
+
+    func testHistoryWithoutHighestScoreDecodesAsZero() throws {
+        var data = StudyData()
+        data.mascotHighestScore = 0.5
+        var dictionary = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(data)) as? [String: Any])
+        XCTAssertEqual(dictionary["mascotHighestScore"] as? Double, 0.5)
+        dictionary.removeValue(forKey: "mascotHighestScore")
+        let restored = try JSONDecoder().decode(StudyData.self, from: JSONSerialization.data(withJSONObject: dictionary))
+        XCTAssertEqual(restored.mascotHighestScore, 0)
+        XCTAssertFalse(restored.mascotNeedsMigration)
+    }
+
+    @MainActor func testHighestScoreOnlyRisesAtSessionEnd() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let catalog = try Catalog.load(id: "demo-safety")
+        let first = catalog.questions[0]
+        let store = StudyStore(qualificationID: "gauge", directory: directory)
+        let now = Date()
+        for day in [-4.0, -2.0, 0.0] {
+            store.record(answer(first.id, correct: true, at: now.addingTimeInterval(day * 86_400)), question: first)
+        }
+        XCTAssertEqual(store.data.mascotHighestScore, 0)
+        store.updateMascotGrowth(questions: [first], now: now)
+        let high = store.data.mascotHighestScore
+        XCTAssertGreaterThan(high, 0.85)
+        // A wider scope lowers the live score, but the saved high and the gauge stay.
+        store.updateMascotGrowth(questions: catalog.questions, now: now.addingTimeInterval(60 * 86_400))
+        XCTAssertEqual(store.data.mascotHighestScore, high)
+        XCTAssertEqual(StudyStore(qualificationID: "gauge", directory: directory).data.mascotHighestScore, high)
+        XCTAssertEqual(TankeiEvolutionGauge(data: store.data).stage, .chicken)
     }
 }

@@ -44,6 +44,8 @@ struct TankeiView: View {
     var idle = false
     var expressive = false
     var eventID = 0
+    /// Repeats the dance instead of random idle gestures (results, evolution, big combos).
+    var dancing = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
@@ -89,14 +91,14 @@ struct TankeiView: View {
         .onDisappear { present = false }
         .onChange(of: state) { _, _ in if canAnimate && animated { interactionStart = .now; playID += 1 } }
         .onChange(of: eventID) { _, _ in if canAnimate && animated { interactionStart = .now; playID += 1 } }
-        .task(id: "\(canAnimate && idle)-\(state.rawValue)-\(stage.rawValue)") {
+        .task(id: "\(canAnimate && idle)-\(state.rawValue)-\(stage.rawValue)-\(dancing)") {
             guard canAnimate && idle else { return }
             do {
-                try await Task.sleep(for: .seconds(1.6))
+                try await Task.sleep(for: .seconds(dancing ? 0.2 : 1.6))
                 while !Task.isCancelled {
-                    idleAction = .choose(state: state, stage: stage, excluding: idleAction)
+                    idleAction = dancing ? .dance : .choose(state: state, stage: stage, excluding: idleAction)
                     actionStart = .now
-                    try await Task.sleep(for: .seconds(Double.random(in: 4.2...6.8)))
+                    try await Task.sleep(for: .seconds(dancing ? 2.8 : Double.random(in: 4.2...6.8)))
                 }
             } catch { /* Visibility, accessibility, or scene changes cancel the scheduler. */ }
         }
@@ -120,11 +122,13 @@ struct TankeiView: View {
         let idleAction = idleAction
         let actionStart = actionStart
         let interactionStart = interactionStart
+        let dancing = dancing
         return TimelineView(.animation(minimumInterval: 1.0 / 60, paused: !idle)) { timeline in
           let ambient = idle ? TankeiFrame.ambient(at: timeline.date.timeIntervalSince(motionStart), resting: state == .rest,
                                                   expressive: expressive) : TankeiFrame()
           let gesture = idle && timeline.date.timeIntervalSince(interactionStart) >= 1.5 ?
-              idleAction.frame(at: timeline.date.timeIntervalSince(actionStart), expressive: expressive) : TankeiFrame()
+              idleAction.frame(at: timeline.date.timeIntervalSince(actionStart), expressive: expressive)
+                .scaled(dancing ? 1.8 : 1) : TankeiFrame()
           Color.clear.keyframeAnimator(initialValue: TankeiFrame(), trigger: playID) { _, frame in
              TankeiDrawing(state: state, stage: stage, size: size, frame: frame.adding(ambient).adding(gesture))
         } keyframes: { _ in
@@ -291,34 +295,77 @@ private struct TankeiDrawing: View {
     }
 }
 
-/// Replay a newly earned milestone only at the result; never delay the main action.
-struct TankeiGrowthReveal: View {
-    let state: TankeiState
-    let initialStage: TankeiStage
+/// A one-colour cut-out of the mascot, used for unreached gauge stops and the evolution flicker.
+struct TankeiSilhouette: View {
     let stage: TankeiStage
     let size: CGFloat
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.scenePhase) private var scenePhase
-    @State private var revealed = false
-
-    private var shouldReveal: Bool {
-        stage.rawValue > initialStage.rawValue && !reduceMotion && scenePhase == .active &&
-            !ProcessInfo.processInfo.isLowPowerModeEnabled
-    }
+    var color: Color = .white
 
     var body: some View {
-        TankeiView(state: state, stage: shouldReveal && !revealed ? initialStage : stage,
-                    size: size, animated: true, idle: true, expressive: true)
-            .task(id: stage) {
-                guard shouldReveal else { revealed = true; return }
-                do { try await Task.sleep(for: .milliseconds(280)) } catch { return }
-                guard !Task.isCancelled else { return }
-                revealed = true
-            }
+        color.frame(width: size, height: size)
+            .mask(TankeiView(stage: stage, size: size))
+            .accessibilityHidden(true)
     }
 }
 
-/// Shown once, after the final answer. Learning controls never morph mid-session.
+/// Home: the four stages as stops on one track. The fill shows how far the earned stage is toward
+/// the next one, from saved highs only, so it never moves back. No numbers are shown.
+struct TankeiEvolutionGaugeView: View {
+    let gauge: TankeiEvolutionGauge
+    var width: CGFloat = 136
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var pulse = false
+    private let stop: CGFloat = 24
+
+    var body: some View {
+        VStack(spacing: 4) {
+            ZStack(alignment: .leading) {
+                Capsule().fill(Palette.track).frame(height: 8).padding(.horizontal, stop / 2)
+                Capsule().fill(Palette.piyo).frame(width: fillWidth, height: 8).padding(.leading, stop / 2)
+                HStack(spacing: 0) {
+                    ForEach(TankeiStage.allCases) { stage in
+                        if stage != .chick { Spacer(minLength: 0) }
+                        stageStop(stage)
+                    }
+                }
+            }
+            .frame(width: width)
+            if gauge.almostNext {
+                Text("もうすぐ進化！")
+                    .font(.caption.weight(.heavy)).foregroundStyle(Palette.beakText)
+                    .scaleEffect(pulse ? 1.08 : 1)
+                    .animation(reduceMotion ? nil : .easeInOut(duration: 0.7).repeatForever(autoreverses: true), value: pulse)
+                    .onAppear { pulse = !reduceMotion }
+                    .fixedSize()
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("相棒の進化")
+        .accessibilityValue(gauge.stage.title + (gauge.almostNext ? "、もうすぐ進化" : ""))
+        .accessibilityIdentifier("evolutionGauge")
+    }
+
+    private var fillWidth: CGFloat {
+        let segments = TankeiStage.allCases.count - 1
+        let filled = (0..<segments).reduce(0.0) { $0 + gauge.fill(segment: $1) }
+        return (width - stop) * CGFloat(filled / Double(segments))
+    }
+
+    private func stageStop(_ stage: TankeiStage) -> some View {
+        let reached = stage.rawValue <= gauge.stage.rawValue
+        return ZStack {
+            Circle().fill(reached ? Palette.piyoTint : Palette.surface)
+            Circle().strokeBorder(reached ? Palette.piyo : Palette.track, lineWidth: 2)
+            if reached { TankeiView(stage: stage, size: stop - 6) }
+            else { TankeiSilhouette(stage: stage, size: stop - 6, color: Palette.muted.opacity(0.45)) }
+        }
+        .frame(width: stop, height: stop)
+    }
+}
+
+/// Shown once, after the final answer, when a new stage was earned. The screen glows, the
+/// silhouettes flicker faster and faster, a flash, and the new stage dances in.
+/// Reduce Motion or Low Power Mode: the new stage as a still picture and a haptic.
 struct TankeiGrowthCelebration: View {
     let initialStage: TankeiStage
     let stage: TankeiStage
@@ -326,25 +373,117 @@ struct TankeiGrowthCelebration: View {
     let buttonTitle: String
     let continueAction: () -> Void
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var phase = Phase.before
+    @State private var showNew = false
+    @State private var flash = 0.0
+    @State private var burst = 0
+    @State private var haptic = 0
+
+    private enum Phase { case before, morphing, revealed }
+    private var still: Bool { reduceMotion || ProcessInfo.processInfo.isLowPowerModeEnabled }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                Text("成長したよ！").font(dynamicTypeSize.isAccessibilitySize ? .title2.bold() : .largeTitle.bold())
-                    .accessibilityAddTraits(.isHeader).accessibilityIdentifier("mascotGrowthMilestone")
-                TankeiGrowthReveal(state: .celebrate, initialStage: initialStage, stage: stage,
-                                   size: dynamicTypeSize.isAccessibilitySize ? 192 : 256)
-                Text(stage.title).font(.title2.bold()).accessibilityIdentifier("growthStage")
+        let size: CGFloat = dynamicTypeSize.isAccessibilitySize ? 192 : 256
+        let revealed = phase == .revealed
+        ZStack {
+            EvolutionGlow(active: phase != .before, still: still).ignoresSafeArea()
+            ScrollView {
+                VStack(spacing: 16) {
+                    Text("進化した！")
+                        .font(.system(dynamicTypeSize.isAccessibilitySize ? .title2 : .largeTitle, design: .rounded).weight(.heavy))
+                        .foregroundStyle(Palette.onPiyo)
+                        .scaleEffect(revealed || still ? 1 : 0.4).opacity(revealed ? 1 : 0)
+                        .accessibilityAddTraits(.isHeader).accessibilityIdentifier("mascotGrowthMilestone")
+                    ZStack {
+                        switch phase {
+                        case .before:
+                            TankeiView(state: .ready, stage: initialStage, size: size, animated: true, idle: true, expressive: true)
+                        case .morphing:
+                            TankeiSilhouette(stage: showNew ? stage : initialStage, size: size)
+                                .scaleEffect(showNew ? 1.1 : 0.94)
+                                .shadow(color: .white, radius: 28)
+                        case .revealed:
+                            TankeiView(state: .celebrate, stage: stage, size: size, animated: true, idle: true,
+                                       expressive: true, dancing: true)
+                        }
+                    }
+                    .frame(width: size, height: size)
+                    Text(stage.title)
+                        .font(.system(.title, design: .rounded).weight(.heavy)).foregroundStyle(Palette.onPiyo)
+                        .opacity(revealed ? 1 : 0)
+                        .accessibilityIdentifier("growthStage")
+                }
+                .frame(maxWidth: .infinity).padding(.horizontal, 24)
+                .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 24 : 48)
             }
-            .frame(maxWidth: .infinity).padding(.horizontal, 24)
-            .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 24 : 40)
+            Color.white.opacity(flash).ignoresSafeArea().allowsHitTesting(false)
+            if !still { FeatherBurst(trigger: burst, count: TankeiCombo.blazing.featherCount).ignoresSafeArea().allowsHitTesting(false) }
         }
         .safeAreaInset(edge: .bottom) {
             Button(buttonTitle, action: continueAction)
                 .buttonStyle(PuffyButtonStyle())
                 .frame(maxWidth: 600)
-                .padding(20).frame(maxWidth: .infinity).background(.bar)
+                .padding(20).frame(maxWidth: .infinity)
+                .opacity(revealed ? 1 : 0).disabled(!revealed)
         }
+        .toolbar(.hidden, for: .navigationBar)
+        .sensoryFeedback(.success, trigger: haptic)
+        .task { await play() }
+    }
+
+    private func play() async {
+        guard phase == .before else { return }
+        SoundEffects.shared.play(.evolve)
+        guard !still else { phase = .revealed; haptic += 1; return }
+        // The flicker speeds up until the sound's chord lands at about 1.45 s.
+        do {
+            try await Task.sleep(for: .milliseconds(150))
+            withAnimation(.easeInOut(duration: 0.3)) { phase = .morphing }
+            for gap in [260, 220, 180, 150, 120, 100, 80, 70, 60, 60] {
+                try await Task.sleep(for: .milliseconds(gap))
+                withAnimation(.easeInOut(duration: Double(gap) / 1_250)) { showNew.toggle() }
+            }
+        } catch { phase = .revealed; return }
+        flash = 1
+        withAnimation(.spring(duration: 0.5, bounce: 0.5)) { phase = .revealed }
+        withAnimation(.easeOut(duration: 0.9)) { flash = 0 }
+        burst += 1
+        haptic += 1
+    }
+}
+
+/// Bright full-screen glow with slowly turning rays. Still under Reduce Motion or Low Power Mode.
+private struct EvolutionGlow: View {
+    let active: Bool
+    let still: Bool
+
+    var body: some View {
+        TimelineView(.animation(paused: still || !active)) { timeline in
+            Canvas { context, size in
+                let center = CGPoint(x: size.width / 2, y: size.height * 0.42)
+                let radius = hypot(size.width, size.height)
+                context.fill(Path(CGRect(origin: .zero, size: size)),
+                             with: .radialGradient(Gradient(colors: [.white, Palette.piyo, Palette.beak]),
+                                                   center: center, startRadius: 0, endRadius: radius * 0.75))
+                guard active else { return }
+                let turn = still ? 0 : timeline.date.timeIntervalSinceReferenceDate * 0.35
+                let rays = 14
+                var light = context
+                light.opacity = 0.3
+                for index in 0..<rays {
+                    let angle = Double(index) / Double(rays) * 2 * .pi + turn
+                    let half = .pi / Double(rays) * 0.45
+                    var ray = Path()
+                    ray.move(to: center)
+                    ray.addLine(to: CGPoint(x: center.x + cos(angle - half) * radius, y: center.y + sin(angle - half) * radius))
+                    ray.addLine(to: CGPoint(x: center.x + cos(angle + half) * radius, y: center.y + sin(angle + half) * radius))
+                    ray.closeSubpath()
+                    light.fill(ray, with: .color(.white))
+                }
+            }
+        }
+        .accessibilityHidden(true)
     }
 }
 

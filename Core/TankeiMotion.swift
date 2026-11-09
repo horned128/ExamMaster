@@ -1,4 +1,6 @@
 import Foundation
+import AVFoundation
+import UIKit
 
 /// Continuous, bounded motion samples. No timer, randomness, or persisted learning state.
 struct TankeiFrame: Equatable {
@@ -17,6 +19,13 @@ struct TankeiFrame: Equatable {
                     wing: wing + other.wing, nod: nod + other.nod,
                     eyeScale: eyeScale * other.eyeScale, tail: tail + other.tail,
                      sway: sway + other.sway, burst: burst + other.burst, gaze: gaze + other.gaze)
+    }
+
+    /// Scales the motion only; eyes and particles keep their own range.
+    func scaled(_ factor: Double) -> TankeiFrame {
+        let k = CGFloat(factor)
+        return TankeiFrame(lift: lift * k, squash: squash * k, wing: wing * factor, nod: nod * factor,
+                           eyeScale: eyeScale, tail: tail * factor, sway: sway * factor, burst: burst, gaze: gaze * k)
     }
 
     static func ambient(at time: TimeInterval, resting: Bool = false, expressive: Bool = false) -> TankeiFrame {
@@ -113,5 +122,60 @@ enum TankeiIdleAction: String, CaseIterable {
         case .tailFlick:
             return TankeiFrame(wing: 2 * amount, tail: 22 * amount * sin(6 * .pi * progress))
         }
+    }
+}
+
+/// Short synthesized effects (tools/GenerateSounds.py → Assets.xcassets/Sounds).
+enum SoundEffect: String, CaseIterable {
+    case correct = "sfx-correct", wrong = "sfx-wrong"
+    case combo3 = "sfx-combo3", combo5 = "sfx-combo5", combo10 = "sfx-combo10"
+    case complete = "sfx-complete", evolve = "sfx-evolve"
+
+    static func combo(_ tier: TankeiCombo) -> SoundEffect {
+        switch tier {
+        case .none: .correct
+        case .warm: .combo3
+        case .hot: .combo5
+        case .blazing: .combo10
+        }
+    }
+}
+
+/// On by default and switched in settings. The ambient category follows the silent switch
+/// and mixes with music, so an effect never stops what the person is listening to.
+@MainActor final class SoundEffects {
+    static let shared = SoundEffects()
+    static let enabledKey = "soundEffectsEnabled"
+    static var enabled: Bool { UserDefaults.standard.object(forKey: enabledKey) as? Bool ?? true }
+
+    private var players: [SoundEffect: AVAudioPlayer] = [:]
+    private var sessionReady = false
+
+    func preload() {
+        guard Self.enabled else { return }
+        prepareSession()
+        for effect in SoundEffect.allCases where players[effect] == nil { players[effect] = load(effect) }
+    }
+
+    func play(_ effect: SoundEffect) {
+        guard Self.enabled else { return }
+        prepareSession()
+        guard let player = players[effect] ?? load(effect) else { return }
+        players[effect] = player
+        player.currentTime = 0
+        player.play()
+    }
+
+    private func prepareSession() {
+        guard !sessionReady else { return }
+        sessionReady = true
+        try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .default, options: [.mixWithOthers])
+    }
+
+    private func load(_ effect: SoundEffect) -> AVAudioPlayer? {
+        guard let asset = NSDataAsset(name: effect.rawValue),
+              let player = try? AVAudioPlayer(data: asset.data, fileTypeHint: AVFileType.wav.rawValue) else { return nil }
+        player.prepareToPlay()
+        return player
     }
 }

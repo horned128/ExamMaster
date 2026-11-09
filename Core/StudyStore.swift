@@ -91,9 +91,12 @@ import Observation
     /// Recording answers and suspending a session never change the visible stage.
     func updateMascotGrowth(questions: [Question], now: Date = .now) {
         guard !readOnly, !questions.isEmpty else { return }
-        let stage = TankeiGrowth(questions: questions, data: data, now: now).stage.rawValue
-        guard stage != data.mascotHighestStage || data.mascotNeedsMigration else { return }
+        let growth = TankeiGrowth(questions: questions, data: data, now: now)
+        let stage = growth.stage.rawValue
+        let score = max(data.mascotHighestScore, growth.score)
+        guard stage != data.mascotHighestStage || score != data.mascotHighestScore || data.mascotNeedsMigration else { return }
         data.mascotHighestStage = stage
+        data.mascotHighestScore = score
         data.mascotNeedsMigration = false
         save()
     }

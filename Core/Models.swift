@@ -452,10 +452,12 @@ struct StudyData: Codable {
     var pendingMock: PendingMock?
     var examDay: ExamDay?
     var mascotHighestStage = TankeiStage.chick.rawValue
+    /// The best growth score reached at a session's end. The evolution gauge never moves back.
+    var mascotHighestScore = 0.0
     var mascotNeedsMigration = false
 
     private enum CodingKeys: String, CodingKey {
-        case schemaVersion, answers, mastery, bookmarks, mocks, onboardingCompleted, diagnosticCompleted, recallFirst, randomScope, pending, pendingMock, examDay, mascotHighestStage
+        case schemaVersion, answers, mastery, bookmarks, mocks, onboardingCompleted, diagnosticCompleted, recallFirst, randomScope, pending, pendingMock, examDay, mascotHighestStage, mascotHighestScore
     }
 
     init() {}
@@ -476,6 +478,7 @@ struct StudyData: Codable {
         pendingMock = try c.decodeIfPresent(PendingMock.self, forKey: .pendingMock)
         examDay = try c.decodeIfPresent(ExamDay.self, forKey: .examDay)
         mascotHighestStage = try c.decodeIfPresent(Int.self, forKey: .mascotHighestStage) ?? TankeiStage.chick.rawValue
+        mascotHighestScore = try c.decodeIfPresent(Double.self, forKey: .mascotHighestScore) ?? 0
         mascotNeedsMigration = !c.contains(.mascotHighestStage)
     }
 }

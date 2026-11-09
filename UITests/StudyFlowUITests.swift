@@ -873,6 +873,52 @@ final class StudyFlowUITests: XCTestCase {
         records.tap()
     }
 
+    /// Phase 4 effects: home evolution gauge, answer reactions, evolution sequence and the completion screen.
+    func testReactionsEvolutionAndCompletionCelebration() {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["-UITestResetStudy", "-UITestSeedCompanionHistory", "-UITestDisableAds"]
+        app.launch()
+        let gauge = app.descendants(matching: .any).matching(identifier: "evolutionGauge").firstMatch
+        XCTAssertTrue(gauge.waitForExistence(timeout: 5))
+        XCTAssertEqual(gauge.label, "相棒の進化")
+        capture(app, name: "演出・ホームの進化ゲージ")
+        app.buttons["homeTodayStudy"].tap()
+        var lines: [String] = []
+        for step in 0..<20 {
+            let reveal = app.buttons["選択肢を見る"]
+            if reveal.waitForExistence(timeout: 1) { reveal.tap() }
+            let choice = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "選択肢 1、")).firstMatch
+            XCTAssertTrue(choice.waitForExistence(timeout: 5))
+            scrollTo(choice, in: app)
+            choice.tap()
+            let line = app.staticTexts["answerLine"]
+            XCTAssertTrue(line.waitForExistence(timeout: 5))
+            lines.append(line.label)
+            if step == 0 { capture(app, name: "演出・回答パネル") }
+            let next = app.buttons["submitOrAdvance"]
+            let last = next.label == "結果を見る"
+            next.tap()
+            if last { break }
+        }
+        XCTAssertFalse(lines.contains(""))
+        if app.staticTexts["mascotGrowthMilestone"].waitForExistence(timeout: 3) {
+            let button = app.buttons["結果を見る"]
+            let enabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: button)
+            XCTAssertEqual(XCTWaiter.wait(for: [enabled], timeout: 6), .completed)
+            capture(app, name: "演出・進化")
+            button.tap()
+        }
+        XCTAssertTrue(app.staticTexts["resultWord"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "resultScore").firstMatch.exists)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "resultFeathers").firstMatch.exists)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "resultTodayGoal").firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["次に出会う目安"].exists)
+        sleep(2)
+        capture(app, name: "演出・完了画面")
+        print("PHASE4 lines:", lines, "score:", app.descendants(matching: .any).matching(identifier: "resultScore").firstMatch.label)
+    }
+
     private func capture(_ app: XCUIApplication, name: String) {
         // Capture the display rather than the application's stale bounds after rotation.
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())

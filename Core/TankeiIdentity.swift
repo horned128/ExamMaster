@@ -55,13 +55,99 @@ enum TankeiStage: Int, Codable, CaseIterable, Identifiable {
         }
     }
 
+    /// The growth score at which this stage begins.
+    var threshold: Double {
+        switch self {
+        case .chick: 0
+        case .growingChick: 0.25
+        case .youngChicken: 0.6
+        case .chicken: 0.85
+        }
+    }
+
+    var next: TankeiStage? { TankeiStage(rawValue: rawValue + 1) }
+
     static func at(_ fraction: Double) -> TankeiStage {
         guard fraction.isFinite else { return .chick }
         // A mock exam is optional: stable learning alone must allow full growth.
-        if fraction >= 0.85 { return .chicken }
-        if fraction >= 0.6 { return .youngChicken }
-        if fraction >= 0.25 { return .growingChick }
-        return .chick
+        return allCases.last { fraction >= $0.threshold } ?? .chick
+    }
+}
+
+/// The home gauge: the earned stage and how far it is toward the next one, from saved highs only,
+/// so it never moves back. No number is shown; `almostNext` adds a short line past 80%.
+struct TankeiEvolutionGauge: Equatable {
+    let stage: TankeiStage
+    /// 0...1 within the current stage. Always 1 at the final stage.
+    let progress: Double
+
+    var almostNext: Bool { stage.next != nil && progress >= 0.8 }
+
+    init(highestStage: Int, highestScore: Double) {
+        let saved = TankeiStage(rawValue: highestStage) ?? .chick
+        let score = highestScore.isFinite ? min(1, max(0, highestScore)) : 0
+        stage = TankeiStage(rawValue: max(saved.rawValue, TankeiStage.at(score).rawValue)) ?? .chick
+        if let next = stage.next {
+            let span = next.threshold - stage.threshold
+            progress = min(1, max(0, (score - stage.threshold) / span))
+        } else {
+            progress = 1
+        }
+    }
+
+    init(data: StudyData) {
+        self.init(highestStage: data.mascotHighestStage, highestScore: data.mascotHighestScore)
+    }
+
+    /// How much of segment `index` (between stage `index` and `index + 1`) is filled.
+    func fill(segment index: Int) -> Double {
+        if index < stage.rawValue { return 1 }
+        if index > stage.rawValue { return 0 }
+        return stage.next == nil ? 1 : progress
+    }
+}
+
+/// Reactions grow at 3, 5 and 10 correct answers in a row. A miss quietly returns to zero.
+enum TankeiCombo: Int, Comparable {
+    case none = 0, warm = 3, hot = 5, blazing = 10
+
+    init(streak: Int) {
+        self = [.blazing, .hot, .warm].first { streak >= $0.rawValue } ?? .none
+    }
+
+    static func < (lhs: Self, rhs: Self) -> Bool { lhs.rawValue < rhs.rawValue }
+
+    /// A new tier, or every further ten, gets the combo sound and line.
+    static func isMilestone(_ streak: Int) -> Bool {
+        streak == 3 || streak == 5 || (streak >= 10 && streak.isMultiple(of: 10))
+    }
+
+    /// The panel mascot grows with the tier.
+    var mascotScale: CGFloat {
+        switch self {
+        case .none: 1
+        case .warm: 1.2
+        case .hot: 1.4
+        case .blazing: 1.7
+        }
+    }
+
+    var featherCount: Int {
+        switch self {
+        case .none: 14
+        case .warm: 20
+        case .hot: 30
+        case .blazing: 48
+        }
+    }
+
+    func line(streak: Int) -> String {
+        switch self {
+        case .none: ""
+        case .warm: "\(streak)れんぞく！ ノッてきた！"
+        case .hot: "\(streak)れんぞく！ 止まらない！"
+        case .blazing: "\(streak)れんぞく！！ 天才！？"
+        }
     }
 }
 
