@@ -97,6 +97,8 @@ def main() -> int:
         if len(set(gids)) != len(gids) or not set(gids) <= term_set:
             fail(f"{where}: glossaryTermIDs must be unique and exist in glossary.json")
 
+    for name in ("textbook.json", "layermap.json"):  # 教科書と全体図の図も Figures に入っている
+        referenced_assets |= asset_names(json.loads((DIR / name).read_text(encoding="utf-8")))
     on_disk = {p.name for p in (DIR / "Figures").glob("*.png")}
     for name in sorted(referenced_assets - on_disk):
         fail(f"missing figure {name}")
@@ -131,6 +133,15 @@ def main() -> int:
           f"{len(sets)} sets, {len(term_ids)} terms, {len(on_disk)} figures — "
           f"{'OK' if not problems else f'{len(problems)} problems'}")
     return 1 if problems else 0
+
+
+def asset_names(node) -> set[str]:
+    if isinstance(node, dict):
+        found = {node["assetName"]} if isinstance(node.get("assetName"), str) else set()
+        return found.union(*(asset_names(v) for v in node.values()))
+    if isinstance(node, list):
+        return set().union(*(asset_names(v) for v in node))
+    return set()
 
 
 def strip(text: str) -> str:
