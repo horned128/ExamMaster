@@ -18,11 +18,16 @@ struct FundamentalSetLibraryView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 16) {
                 Surface {
-                    Text("科目ごとに取り組む").font(.headline)
-                    Text("科目Aは60問・90分、科目Bは20問・100分。公開問題は抜粋なので、短い時間の演習として収録しています。")
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("科目ごとに取り組む").font(.headline)
+                        Spacer(minLength: 8)
+                        InfoTip(label: "収録と採点について", lines: [
+                            "科目Aは本番60問・90分、科目Bは20問・100分。公開問題は抜粋なので、短い時間の演習として収録しています。",
+                            "正答率60%を練習の目安にします。本試験はIRT評価で各科目600点以上が必要です。"
+                        ])
+                    }
+                    Text("科目A 60問・90分 · 科目B 20問・100分")
                         .font(.subheadline).foregroundStyle(Palette.muted)
-                    Text("正答率60%を練習の目安にします。本試験はIRT評価で各科目600点以上が必要です。")
-                        .font(.caption).foregroundStyle(Palette.muted)
                 }
                 ForEach([selectedSubject], id: \.self) { subject in
                     ForEach([QuestionKind.past, .original], id: \.self) { kind in

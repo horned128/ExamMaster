@@ -56,8 +56,7 @@ struct QuestionCollectionView: View {
             let choice = electives.map { "問\($0)" }.joined(separator: "・")
             return note + (electives.isEmpty ? "" : choice + "は選んだ一方を出題します。")
         }
-        return isPublicExcerpt ? "公開問題の抜粋を使う時間制限付き演習です。学習状態による絞り込みは適用しません。"
-            : "全\(accessible.count)問を本番形式で出題します。学習状態による絞り込みは適用しません。"
+        return isPublicExcerpt ? "公開問題の抜粋を時間を測って解きます。" : "全\(accessible.count)問を本番形式で出題します。"
     }
     private var electives: [Int] {
         guard catalog.qualification.mockScoring == .subjectPoints, Set(candidates.map(\.subject)).count == 1 else { return [] }
@@ -175,7 +174,7 @@ struct QuestionCollectionView: View {
                             .accessibilityIdentifier("practiceQuestionCount")
                     } footer: {
                         if practiceQuestions.isEmpty {
-                            Text("この学習状態の問題はありません。学習状態を変更してください。")
+                            Text("この学習状態の問題はありません。")
                         }
                     }
                 }

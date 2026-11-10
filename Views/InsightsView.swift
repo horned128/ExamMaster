@@ -97,8 +97,6 @@ struct InsightsView: View {
             } label: {
                 Text("科目別の定着率").font(.subheadline).frame(minHeight: 44)
             }
-            Text("回答と時間経過からの目安。合格確率ではありません。")
-                .font(.caption).foregroundStyle(Palette.muted)
         }
     }
 
@@ -220,7 +218,7 @@ struct InsightsView: View {
             if recentMocks.isEmpty {
                 Label("記録はこれから", systemImage: "chart.xyaxis.line")
                     .font(.subheadline).foregroundStyle(Palette.muted)
-                Text("年度別の問題一覧から、模擬試験を始められます。")
+                Text("「\(catalog.qualification.libraryTabTitle)」タブから始められます。")
                     .font(.caption).foregroundStyle(Palette.muted)
             } else {
                 Chart {

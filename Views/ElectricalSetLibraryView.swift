@@ -15,6 +15,14 @@ struct ElectricalSetLibraryView: View {
     }
     private var hasPredictions: Bool { sets.contains { $0.kind == .prediction } }
 
+    private var mockDetails: [String] {
+        var lines = [subject == "法規" ? "6点・7点の配点で、100点満点として採点します。" : "各5点、100点満点で採点します。"]
+        if ["理論", "機械"].contains(subject) {
+            lines.append("問17と問18は、模試の開始前に一方を選びます。通常の練習では両方を学べます。")
+        }
+        return lines
+    }
+
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 16) {
@@ -35,14 +43,13 @@ struct ElectricalSetLibraryView: View {
                     }
                 }
                 Surface {
-                    Text("\(subject)の模試").font(.headline)
-                    Text(subject == "法規" ? "16解答欄・65分。6点・7点の配点で、100点満点として採点します。" :
-                         "20解答欄・90分。各5点、100点満点で採点します。")
-                        .font(.subheadline).foregroundStyle(Palette.muted)
-                    if ["理論", "機械"].contains(subject) {
-                        Text("問17と問18は、模試の開始前に一方を選びます。通常の練習では両方を学べます。")
-                            .font(.subheadline).foregroundStyle(Palette.muted)
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("\(subject)の模試").font(.headline)
+                        Spacer(minLength: 8)
+                        InfoTip(label: "\(subject)の模試について", lines: mockDetails)
                     }
+                    Text(subject == "法規" ? "16解答欄・65分・100点満点" : "20解答欄・90分・100点満点")
+                        .font(.subheadline).foregroundStyle(Palette.muted)
                     DisclosureGroup("収録範囲と出典") {
                         Text(catalog.qualification.examNote).font(.subheadline).foregroundStyle(Palette.muted)
                         Link("公式の過去問・正答表", destination: URL(string: "https://www.shiken.or.jp/chief/third/qa/")!)

@@ -595,3 +595,25 @@ struct FeatherBurst: View {
         .accessibilityHidden(true)
     }
 }
+
+/// 画面の補足は1行までにし、それ以上の説明は (i) から開く。
+struct InfoTip: View {
+    let label: String
+    let lines: [String]
+    @State private var shown = false
+    var body: some View {
+        Button { shown = true } label: {
+            Image(systemName: "info.circle").foregroundStyle(Palette.muted)
+                .frame(width: 44, height: 44).contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(label)
+        .popover(isPresented: $shown) {
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(lines, id: \.self) { Text($0).textRole(.reason).fixedSize(horizontal: false, vertical: true) }
+            }
+            .padding(20).frame(idealWidth: 320, alignment: .leading)
+            .presentationCompactAdaptation(.popover)
+        }
+    }
+}

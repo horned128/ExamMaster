@@ -148,7 +148,7 @@ struct PredictionLibraryView: View {
                 Surface(inset: 16) {
                     VStack(alignment: .leading, spacing: 6) {
                         Label("\(sets.count)セットから選ぶ", systemImage: "square.stack").font(.headline)
-                        Text("各\(catalog.qualification.mockQuestionCount)問・\(catalog.qualification.examMinutes)分。問題を選んで練習、または模擬試験へ。")
+                        Text("各\(catalog.qualification.mockQuestionCount)問・\(catalog.qualification.examMinutes)分")
                             .font(.caption).foregroundStyle(Palette.muted)
                         Text(catalog.qualification.originalContentLabel).font(.caption2).foregroundStyle(Palette.muted)
                     }.frame(maxWidth: .infinity, alignment: .leading)
@@ -209,7 +209,7 @@ struct PastMockLibraryView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Surface {
                     Label("試験の回を選ぶ", systemImage: "calendar").font(.headline)
-                    Text("各回の原問と公式正答で練習。模擬試験は\(catalog.qualification.mockQuestionCount)問・\(catalog.qualification.examMinutes)分です。")
+                    Text("原問と公式正答 · 模試 \(catalog.qualification.mockQuestionCount)問・\(catalog.qualification.examMinutes)分")
                         .font(.subheadline).foregroundStyle(Palette.muted)
                 }
                 ForEach(sets) { set in
@@ -353,7 +353,7 @@ struct ThemeDetailView: View {
                 .accessibilityIdentifier("subcategory-\(subtopic.title)")
             }
             if subtopics.contains(where: { $0.title == StudySubtopic.unreviewedTitle }) {
-                Text("2015年以前の未校閲問題は、誤った細分類を付けないよう、この一覧ではまとめて表示しています。")
+                Text("2015年以前の問題は細分類せずにまとめています。")
                     .font(.caption).foregroundStyle(Palette.muted)
                     .padding(.horizontal, 4)
             }
@@ -540,8 +540,6 @@ struct QuickQuizView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Lvを選んで、5問に挑戦").font(.headline)
-                Text("難易度ごとに出題。問題が5問未満のLvは、ある問題をすべて出題します。")
-                    .font(.caption).foregroundStyle(Palette.muted)
                 ForEach(levels, id: \.self) { level in
                     let questions = QuizLevel.questions(level: level, catalog: catalog, unlocked: purchase.unlocked)
                     let learned = questions.filter { store.data.mastery[$0.id] != nil }.count
